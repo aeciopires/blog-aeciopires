@@ -87,7 +87,7 @@ A virada de DNS aconteceu antes destes testes; o autor executou o roteiro no dom
 - [x] Modos claro/escuro (botão e preferência do sistema).
 - [x] Busca: `kubernetes helm`, `instalacao zabbix`, `kubernets` (`Ctrl K` no computador).
 - [x] RSS: `/index.xml` num leitor de feeds.
-- [x] Lighthouse (Chrome DevTools → Lighthouse, mobile): anotar Performance, Accessibility, Best Practices e SEO.
+- [x] Lighthouse (Chrome DevTools → Lighthouse, mobile): Performance **99**, Accessibility **96**, Best Practices **96**, SEO **100** (20/11/2026; referência para comparar após atualizações do tema/Hugo).
 - [x] Formulário de Contato (Jotform): enviar uma mensagem de teste e conferir o recebimento.
 - [x] Botões "Quero fazer o curso" (Docker e Kubernetes) abrem o formulário certo.
 - [x] giscus: comentar num post como teste, conferir em Discussions → Comentários e apagar.
