@@ -17,4 +17,4 @@ Use o formulário abaixo para falar comigo. A mensagem chega direto para mim, se
 
 {{< jotform >}}
 
-Também estou no [GitHub](https://github.com/aeciopires) e no [LinkedIn](https://www.linkedin.com/in/aeciopires).
+Também estou no [GitHub](https://github.com/aeciopires), no [LinkedIn](https://www.linkedin.com/in/aeciopires) e no [Linktree](https://linktr.ee/aeciopires).

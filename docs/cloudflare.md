@@ -36,9 +36,12 @@ Com o proxy ligado, o GitHub Pages pode exibir "not pointing to GitHub". **É es
 | Security → WAF → Managed rules | *Cloudflare Free Managed Ruleset* |
 | Speed / Network | HTTP/3, 0-RTT, Brotli, Early Hints · **Rocket Loader desligado** |
 | Caching | Tiered Cache (Smart Topology) ligado |
-| Scrape Shield | Email Obfuscation ligado · Hotlink Protection **desligado** |
+| Scrape Shield | Email Obfuscation **desligado** · Hotlink Protection **desligado** |
+| AI Crawl Control | *Managed robots.txt* ligado: o Cloudflare acrescenta ao nosso `robots.txt` os *Content Signals* e a lista de robôs de IA bloqueados; o nosso conteúdo (com `Sitemap:`) continua no final |
 | DNS | **DNSSEC** ligado (DS no registrador). Se houver CAA, incluir `letsencrypt.org` |
 | Notifications | Alertas de certificado e DDoS |
+
+**Email Obfuscation desligado (20/11/2026):** ele reescrevia endereços no HTML para `/cdn-cgi/l/email-protection` e dependia de JavaScript para mostrá-los, quebrando exemplos dentro de comandos (`email@empresa.com`) e a atribuição exigida pela licença do Tux em `/creditos/`. O site não publica o e-mail do autor (contato só via Jotform), então não há o que proteger. Achado na comparação do site no ar com o build local.
 
 ## 3. Cache Rules
 
@@ -257,6 +260,7 @@ Fazer **depois** de um deploy já com o domínio (HTML sem o prefixo `/blog-aeci
 
 - Ativar em **Analytics & Logs → Web Analytics → `blog.aeciopires.com`**.
 - Copiar o token público do site para `config/_default/params.toml` → `[cloudflareAnalytics] token`. O beacon só entra no build de produção (`layouts/partials/extend-head.html`).
+- **Instalação manual** (Web Analytics → site → *Manage site* → **Enable with JS snippet installation**), desde 20/11/2026. No modo automático o Cloudflare injetava um segundo beacon antes do `</body>` e cada visita podia ser contada duas vezes. O nosso beacon fica: está no repositório, coberto pela CSP e só no build de produção. Conferir: um navegador deve receber **um** `beacon.min.js` por página.
 - Sem cookies → sem banner de consentimento; descrito na página Privacidade.
 
 ## 8. Contingência: certificado da origem (erro 526)
@@ -287,16 +291,26 @@ Propriedade do tipo **Domínio** (`aeciopires.com`): cobre `blog`, `www`, a raiz
 
 1. [x] Search Console → **Adicionar propriedade → Domínio** → `aeciopires.com` → copiar o valor `google-site-verification=…`.
 2. [x] Cloudflare → **DNS → Records → Add record**: `TXT`, nome `@`, conteúdo = o valor copiado, TTL Auto. **Nunca apagar** (a verificação cai). O valor é público, não é segredo.
-3. [ ] **Verificar.** Conferir antes se o TXT já está no DNS do Google:
+3. [x] **Verificar.** Conferir antes se o TXT já está no DNS do Google:
 
    ```bash
    curl -s "https://dns.google/resolve?name=aeciopires.com&type=TXT" | grep -o 'google-site-verification=[^"]*'
    ```
 
    Se aparecer e o Google ainda recusar: esperar ~30 minutos e tentar de novo. É o cache negativo do DNS (último campo do SOA: 1800 s); uma tentativa feita antes de o TXT existir fica guardada como "não existe" por até 30 minutos.
-4. [ ] **Indexação → Sitemaps** → `https://blog.aeciopires.com/sitemap.xml` → **Enviar** (status "Processado", ~89 URLs).
-5. [ ] Remover os sitemaps antigos do WordPress da lista (⋮ → **Remover sitemap**).
-6. [ ] Opcional: **Inspeção de URL** → `https://blog.aeciopires.com/` → **Solicitar indexação**.
+4. [x] **Indexação → Sitemaps** → `https://blog.aeciopires.com/sitemap.xml` → **Enviar** (status "Processado", ~89 URLs).
+5. [x] Remover os sitemaps antigos do WordPress da lista (⋮ → **Remover sitemap**).
+6. [x] Opcional: **Inspeção de URL** → `https://blog.aeciopires.com/` → **Solicitar indexação**.
 7. [ ] Em 1–2 semanas: **Indexação → Páginas** (404 e "Página com redirecionamento", esperado para os endereços antigos).
+
+**Status (20/11/2026):** propriedade verificada e sitemap enviado pelo autor. A inspeção da home retornou *"Bloqueada devido a acesso proibido (403)"*, mas o **teste ao vivo** passou ("O URL está disponível para o Google"): o 403 era do rastreamento anterior à virada. Indexação solicitada.
+
+**Se a inspeção mostrar 403:**
+
+1. Clicar em **Testar URL publicada** (canto superior direito da inspeção). O status inicial é o do **último rastreamento**, que pode ser de antes da virada (WordPress ou configuração em andamento); só o teste ao vivo mostra o estado atual.
+2. Se o teste ao vivo passar: **Solicitar indexação** e aguardar o novo rastreamento.
+3. Se o teste ao vivo também der 403: Cloudflare → **Security → Events**, filtrar por *User agent* contendo `Google` (ou pelo horário do teste) e ver qual regra bloqueou (custom rule W1–W5, rate limit, managed rules, *Bot Fight Mode*, *Block AI bots*). O Googlebot verificado não pode ser bloqueado; se for uma regra própria, acrescentar `and not cf.client.bot` à expressão dela.
+
+De fora, com qualquer user-agent (inclusive `Googlebot` e `Google-InspectionTool`), o site responde 200; um bloqueio só para o Google vem dos IPs/verificação de bot, e só aparece em *Security → Events*.
 
 O `robots.txt` (gerenciado pelo Cloudflare + o do Hugo) já declara `Sitemap: https://blog.aeciopires.com/sitemap.xml`.
