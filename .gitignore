@@ -433,3 +433,5 @@ reports/
 .mermaid-out/
 _privado/
 node_modules/
+# Visualizações por página: gerado por scripts/visualizacoes.mjs no deploy (muda a cada execução)
+data/visualizacoes.json

@@ -157,6 +157,18 @@ check-links-online: ## lychee online nos links externos (não bloqueante; report
 	-$(RUN) lychee --no-progress --format markdown --output reports/links.md 'content/**/*.md'
 	@echo "relatório: reports/links.md"
 
+aviso-atualizacao: ## Aviso "Atualizado em" + lastmod num post: SLUG=… RESUMO="o que mudou"
+	@$(NODE) scripts/conteudo.mjs aviso "$(SLUG)" "$(RESUMO)"
+
+prosa: ## Texto corrido de posts (sem código), para revisão gramatical: SLUG="slug1 slug2"
+	@$(NODE) scripts/conteudo.mjs prosa $(SLUG)
+
+verificar-texto: ## Restos da migração e erros recorrentes nos posts [SLUG="slug1 slug2"]
+	@$(NODE) scripts/conteudo.mjs verificar $(SLUG)
+
+visualizacoes: ## Gera data/visualizacoes.json (Cloudflare Web Analytics) para "Mais/Menos lidos" da home
+	@$(NODE) scripts/visualizacoes.mjs
+
 audit-content: ## Auditoria dos posts [SLUG=…] (reports/content-audit.md e .json)
 	@$(NODE) scripts/audit-content.mjs "$(SLUG)"
 

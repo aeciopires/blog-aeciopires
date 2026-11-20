@@ -60,7 +60,7 @@ make serve           # http://localhost:1313
 | Republicar | `make publish-post SLUG=…` / `make publish-page SLUG=…` (traz de volta de `_privado/`, se for o caso) |
 | Remover de vez | `make rm-post SLUG=… REDIRECT=<outro-slug> CONFIRM=sim` (ou `rm-page`). Sempre preferir despublicar ou redirecionar a deixar 404 |
 | Renomear slug | **Evitar.** Se inevitável, `aliases: ["/slug-antigo/"]` no front matter |
-| Ver rascunhos | `make list-drafts` |
+| Ver rascunhos | `make list-drafts` (posts com data no futuro: `mise exec -- hugo list future`) |
 | Imagens | No *page bundle*: `feature.*` = imagem destacada; texto alternativo em todas; `make optimize-images` antes do commit |
 | Categorias e tags | Só as registradas em `data/taxonomia.yaml` (1 a 5 tags por post). Tag nova: `make new-tag`; sinônimo: `make fix-tags`; unir: `make merge-tag`. O `make check-tags` bloqueia o que estiver fora do padrão |
 | Diagramas em posts | Shortcode `{{</* mermaid */>}}` do Blowfish |
@@ -90,6 +90,8 @@ Notas:
 |---|---|
 | Escrever com *live reload* (mostra rascunhos) | `make serve` |
 | Ver exatamente como o leitor verá (sem rascunhos, modo produção, sem analytics) | `make serve-prod` |
+
+Um post novo continua rascunho (`draft: true`) até o `make publish-post`: aparece no `make serve`, mas **não** no `make serve-prod` (nem a página, nem o card na home). Isso é esperado; veja a seção 11 ("Post não aparece").
 | Ambiente isolado / sem mise | `make serve-docker` |
 | Mesma validação da CI | `make lint-md validate` |
 | Diagramas da documentação | `make validate-diagrams` |
@@ -109,14 +111,20 @@ O que olhar no navegador:
    - "Use a skill revisar-conteudo no post helm-chart-zabbix-8-0-0";
    - "Use a skill revisar-conteudo nos 5 posts mais antigos".
 3. Revisar o PR proposto: a tabela "antes, depois e fonte oficial", o `make serve` e o `make validate`.
-4. Links externos: `make check-links-online` mensal. Para link morto, trocar pela fonte oficial atual ou pelo Wayback Machine.
+4. Links externos: `make check-links-online` mensal. Para link morto, trocar pela fonte oficial atual ou pela cópia do Internet Archive (marcada "(cópia arquivada)"); sem cópia útil, remover a linha.
+5. Ferramentas de apoio (também usadas pelas skills):
+   - `make aviso-atualizacao SLUG=… RESUMO="…"`: aviso "Atualizado em DD/MM/AAAA" no início do post + `lastmod` (substitui o aviso anterior);
+   - `make verificar-texto [SLUG="…"]`: restos da migração (`<http://…>`, pontuação dentro de links, `**` soltos, HTML cru, heredoc sem aspas com `$` de template) e erros de escrita recorrentes. Nem todo aviso é erro: confira cada um;
+   - `make prosa SLUG="…"`: só o texto corrido, para revisar a gramática.
+6. Para testar os comandos dos posts, a skill `revisar-conteudo` usa Docker e clusters kind com nomes `revisao-*`, portas alternativas e nenhuma credencial real, e remove tudo ao final. Seus containers e clusters não são tocados.
 
 ## 6. Usar as skills do Claude Code
 
 | Skill | Quando usar | Exemplo de pedido |
 |---|---|---|
 | `blowfish` | Qualquer mudança de tema, configuração, layout, shortcode ou front matter | "Usando a skill blowfish, adicione uma série 'Helm Chart do Zabbix' aos 4 posts" |
-| `revisar-conteudo` | Atualizar posts com base em fontes oficiais | "Revise o post X com a skill revisar-conteudo" |
+| `revisar-conteudo` | Atualizar e testar posts com base em fontes oficiais | "Revise o post X com a skill revisar-conteudo" ou "Teste com Docker e kind os posts com comandos" |
+| `escrever-post` | Escrever um post novo (fica como rascunho) | "Escreva um post sobre o repositório github.com/aeciopires/X" |
 | `atualizar-site` | Atualizar Hugo, Blowfish, ferramentas e imagens | "Use a skill atualizar-site e proponha as atualizações disponíveis" |
 
 - As skills nunca publicam sozinhas: entregam uma branch ou PR para você revisar.
@@ -153,6 +161,7 @@ O que olhar no navegador:
 |---|---|
 | Tamanho da fonte, largura do texto e margens no computador | Variáveis `--blog-fonte-lg`, `--blog-fonte-2xl`, `--blog-largura-texto` e `--blog-margem-lateral` no fim de `assets/css/custom.css` (celular e tablet seguem o tema). Mantenha o texto entre 60 e 80 caracteres por linha |
 | Busca (termos em qualquer ordem, sem acento, tolerância a erro) | `assets/js/busca.js`: só ajusta as opções da Fuse.js do tema (`useTokenSearch`, `tokenMatch: "all"`, `ignoreDiacritics`, `threshold: 0.15`), sem copiar o `search.js`. Mais tolerância (0.2+) acha "zabix", mas faz "istio" casar com "isto". Após atualizar o Blowfish, conferir se o tema ainda usa `new Fuse(...)` e se a Fuse.js é ≥ 7.5 |
+| Ordenação dos posts da home (Mais recentes, Mais antigos, Mais lidos, Menos lidos) | Ver "Ordenação dos posts da home" logo abaixo |
 | Logos pequenos dentro de posts | `{{< figure src="logo.svg" alt="Logo do X" figureClass="logo-post" nozoom=true >}}`: 80 px de altura, vários lado a lado (classe `logo-post` em `assets/css/custom.css`) |
 | Blocos de código sem barra de rolagem | Fim de `assets/css/custom.css`: linhas longas quebram só na exibição (`pre-wrap`); copiar traz o comando original, sem `\` extra. Para voltar à rolagem horizontal, remova esse bloco |
 | Cores, vidro, banner, nuvem | `assets/css/custom.css` (cores do esquema nativo `blowfish` via `--color-*`; não criar esquema próprio sem necessidade) |
@@ -162,6 +171,35 @@ O que olhar no navegador:
 | Novo serviço de terceiros | Avaliar privacidade e segurança → CSP → [cloudflare.md](cloudflare.md) → página Privacidade → `CLAUDE.md` se virar regra |
 | Mudança de arquitetura | [ARCHITECTURE.md](ARCHITECTURE.md) (diagramas) + registro da decisão em `PLANS/<nome>/` |
 
+### Ordenação dos posts da home
+
+O Blowfish não tem ordenação escolhida pelo leitor: só `list.orderByWeight`, fixo no build. A contagem de leituras do tema (`showViews`) depende do Firebase, um serviço de terceiros, por isso não foi usada. A solução é própria:
+
+| Peça | Papel |
+|---|---|
+| `layouts/partials/recent-articles/cardview.html` | **Override** do tema (v3.10.0): renderiza todos os posts como cards com `data-data` (data) e `data-visitas`, deixa visíveis só os `homepage.showRecentItems` primeiros e mostra os botões. Mantém o `.Paginate` do tema para não sumir com `/page/N/` |
+| `assets/js/ordenar-home.js` | Reordena os cards, ativa um botão por vez (`aria-pressed`), troca o título da seção e lembra a escolha no navegador (`localStorage`). Sem JavaScript, os botões não aparecem e a home fica como no tema |
+| `assets/css/custom.css` (bloco "Ordenação dos posts da home") | Visual dos botões nos modos claro e escuro |
+| `scripts/visualizacoes.mjs` + `make visualizacoes` | Gera `data/visualizacoes.json` (ignorado pelo Git) com as visualizações por caminho dos últimos 180 dias, pela API GraphQL do Cloudflare Web Analytics (`rumPageloadEventsAdaptiveGroups`). A API só responde até 26 semanas e 2 dias (184 dias) atrás; pedir mais dá o erro *cannot request data older than 26w2d*. Os números são aproximados (a API usa amostragem) |
+| `.github/workflows/deploy.yml` | Passo "Visualizações por página" antes do build e republicação toda segunda (09:15 UTC) para atualizar os números |
+
+Sem `data/visualizacoes.json` (sem o secret no deploy, ou num build local sem `make visualizacoes`), "Mais lidos" e "Menos lidos" não aparecem; "Mais recentes" e "Mais antigos" sempre funcionam. Posts sem visitas no período contam como 0 (aparecem primeiro em "Menos lidos", desempatados pela data).
+
+**Novos posts ou posts removidos:** nada a fazer. A lista vem do Hugo a cada build, e os números são recalculados no deploy seguinte (no máximo uma semana depois, ou na hora com Actions → *Deploy* → *Run workflow*). Um post novo começa com 0 visitas. Se um post mudar de endereço, as visitas antigas ficam no caminho antigo até saírem da janela de 180 dias.
+
+**Ao atualizar o Blowfish ou o Hugo**, confira:
+
+1. Se `themes/blowfish/layouts/partials/recent-articles/cardview.html` mudou: `git -C themes/blowfish diff <tag-antiga> <tag-nova> -- layouts/partials/recent-articles/ layouts/partials/article-link/card.html`. Traga para o override as mudanças do tema (classes do grid, chamada do card) e mantenha os atributos `data-*`, os botões e o `<script>`.
+2. Se o tema passou a oferecer ordenação nativa ou se `homepage.showRecentItems`/`cardView` mudaram de nome (notas da versão e https://blowfish.page/docs/homepage-layout/).
+3. Se `hugo.Data`, `.Paginate` e `.Date.Unix` continuam válidos (`hugo --logLevel info` sem avisos de deprecated).
+4. Teste: `make serve-prod` → home → cada botão muda a ordem e só um fica ativo; desligue o JavaScript e veja os 6 mais recentes; celular e modos claro/escuro.
+5. Para testar "Mais lidos" com os números reais: exporte `CLOUDFLARE_ANALYTICS_TOKEN` e `CLOUDFLARE_ACCOUNT_ID` no terminal (sem salvar o token em arquivo) e rode `make visualizacoes` antes do `make serve-prod`. Só exportar as variáveis não basta: o Hugo lê o arquivo, não as variáveis. Com o servidor já rodando, ele recarrega sozinho ao surgir o arquivo.
+6. Para testar "Mais lidos" sem token, crie um `data/visualizacoes.json` de exemplo: `{"paginas": {"/zabbix-docker/": 10, "/primeiros-passos-com-docker/": 5}}` (o arquivo é ignorado pelo Git).
+
+**Janela de dados:** o padrão é 180 dias (`VISUALIZACOES_DIAS`, que aceita no máximo 180). A API do Web Analytics só responde até 26 semanas e 2 dias (184 dias) atrás. Por isso não usar "6 meses" de calendário, que pode passar de 184 dias e dar o erro *cannot request data older than 26w2d*. Se o Cloudflare mudar esse limite, ajustar o teto em `scripts/visualizacoes.mjs`.
+
+**Se a API do Cloudflare mudar** (o passo do deploy falha com erro do GraphQL): conferir o conjunto de dados e os campos na [documentação do Web Analytics](https://developers.cloudflare.com/web-analytics/) e no esquema da API (GraphiQL em https://graphql.cloudflare.com/explorer), ajustar a consulta em `scripts/visualizacoes.mjs` e testar com `CLOUDFLARE_ANALYTICS_TOKEN=... CLOUDFLARE_ACCOUNT_ID=... make visualizacoes`.
+
 Peças próprias do site:
 
 | Arquivo | Para quê |
@@ -169,8 +207,9 @@ Peças próprias do site:
 | `layouts/shortcodes/blog-chamada.html` | Chamada da home (eyebrow, título, botões) |
 | `layouts/shortcodes/blog-stats.html` | Números da home, calculados no build |
 | `layouts/shortcodes/tecnologias.html` | Banner "Stacks que uso no dia a dia" |
-| `layouts/shortcodes/nuvem-tags.html` + `layouts/partials/tag-cloud.html` | Nuvem de tags (home e `/tags/`) |
+| `layouts/shortcodes/nuvem-tags.html` + `layouts/partials/tag-cloud.html` | Nuvem de tags (home e `/tags/`): o tamanho mostra a frequência; o número de posts fica só no `title` e num texto para leitor de tela (classe `tag-cloud__contagem`). A lista "Todas as tags de A a Z" de `/tags/` mantém o número visível (todas têm o mesmo tamanho) |
 | `layouts/tags/terms.html` | Página `/tags/` com nuvem e lista A–Z (override do tema) |
+| `layouts/partials/recent-articles/cardview.html` + `assets/js/ordenar-home.js` + `scripts/visualizacoes.mjs` | Ordenação dos posts da home (override do tema; ver acima) |
 | `layouts/shortcodes/jotform.html` | Formulário de contato |
 | `layouts/shortcodes/licenca-blowfish.html` | Texto MIT integral em `/creditos/` |
 | `layouts/partials/comments.html` + `assets/js/giscus.js` + `static/giscus/` | Comentários (giscus + arquivados) |
@@ -274,6 +313,8 @@ Alternativa sem CLI: o configurador em <https://giscus.app> mostra os mesmos IDs
 | `CLOUDFLARE_ZONE_ID` | variable | Zona `aeciopires.com` |
 | `MIGRACAO_CONCLUIDA` | variable | `true` torna o `compare-urls` bloqueante no `pr-check` |
 | `DOMINIO_ATIVO` | variable | `true` liga o `origin-cert.yml` (depois da virada de DNS) |
+| `CLOUDFLARE_ANALYTICS_TOKEN` | secret | Leitura do Web Analytics para "Mais lidos"/"Menos lidos" da home (sem ele, esses botões ficam ocultos) |
+| `CLOUDFLARE_ACCOUNT_ID` | variable | Conta do Cloudflare consultada pelo `scripts/visualizacoes.mjs` |
 
 **Criar o `CLOUDFLARE_API_TOKEN`** (só *Cache Purge*, só esta zona, com validade):
 
@@ -282,6 +323,8 @@ Alternativa sem CLI: o configurador em <https://giscus.app> mostra os mesmos IDs
 3. **TTL:** data de término (ex.: 1 ano) e anote no calendário (seção 10, rotação anual). Opcional: *Client IP Address Filtering* não se aplica (runners do GitHub mudam de IP).
 4. **Continue to summary → Create Token** e copie o valor (aparece uma vez só).
 5. Grave no GitHub sem deixar o valor no histórico do shell: `gh secret set CLOUDFLARE_API_TOKEN` (o `gh` pede o valor) ou Settings → Secrets and variables → Actions → *New repository secret*.
+
+**Criar o `CLOUDFLARE_ANALYTICS_TOKEN`** (só leitura de Analytics, só esta conta, com validade): mesmo caminho do token acima, com o nome `github-actions-blog-analytics`, **Permissions:** `Account` · `Account Analytics` · `Read` e **Account Resources:** `Include` · a sua conta. Grave com `gh secret set CLOUDFLARE_ANALYTICS_TOKEN`. O **Account ID** fica em Cloudflare → domínio → **Overview** → bloco **API** (não é segredo): `gh variable set CLOUDFLARE_ACCOUNT_ID --body "<account-id>"`. Teste local opcional: `CLOUDFLARE_ANALYTICS_TOKEN=... CLOUDFLARE_ACCOUNT_ID=... make visualizacoes` (não salve o token em arquivo).
 
 **Achar o `CLOUDFLARE_ZONE_ID`:** Cloudflare → domínio `aeciopires.com` → **Overview** → coluna da direita, bloco **API** → *Zone ID* (não é segredo). Gravar: `gh variable set CLOUDFLARE_ZONE_ID --body "<zone-id>"` ou Settings → Secrets and variables → Actions → aba *Variables*.
 
@@ -298,9 +341,10 @@ Alternativa sem CLI: o configurador em <https://giscus.app> mostra os mesmos IDs
 | A cada PR do Dependabot | Ler o changelog da action, deixar o `pr-check` rodar e fazer merge |
 | Mensal | `make check-updates` (só **ver**); alertas de segurança do GitHub; `make check-links-online` |
 | Trimestral | `make tags-report` + `make merge-tag` nas tags fracas; `make audit-content` + skill `revisar-conteudo` nos 5 posts mais lidos e nos 5 mais antigos; eventos do WAF, cache e relatórios da CSP; limites do plano Free |
-| Quando sair versão do Hugo ou do Blowfish | Skill `atualizar-site` ou `make update-theme`; notas de migração; `hugo --logLevel info`; `make serve` (claro/escuro/celular) e `make validate` antes do PR |
+| Quando sair versão do Hugo ou do Blowfish | Skill `atualizar-site` ou `make update-theme`; notas de migração; `hugo --logLevel info`; conferir os overrides (incluindo a ordenação da home, seção 8); `make serve` (claro/escuro/celular) e `make validate` antes do PR |
+| Toda segunda (automático) | O `deploy.yml` republica o site às 09:15 UTC para atualizar "Mais lidos"/"Menos lidos" da home. Se o passo "Visualizações por página" falhar, ver seção 8 ("Janela de dados" e "Se a API do Cloudflare mudar") |
 | 1º de janeiro (automático) | O `deploy.yml` republica o site às 03:05 UTC para atualizar os anos calculados na home ("há N anos", "anos de blog"). Conferir em Actions que rodou; se o repositório ficou 60 dias sem atividade, o GitHub desativa o agendamento: reative em Actions → Deploy → *Enable workflow* ou rode *Run workflow* |
-| Anual | Rotacionar o token do Cloudflare; revisar permissões do app giscus; revisar `CLAUDE.md`, `README.md`, `docs/*.md`, página Créditos e `assets/img/logos/SOURCES.md` |
+| Anual | Rotacionar os tokens do Cloudflare (purge e analytics); revisar permissões do app giscus; revisar `CLAUDE.md`, `README.md`, `docs/*.md`, página Créditos e `assets/img/logos/SOURCES.md` |
 | Sempre que o `origin-cert.yml` falhar | Contingência em [cloudflare.md](cloudflare.md) |
 
 ## 11. Troubleshooting
@@ -319,6 +363,8 @@ Alternativa sem CLI: o configurador em <https://giscus.app> mostra os mesmos IDs
 | Porta 1313 ocupada | Outro processo usando a porta | Liberar a porta |
 | `check-tags` falha | Tag fora do registro ou sinônimo | `make fix-tags` ou `make new-tag` |
 | "Raw HTML omitted" no build | HTML cru no Markdown | Trocar por shortcode do Blowfish |
+| Post não aparece (404 na página e fora da home/lista), mas aparece no `make serve` | Rascunho (`draft: true`): o `make serve-prod` e o deploy não geram rascunhos | `make list-drafts`; para publicar, `make publish-post SLUG=… DATE=now` e push. Para só revisar, use `make serve` |
+| Post não aparece nem no `make serve` | Data no futuro (`buildFuture = false` em `hugo.toml`), por exemplo fuso errado na `date` | `mise exec -- hugo list future`; corrigir a `date` (com `-03:00`) ou usar `make publish-post SLUG=… DATE=now` |
 | Feed antigo não redireciona | Regras R1/R2 | [cloudflare.md](cloudflare.md) |
 | giscus não carrega | IDs vazios, CSP sem `giscus.app` ou app desinstalado | Preencher `[giscus]`, corrigir a CSP ou reinstalar o app |
 | Tema do giscus não troca | Script de observação da classe `dark` | Revisar `assets/js/giscus.js` |

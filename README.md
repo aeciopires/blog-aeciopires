@@ -6,6 +6,7 @@ Código-fonte do [blog.aeciopires.com](https://blog.aeciopires.com): compartilha
 - **Hospedagem:** GitHub Pages, publicado pelo GitHub Actions a cada push em `main`.
 - **Borda:** Cloudflare (DNS, proxy, cache, segurança e Web Analytics).
 - **Comentários:** [giscus](https://giscus.app) (GitHub Discussions deste repositório); os do blog antigo ficam somente leitura.
+- **Home:** o leitor ordena os posts por mais recentes, mais antigos, mais lidos ou menos lidos; os dois últimos usam as visualizações do Cloudflare Web Analytics dos últimos 180 dias, atualizadas no deploy semanal ([MAINTENANCE.md](docs/MAINTENANCE.md), seção 8). A nuvem de tags mostra a frequência pelo tamanho, sem número visível.
 - **Ferramentas:** versões exatas no [`mise.toml`](mise.toml), as mesmas na máquina local e na CI.
 
 ## Início rápido
@@ -34,6 +35,7 @@ docker context use colima
 | `make help` | Lista todos os alvos |
 | `make serve` | Servidor local com rascunhos e *live reload* |
 | `make serve-prod` | Servidor local como o leitor vê (sem rascunhos) |
+| `make visualizacoes` | Gera `data/visualizacoes.json` ("Mais/Menos lidos" da home); exige `CLOUDFLARE_ANALYTICS_TOKEN` e `CLOUDFLARE_ACCOUNT_ID` no ambiente |
 | `make new-post SLUG=meu-post TITLE="Meu post"` | Cria um post como rascunho |
 | `make publish-post SLUG=meu-post DATE=now` | Publica o post (sai no próximo push em `main`) |
 | `make unpublish-post SLUG=meu-post` | Volta o post para rascunho |

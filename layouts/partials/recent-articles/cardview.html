@@ -1,0 +1,39 @@
+{{- /*
+  Override de themes/blowfish/layouts/partials/recent-articles/cardview.html (Blowfish v3.10.0).
+  Revisar a cada atualização do tema (docs/MAINTENANCE.md, "Ordenação dos posts da home").
+
+  Diferença em relação ao tema: o leitor escolhe a ordem dos posts da home
+  (mais recentes, mais antigos, mais lidos, menos lidos). Todos os posts são renderizados,
+  mas só os primeiros `homepage.showRecentItems` ficam visíveis; assets/js/ordenar-home.js
+  reordena os cards no navegador. Sem JavaScript, a home fica como no tema (mais recentes).
+
+  "Mais lidos"/"menos lidos" usam data/visualizacoes.json (gerado por scripts/visualizacoes.mjs
+  a partir do Cloudflare Web Analytics). Sem esse arquivo, esses dois botões não aparecem.
+*/ -}}
+{{- $visiveis := site.Params.homepage.showRecentItems | default 5 -}}
+{{- $posts := where site.RegularPages "Type" "in" site.Params.mainSections -}}
+{{- /* Mantém as páginas /page/N/ da home que o tema gera com .Paginate (evita 404). */ -}}
+{{- $paginacao := .Paginate $posts -}}
+{{- $paginas := index (hugo.Data.visualizacoes | default dict) "paginas" | default dict -}}
+{{- $temVisitas := gt (len $paginas) 0 -}}
+
+<div class="ordenar-home" role="group" aria-label="Ordenar posts" data-ordenar-home hidden>
+  <span class="ordenar-home__rotulo">Ordenar:</span>
+  <button type="button" class="ordenar-home__botao" data-ordem="recentes" aria-pressed="true">Mais recentes</button>
+  <button type="button" class="ordenar-home__botao" data-ordem="antigos" aria-pressed="false">Mais antigos</button>
+  {{- if $temVisitas }}
+  <button type="button" class="ordenar-home__botao" data-ordem="mais-lidos" aria-pressed="false">Mais lidos</button>
+  <button type="button" class="ordenar-home__botao" data-ordem="menos-lidos" aria-pressed="false">Menos lidos</button>
+  {{- end }}
+</div>
+
+<section class="w-full grid gap-4 sm:grid-cols-2 md:grid-cols-3" data-posts-home data-visiveis="{{ $visiveis }}">
+  {{- range $i, $p := $posts.ByDate.Reverse }}
+  <div class="ordenar-home__item" data-data="{{ $p.Date.Unix }}" data-visitas="{{ index $paginas $p.RelPermalink | default 0 }}"{{ if ge $i $visiveis }} hidden{{ end }}>
+    {{ partial "article-link/card.html" $p }}
+  </div>
+  {{- end }}
+</section>
+
+{{- $js := resources.Get "js/ordenar-home.js" | resources.Minify | resources.Fingerprint (site.Params.fingerprintAlgorithm | default "sha512") }}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
