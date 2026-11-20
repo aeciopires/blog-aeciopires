@@ -6,13 +6,13 @@ Acompanha o [PLAN.md](PLAN.md) (registro histórico, não reescrito). Atualizado
 
 | Fase | Status | Observações |
 |---|---|---|
-| 0 — Preparação | Feito (parte do autor pendente) | Versões conferidas. Inventário de URLs em `scripts/urls-wordpress.txt` (216). Backup completo (WXR + dump do banco + `uploads/`) em `~/Desktop/bkp_blog`, fora do repositório. **Pendente (autor):** anotar o registro DNS atual de `blog`, exportar relatórios de analytics, 2FA |
+| 0 — Preparação | Feito (parte do autor pendente) | Versões conferidas. Inventário de URLs em `scripts/urls-wordpress.txt` (216). Backup completo (WXR + dump do banco + `uploads/`) em `~/Desktop/bkp_blog`, fora do repositório. Relatórios do Jetpack Stats/Google Analytics **não serão exportados** (decisão do autor, 20/11/2026). Registro DNS antigo de `blog`: dispensado, virada concluída. **Pendente (autor):** 2FA no GitHub e no Cloudflare |
 | 1 — Esqueleto | Feito (local) | `mise.toml`, `Makefile`, scripts, `docker-compose.yml`, submódulo v3.10.0, config, skills, workflows, `dependabot.yml`, `CLAUDE.md`, `README.md`, `docs/`. giscus configurado em 20/11/2026: `repoId = "R_kgDOV0zJLg"`, `categoryId = "DIC_kwDOV0zJLs4DLj2M"` (IDs GraphQL; o id REST `1464650030` e o número da URL `53362060` não funcionam; comando em `docs/MAINTENANCE.md`). **Pendente (autor):** teste em macOS |
 | 2 — Tema | Feito (local) | T9 aplicado e revisado por capturas (escuro/claro, computador/celular). Aviso MIT preservado no CSS minificado. **Logos:** 21 de 27 oficiais; 6 em texto por diretriz de marca (Docker, AWS, Google Cloud, Gemini, ChatGPT) e macOS sem logo |
 | 3 — Conversão | Feito (local) | `scripts/migracao/migrar.sh` (reproduzível): 81 posts, 5 páginas fixas (sobre, cursos, curso-docker, curso-kubernetes-k8s, contato; revisadas à mão em 20/11/2026), 5 páginas rascunho como redirecionamento, 161 comentários arquivados (sanitizados), 251 mídias, 67 tags com aliases das antigas, 19 categorias. `compare-urls`: 216/216 URLs preservadas; lychee: 0 links internos quebrados; lint: 0 problemas; build sem avisos |
 | 4 — Revisão | **Concluída em 20/11/2026** (autor validou todo o conteúdo: posts, páginas e comentários) | Lista em [revisao-fase-4.md](revisao-fase-4.md). Auditoria WordPress × Hugo (`scripts/migracao/comparar_wordpress.py`) sem pendências. Tags resolvidas: **57 tags** (inclui a nova `fe`); 6 removidas por decisão do autor e 5 que ficaram sem posts após o enxugamento (`alertmanager`, `azure`, `cert-manager`, `fargate`, `ingress-nginx`), todas com `/tag/<nome>/` → `/tags/`. `make validate` OK; PDF externo quebrado com o shortcode `removido` |
-| 5 — Staging | **Em andamento** (desde 20/11/2026) | PR #1 (`aa2ed57`) e PR #2 (`b85b2dd`: hook de segredos, imagens no próprio site, busca) mesclados; deploys `44740864708` e `44746971510` OK em <https://aeciopires.github.io/blog-aeciopires/>; check `validate` exigido no ruleset da `main`; branches temporárias removidas. Testes de staging pendentes (autor) |
-| 6 — Virada de DNS | **Em andamento** | Seções 1 a 4 de `docs/cloudflare.md` feitas pelo autor (conferido em 20/11/2026: `server: cloudflare`, `cf-cache-status: HIT`, `/wp-login.php` → 403, `/feed/` → 301 para `/index.xml`); W3 ampliada com a lista de caminhos sondados por scanners. Token do Web Analytics em `params.toml` (seção 7). **Pendente:** seção 5 (headers e CSP), domínio raiz/`www` com erro 1016 (redirect R3, seção 4), secrets/variables do purge, seção 9 |
+| 5 — Staging | **Em andamento** (desde 20/11/2026) | PR #1 (`aa2ed57`) e PR #2 (`b85b2dd`: hook de segredos, imagens no próprio site, busca) mesclados; deploys `44740864708` e `44746971510` OK em <https://aeciopires.github.io/blog-aeciopires/>; check `validate` exigido no ruleset da `main`; branches temporárias removidas. A virada aconteceu antes do roteiro de testes; ele passa a valer no domínio final (ver Fase 5 abaixo) |
+| 6 — Virada de DNS | **Quase concluída** (20/11/2026) | Seções 1 a 5 e 7 de `docs/cloudflare.md` feitas pelo autor. PR #3 (`2754a7c`) mesclado; deploy `44760468192` OK. O HTML no cache do Cloudflare ainda vinha do build com o prefixo `/blog-aeciopires/` (CSS 404) até o *Purge Everything* manual. Conferido: `server: cloudflare`, feeds → 301, `/wp-login.php` e `POST /` → 403, `/wp-content/uploads/` → 200, beacon do Web Analytics, CSP efetiva com nota **A** no securityheaders.com. Erro 1016 do domínio raiz corrigido (R3); `jenkins`/`puppet` migrados para Redirect Rules com `A 192.0.2.1` (R4, R5). **Pendente:** HSTS de 1 ano, secret/variable do purge, Search Console, SSL Labs, variables de fechamento, desligar o WordPress |
 
 ## Desvios em relação ao plano (e motivo)
 
@@ -77,11 +77,11 @@ Situação em 20/11/2026. Nada foi commitado: todo o trabalho está na branch `f
 ### Primeiro PR — concluído em 20/11/2026
 
 - ~~`make install-hooks`~~; ~~commit e PR #1~~ (`validate` verde na CI); ~~merge na `main`~~; ~~deploy no GitHub Pages~~ (build 39 s + deploy 8 s; páginas, redirecionamentos, RSS, sitemap e busca respondem 200); ~~check `validate` no ruleset da `main`~~ (conferido via API).
-- Pendente da Fase 0 (autor), antes da Fase 6: anotar o registro DNS atual de `blog`, exportar os relatórios de analytics do WordPress, 2FA no GitHub e no Cloudflare.
+- Fase 0: exportação de analytics dispensada pelo autor; anotação do DNS antigo dispensada (virada concluída); 2FA pendente.
 
-### Fase 5 — Staging (em andamento)
+### Fase 5 — Testes funcionais (agora no domínio final)
 
-Roteiro (autor), em <https://aeciopires.github.io/blog-aeciopires/>:
+A virada de DNS aconteceu antes destes testes. Roteiro (autor), agora em <https://blog.aeciopires.com/>:
 
 - [ ] Celular (Android/iOS) e computador: home, um post longo, Categorias, Tags, Cursos, Sobre.
 - [ ] Modos claro/escuro (botão e preferência do sistema).
@@ -93,9 +93,9 @@ Roteiro (autor), em <https://aeciopires.github.io/blog-aeciopires/>:
 - [ ] giscus: comentar num post como teste, conferir em Discussions → Comentários e apagar.
 - [ ] Redirecionamentos: `/arquivos/`, `/testemunho-de-uma-norte-coreana/`, `/category/zabbix-2/`.
 
-**Limitação do staging:** imagens e links internos escritos no corpo dos posts usam caminho absoluto (`/wp-content/...`, `/slug/`) e dão 404 no staging (subpasta `/blog-aeciopires/`). No domínio final (raiz) funcionam; conferir o conteúdo localmente com `make serve-prod`. O `make validate-links` cobre esses caminhos.
+**Limitação do staging (histórico):** imagens e links internos escritos no corpo dos posts usam caminho absoluto (`/wp-content/...`, `/slug/`) e dão 404 no staging (subpasta `/blog-aeciopires/`). No domínio final (raiz) funcionam; conferir o conteúdo localmente com `make serve-prod`. O `make validate-links` cobre esses caminhos.
 
-**Pendências da Fase 0 (antes da Fase 6):** anotar o registro DNS atual de `blog` ([cloudflare.md](../../docs/cloudflare.md), seção 1, passo 1), exportar relatórios do Jetpack Stats/Google Analytics, 2FA no GitHub e no Cloudflare.
+**Fase 0:** não exportar relatórios do Jetpack Stats/Google Analytics (decisão do autor, 20/11/2026); anotar o DNS antigo de `blog` ficou sem efeito (virada feita). Pendente: 2FA no GitHub e no Cloudflare.
 
 ### Fase 6 — Virada de DNS
 
@@ -103,11 +103,13 @@ Passo a passo com caixas de seleção em [docs/cloudflare.md](../../docs/cloudfl
 
 1. ~~Seção 1 (ordem importa): domínio verificado no GitHub, `CNAME`, *Custom domain*, *Enforce HTTPS*, SSL, proxy.~~ Feito.
 1. ~~Seções 2 a 4: zona, Cache Rules, WAF/rate limiting/redirects.~~ Feito.
-1. Seção 5: headers de segurança (CSP primeiro como *Report-Only*, 1–2 semanas). **Pendente.**
-1. ~~Seção 7: Web Analytics e token público em `params.toml` (via PR).~~ Feito (o beacon entra no próximo deploy).
+1. ~~Seção 5: headers de segurança.~~ Feito: CSP efetiva, nota A no securityheaders.com. **Pendente:** HSTS para `max-age=31536000` após alguns dias estável (passo 7).
+1. ~~Seção 4: domínio raiz/`www` (erro 1016, R3) e subdomínios `jenkins`/`puppet` (R4, R5).~~ Feito.
+1. ~~Seção 7: Web Analytics e token público em `params.toml` (via PR).~~ Feito (beacon no ar desde o deploy `44760468192`).
 1. Secrets/variables: [MAINTENANCE.md, seção 9 → Variables e secrets](../../docs/MAINTENANCE.md) (como criar o token e achar o Zone ID).
-1. Seção 9: testes após a virada; reenviar `sitemap.xml` no Search Console.
-1. Depois: `DOMINIO_ATIVO=true`, `MIGRACAO_CONCLUIDA=true`; observar 30 dias (404, Search Console) e cancelar a hospedagem do WordPress, mantendo o backup.
+1. Seção 9: testes após a virada (feitos: cache, feeds, WAF, uploads, redirects, securityheaders; faltam SSL Labs, Web Analytics registrando e purge automático); reenviar `sitemap.xml` no Search Console.
+1. Depois: `DOMINIO_ATIVO=true`, `MIGRACAO_CONCLUIDA=true` (pelo site do GitHub: Settings → Secrets and variables → Actions → *Variables*).
+1. Desligar a hospedagem do WordPress: o autor decidiu desativá-la já (20/11/2026), sem os 30 dias de observação previstos. Seguro porque nenhum registro de DNS aponta para ela (`blog` no GitHub Pages; raiz, `www`, `jenkins` e `puppet` só redirecionam na borda; sem MX). Manter o backup em `~/Desktop/bkp_blog`; acompanhar 404 no Search Console.
 
 ### Adiado
 
