@@ -9,7 +9,7 @@ git clone --recurse-submodules git@github.com:aeciopires/blog-aeciopires.git
 cd blog-aeciopires
 make check-deps      # diagnóstico, não altera nada
 make install-deps    # mise + ferramentas + submódulo do tema + skill
-make install-hooks   # pre-commit: check-tags + lint-md nos .md alterados
+make install-hooks   # pre-commit: segredos/chaves/e-mail (todo commit) + check-tags e lint-md nos .md alterados
 make serve           # http://localhost:1313
 ```
 
@@ -40,7 +40,8 @@ make serve           # http://localhost:1313
 | | `tags-report` / `install-hooks` | `make tags-report` |
 | Imagens | `optimize-images` | `make optimize-images` |
 | Qualidade | `lint-md` / `lint-md-fix` | `make lint-md` |
-| | `validate` | `make validate` (lint-md, check-tags, build, validate-links, actionlint, shellcheck, compare-urls) |
+| | `validate` | `make validate` (check-secrets, lint-md, check-tags, build, validate-links, actionlint, shellcheck, compare-urls) |
+| | `check-secrets` | `make check-secrets` (gitleaks no histórico do Git; exceções em `.gitleaks.toml`) |
 | | `validate-diagrams` | `make validate-diagrams` (Docker) |
 | | `check-links-online` | `make check-links-online` → `reports/links.md` |
 | | `audit-content` | `make audit-content SLUG=meu-post` → `reports/content-audit.md` |
@@ -151,6 +152,8 @@ O que olhar no navegador:
 | Mudança | Onde |
 |---|---|
 | Tamanho da fonte, largura do texto e margens no computador | Variáveis `--blog-fonte-lg`, `--blog-fonte-2xl`, `--blog-largura-texto` e `--blog-margem-lateral` no fim de `assets/css/custom.css` (celular e tablet seguem o tema). Mantenha o texto entre 60 e 80 caracteres por linha |
+| Busca (termos em qualquer ordem, sem acento, tolerância a erro) | `assets/js/busca.js`: só ajusta as opções da Fuse.js do tema (`useTokenSearch`, `tokenMatch: "all"`, `ignoreDiacritics`, `threshold: 0.15`), sem copiar o `search.js`. Mais tolerância (0.2+) acha "zabix", mas faz "istio" casar com "isto". Após atualizar o Blowfish, conferir se o tema ainda usa `new Fuse(...)` e se a Fuse.js é ≥ 7.5 |
+| Logos pequenos dentro de posts | `{{< figure src="logo.svg" alt="Logo do X" figureClass="logo-post" nozoom=true >}}`: 80 px de altura, vários lado a lado (classe `logo-post` em `assets/css/custom.css`) |
 | Blocos de código sem barra de rolagem | Fim de `assets/css/custom.css`: linhas longas quebram só na exibição (`pre-wrap`); copiar traz o comando original, sem `\` extra. Para voltar à rolagem horizontal, remova esse bloco |
 | Cores, vidro, banner, nuvem | `assets/css/custom.css` (cores do esquema nativo `blowfish` via `--color-*`; não criar esquema próprio sem necessidade) |
 | Parâmetros do tema | `config/_default/params.toml`, conferindo a documentação da versão fixada |
@@ -178,7 +181,12 @@ Peças próprias do site:
 ## 9. Segurança (para você e para o leitor)
 
 - **Contas:** 2FA no GitHub e no Cloudflare; *branch protection* na `main` (exigir `pr-check`, sem force-push); *secret scanning* e *push protection* ligados.
-- **Segredos:** nunca no repositório. O único segredo é `CLOUDFLARE_API_TOKEN` (só *Cache Purge*, zona `aeciopires.com`, com expiração).
+- **Segredos:** nunca no repositório. O único segredo é `CLOUDFLARE_API_TOKEN` (só *Cache Purge*, zona `aeciopires.com`, com expiração), em GitHub Secrets. O token do **Web Analytics** (`[cloudflareAnalytics] token` em `params.toml`) **não é segredo**: é um identificador público que vai no HTML de toda página, como um ID do Google Analytics; por isso pode ficar no Git.
+- **Barreiras contra vazamento**, em camadas:
+  1. *pre-commit* (`make install-hooks`), em todo commit: gitleaks nas mudanças staged (tokens, chaves privadas, senhas), arquivos sensíveis (`.env`, `*.pem`, `*.key`, `id_rsa`, `credentials.json`, `.claude/settings.local.json`…) e o e-mail do autor (lido de `git config user.email` e de `git config --get-all hooks.emailbloqueado`, para não ficar escrito no repositório).
+  2. CI (`pr-check.yml` → `make check-secrets`): gitleaks no histórico completo; pega o que passou com `--no-verify`.
+  3. GitHub *secret scanning* + *push protection*: recusa o push de segredos conhecidos.
+- **Falso positivo do gitleaks:** confira se é mesmo exemplo/placeholder; então adicione uma exceção bem delimitada em `.gitleaks.toml` (ou `gitleaks:allow` na linha). **Segredo real que vazou:** revogue/rotacione primeiro, depois remova do histórico.
 - **Workflows:** actions por SHA, com `permissions` mínimas.
 - **Hugo:** `security` em `hugo.toml` restrito (`http.urls` só `api.github.com/repos/`); `unsafe = false`.
 - **Navegador do leitor:** CSP, HSTS e demais headers ([cloudflare.md](cloudflare.md)); qualquer novo script ou iframe exige atualizar a CSP primeiro, em modo *Report-Only*.

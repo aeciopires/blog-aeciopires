@@ -65,7 +65,7 @@ flowchart LR
 | `data/comments/<slug>.yaml` | Comentários arquivados (somente leitura, sanitizados) |
 | `data/tecnologias.yaml` + `assets/img/logos/` | Banner de tecnologias |
 | `assets/css/custom.css` | Visual T9 (vidro, banner, nuvem, comentários) e leitura no computador (fonte e largura do texto em telas ≥ 1024px) |
-| `assets/js/` | JS próprio (giscus, redirecionamentos legados) |
+| `assets/js/` | JS próprio (giscus, redirecionamentos legados, ajuste da busca em `busca.js`) |
 | `layouts/` | Só partials, shortcodes e overrides próprios |
 | `.claude/skills/` | Skills do Claude Code (`blowfish` é link para o submódulo) |
 

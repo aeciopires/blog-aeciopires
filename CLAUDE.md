@@ -12,7 +12,7 @@
 
 - Dependências: `make check-deps`, `make install-deps` (ferramentas via mise; Docker/Colima por fora)
 - Rodar: `make serve` (com rascunhos) | `make serve-prod` (como o leitor vê) | `make serve-docker`
-- Validar (obrigatório antes de commit): `make lint-md validate`
+- Validar (obrigatório antes de commit): `make lint-md validate` (inclui `make check-secrets`)
 - Conteúdo: `make new-post|new-page SLUG=`, `make publish-post|publish-page SLUG= [DATE=now]`,
   `make unpublish-post|unpublish-page SLUG= [PRIVATE=1]`, `make rm-post|rm-page SLUG= [REDIRECT=] CONFIRM=sim`
 - Tags: `make check-tags`, `make fix-tags`, `make new-tag NAME= DESC=`, `make merge-tag FROM= TO=`, `make tags-report`
@@ -35,6 +35,7 @@
 - `markup.goldmark.renderer.unsafe = false`: HTML cru no Markdown é omitido. Use shortcodes.
 - Shortcodes permitidos: do Blowfish `alert`, `button`, `figure`, `github`, `mermaid`, `tabs`, `youtubeLite`;
   próprios `jotform`, `blog-chamada`, `blog-stats`, `tecnologias`, `nuvem-tags`, `licenca-blowfish`, `removido` (arquivo/mídia que sumiu da origem: só nome + tooltip).
+  Logo pequeno num post: `figure` com `figureClass="logo-post" nozoom=true` (não usar imagem Markdown, que ocupa a largura toda).
 - Tags e categorias: só as de `data/taxonomia.yaml` (1–5 tags/post). Nunca criar tag sem `make new-tag`;
   trocar sinônimos com `make fix-tags`; `make check-tags` deve passar.
 - Atualizar post: `lastmod` + nota "Atualizado em DD/MM/AAAA"; preservar o sentido histórico do tutorial.
@@ -44,6 +45,8 @@
 ## Segurança (regras obrigatórias)
 
 - Nunca commitar segredos, tokens, `.env` ou dados pessoais; segredos só em GitHub Secrets.
+  Antes de cada commit, o pre-commit (`make install-hooks`) roda gitleaks, bloqueia arquivos sensíveis e o e-mail do autor.
+  Nunca usar `git commit --no-verify` para contornar; falso positivo só com exceção pontual em `.gitleaks.toml`.
 - Nunca publicar o e-mail do autor (páginas, posts, rodapé, JSON-LD, `params.author`); contato só via Jotform. Sem X/Twitter, sem YouTube como perfil.
 - Perfis do autor só em `config/_default/languages.pt-br.toml` (`params.author.links`); os ícones do menu repetem as URLs (exceção documentada).
 - Não adicionar scripts/iframes de terceiros sem atualizar a CSP (`docs/cloudflare.md`) e pedir aprovação.
@@ -76,6 +79,7 @@
   Overrides de layout do tema existentes: `layouts/tags/terms.html` (revisar a cada atualização do Blowfish).
   O CSS de leitura no computador sobrescreve as classes `.max-w-prose` e `.lg:px-32` do tema, e o dos blocos de código
   (quebra visual de linhas longas) sobrescreve `.chroma .line` e `.chroma > code`: conferir a cada atualização.
+  A busca é ajustada por `assets/js/busca.js` (envolve `window.Fuse` com opções extras; não copiar o `search.js` do tema).
 - Corrigir avisos de `hugo --logLevel info`; não usar funções deprecated (ex.: `hugo.Data`, não `site.Data`).
 - Ao mudar comportamento, atualizar `README.md`, `docs/ARCHITECTURE.md`, `docs/MAINTENANCE.md`, `docs/cloudflare.md` e este arquivo.
 
