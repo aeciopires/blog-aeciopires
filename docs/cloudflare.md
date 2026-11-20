@@ -19,7 +19,7 @@ O GitHub só emite o certificado se enxergar o DNS apontando para ele; por isso 
 7. [ ] DNS: ligar o **proxy** (nuvem laranja) em `blog`.
 8. [ ] Aplicar as seções 3 a 6 e ativar o Web Analytics (seção 7).
 9. [ ] Repositório: secret `CLOUDFLARE_API_TOKEN`, variables `CLOUDFLARE_ZONE_ID` e `DOMINIO_ATIVO=true`.
-10. [ ] Testar (seção 9) e reenviar o `sitemap.xml` no Search Console.
+10. [ ] Testar (seção 9) e reenviar o `sitemap.xml` no Search Console (seção 10).
 11. [ ] Manter o WordPress em subdomínio temporário com acesso restrito por 30 dias; depois, cancelar.
 
 Com o proxy ligado, o GitHub Pages pode exibir "not pointing to GitHub". **É esperado.**
@@ -191,7 +191,7 @@ Conferido contra todas as URLs do build e de `static/wp-content/` (nenhuma casa 
 
 ## 5. Headers de segurança (Transform Rules → Response Headers, só `blog.aeciopires.com`)
 
-**Status (20/11/2026):** regra aplicada; CSP já efetiva (`Content-Security-Policy`); securityheaders.com nota **A**. Pendente: HSTS ainda em `max-age=300` (passo 7).
+**Status (20/11/2026):** regra aplicada; CSP já efetiva (`Content-Security-Policy`); securityheaders.com nota **A**. HSTS em `max-age=31536000` desde 20/11/2026 (passo 7).
 
 | Header | Valor |
 |---|---|
@@ -227,25 +227,25 @@ upgrade-insecure-requests
 
 Fazer **depois** de um deploy já com o domínio (HTML sem o prefixo `/blog-aeciopires/`), para testar o site correto.
 
-1. [ ] Cloudflare → `aeciopires.com` → **Rules → Overview → Create rule → Response Header Transform Rule**.
-2. [ ] Nome `Headers de segurança do blog`; *Custom filter expression*: `http.host eq "blog.aeciopires.com"`.
-3. [ ] Em **Then → Modify response header**, um **Set static** por header da tabela acima, com HSTS em `max-age=300` e a CSP com o nome `Content-Security-Policy-Report-Only`. A CSP vai em uma linha só:
+1. [x] Cloudflare → `aeciopires.com` → **Rules → Overview → Create rule → Response Header Transform Rule**.
+2. [x] Nome `Headers de segurança do blog`; *Custom filter expression*: `http.host eq "blog.aeciopires.com"`.
+3. [x] Em **Then → Modify response header**, um **Set static** por header da tabela acima, com HSTS em `max-age=300` e a CSP com o nome `Content-Security-Policy-Report-Only`. A CSP vai em uma linha só:
 
    ```text
    default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://form.jotformz.com https://cdn.jotfor.ms https://giscus.app; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-src https://form.jotformz.com https://giscus.app https://www.youtube-nocookie.com https://www.youtube.com; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
    ```
 
-4. [ ] **Deploy** e conferir:
+4. [x] **Deploy** e conferir:
 
    ```bash
    curl -sI https://blog.aeciopires.com/ \
      | grep -iE 'strict-transport|content-security|x-frame|referrer-policy|permissions-policy|x-content-type'
    ```
 
-5. [ ] **Fase *Report-Only* (1–2 semanas):** com DevTools → Console aberto, navegar pela home, busca, troca claro/escuro, um post com comentários (giscus), um post com vídeo (YouTube) e `/contato/` (Jotform). Cada violação aparece como `[Report Only] Refused to …`. Para cada domínio legítimo citado: atualizar primeiro a CSP desta seção (PR) e depois a regra no painel.
-6. [ ] Sem violações: renomear o header para `Content-Security-Policy` (mesmo valor) e repetir os testes do passo 5.
-7. [ ] Estável por alguns dias: HSTS para `max-age=31536000` (**sem** `includeSubDomains`/`preload`).
-8. [ ] <https://securityheaders.com/?q=blog.aeciopires.com> com nota A; marcar o item na seção 9.
+5. [x] **Fase *Report-Only* (1–2 semanas):** com DevTools → Console aberto, navegar pela home, busca, troca claro/escuro, um post com comentários (giscus), um post com vídeo (YouTube) e `/contato/` (Jotform). Cada violação aparece como `[Report Only] Refused to …`. Para cada domínio legítimo citado: atualizar primeiro a CSP desta seção (PR) e depois a regra no painel.
+6. [x] Sem violações: renomear o header para `Content-Security-Policy` (mesmo valor) e repetir os testes do passo 5.
+7. [x] Estável por alguns dias: HSTS para `max-age=31536000` (**sem** `includeSubDomains`/`preload`).
+8. [x] <https://securityheaders.com/?q=blog.aeciopires.com> com nota A; marcar o item na seção 9.
 
 **Se algo quebrar:** desativar a regra (efeito imediato) ou voltar só a CSP para `-Report-Only`. O HSTS já enviado continua no navegador do leitor até expirar; por isso começar com `max-age=300`.
 
@@ -276,6 +276,27 @@ O GitHub renova o certificado da origem (~90 dias). Com o proxy ligado, a valida
 - [x] `/wp-content/uploads/…` → 200.
 - [x] `https://aeciopires.com/` e `https://www.aeciopires.com/` → 301 para o blog (R3).
 - [x] `jenkins.aeciopires.com` e `puppet.aeciopires.com` → 301 para os sites dos livros (R4, R5).
-- [ ] SSL Labs nota A.
+- [x] SSL Labs nota A (20/11/2026).
 - [x] securityheaders.com nota A (CSP efetiva, 20/11/2026).
-- [ ] Deploy de teste aparece em ~2 min (purge ok); Web Analytics registrando; `origin-cert.yml` verde.
+- [x] Deploy de teste aparece em ~2 min (purge automático ok, deploy `44766555983`).
+- [ ] Web Analytics registrando; `origin-cert.yml` verde.
+
+## 10. Google Search Console
+
+Propriedade do tipo **Domínio** (`aeciopires.com`): cobre `blog`, `www`, a raiz e os subdomínios dos livros, em http e https, sem arquivo no repositório.
+
+1. [x] Search Console → **Adicionar propriedade → Domínio** → `aeciopires.com` → copiar o valor `google-site-verification=…`.
+2. [x] Cloudflare → **DNS → Records → Add record**: `TXT`, nome `@`, conteúdo = o valor copiado, TTL Auto. **Nunca apagar** (a verificação cai). O valor é público, não é segredo.
+3. [ ] **Verificar.** Conferir antes se o TXT já está no DNS do Google:
+
+   ```bash
+   curl -s "https://dns.google/resolve?name=aeciopires.com&type=TXT" | grep -o 'google-site-verification=[^"]*'
+   ```
+
+   Se aparecer e o Google ainda recusar: esperar ~30 minutos e tentar de novo. É o cache negativo do DNS (último campo do SOA: 1800 s); uma tentativa feita antes de o TXT existir fica guardada como "não existe" por até 30 minutos.
+4. [ ] **Indexação → Sitemaps** → `https://blog.aeciopires.com/sitemap.xml` → **Enviar** (status "Processado", ~89 URLs).
+5. [ ] Remover os sitemaps antigos do WordPress da lista (⋮ → **Remover sitemap**).
+6. [ ] Opcional: **Inspeção de URL** → `https://blog.aeciopires.com/` → **Solicitar indexação**.
+7. [ ] Em 1–2 semanas: **Indexação → Páginas** (404 e "Página com redirecionamento", esperado para os endereços antigos).
+
+O `robots.txt` (gerenciado pelo Cloudflare + o do Hugo) já declara `Sitemap: https://blog.aeciopires.com/sitemap.xml`.
