@@ -303,7 +303,7 @@ Propriedade do tipo **Domínio** (`aeciopires.com`): cobre `blog`, `www`, a raiz
 6. [x] Opcional: **Inspeção de URL** → `https://blog.aeciopires.com/` → **Solicitar indexação**.
 7. [ ] Em 1–2 semanas: **Indexação → Páginas** (404 e "Página com redirecionamento", esperado para os endereços antigos).
 
-**Status (20/11/2026):** propriedade verificada e sitemap enviado pelo autor. A inspeção da home retornou *"Bloqueada devido a acesso proibido (403)"*; em investigação (abaixo).
+**Status (20/11/2026):** propriedade verificada e sitemap enviado pelo autor. A inspeção da home retornou *"Bloqueada devido a acesso proibido (403)"*, mas o **teste ao vivo** passou ("O URL está disponível para o Google"): o 403 era do rastreamento anterior à virada. Indexação solicitada.
 
 **Se a inspeção mostrar 403:**
 
