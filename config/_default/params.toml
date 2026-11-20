@@ -243,4 +243,4 @@ forgejoDefaultServer = "https://codeberg.org"
 
 # Cloudflare Web Analytics (beacon só em produção). Token público do site, do painel do Cloudflare.
 [cloudflareAnalytics]
-  token = ""
+  token = "7a97edd0b7fa4f47b2842f25e0dce6b3"

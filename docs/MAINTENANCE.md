@@ -275,6 +275,21 @@ Alternativa sem CLI: o configurador em <https://giscus.app> mostra os mesmos IDs
 | `MIGRACAO_CONCLUIDA` | variable | `true` torna o `compare-urls` bloqueante no `pr-check` |
 | `DOMINIO_ATIVO` | variable | `true` liga o `origin-cert.yml` (depois da virada de DNS) |
 
+**Criar o `CLOUDFLARE_API_TOKEN`** (só *Cache Purge*, só esta zona, com validade):
+
+1. Cloudflare → ícone do perfil → **My Profile → API Tokens → Create Token → Create Custom Token**.
+2. Nome: `github-actions-blog-purge`. **Permissions:** `Zone` · `Cache Purge` · `Purge`. **Zone Resources:** `Include` · `Specific zone` · `aeciopires.com`.
+3. **TTL:** data de término (ex.: 1 ano) e anote no calendário (seção 10, rotação anual). Opcional: *Client IP Address Filtering* não se aplica (runners do GitHub mudam de IP).
+4. **Continue to summary → Create Token** e copie o valor (aparece uma vez só).
+5. Grave no GitHub sem deixar o valor no histórico do shell: `gh secret set CLOUDFLARE_API_TOKEN` (o `gh` pede o valor) ou Settings → Secrets and variables → Actions → *New repository secret*.
+
+**Achar o `CLOUDFLARE_ZONE_ID`:** Cloudflare → domínio `aeciopires.com` → **Overview** → coluna da direita, bloco **API** → *Zone ID* (não é segredo). Gravar: `gh variable set CLOUDFLARE_ZONE_ID --body "<zone-id>"` ou Settings → Secrets and variables → Actions → aba *Variables*.
+
+**Depois da virada:** `gh variable set DOMINIO_ATIVO --body true` e `gh variable set MIGRACAO_CONCLUIDA --body true`. Conferir: `gh secret list` e `gh variable list`.
+`gh variable` exige gh ≥ 2.31 (o pacote do Ubuntu 22.04 é 2.4); sem ele, usar o site (Settings → Secrets and variables → Actions) ou `gh api repos/aeciopires/blog-aeciopires/actions/variables`.
+
+**Atenção na virada:** o `baseURL` do build vem do `actions/configure-pages`, que só passa a usar o domínio depois do *Custom domain* configurado. Rodar um novo deploy logo após configurar o domínio (Actions → *Deploy* → *Run workflow*) e limpar o cache do Cloudflare; senão o HTML continua com o prefixo `/blog-aeciopires/` e CSS/JS dão 404.
+
 ## 10. Calendário de manutenção
 
 | Frequência | Tarefa |
