@@ -2,7 +2,7 @@
 title: "Instalando o Zabbix via Docker"
 slug: "zabbix-docker"
 date: 2017-08-16T16:39:55-03:00
-lastmod: 2026-11-06T01:15:46-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["docker", "tutoriais", "zabbix-2"]
 tags: ["docker", "mysql", "zabbix"]
@@ -10,7 +10,9 @@ description: "Neste repositório do GitHub tem várias informações sobre o uso
 wp_id: 1498
 ---
 
-**Atualizado em: 6 de novembro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** testado com as imagens `ubuntu-8.0-latest` (Zabbix 8.0.0) e o MySQL 9.7 (o Zabbix 8.0 suporta MySQL 8.4 a 9.7): banco, SNMP traps, server, frontend com HTTP e HTTPS, agent e proxy. Corrigido o texto sobre a validade do certificado (o comando gera 10 anos, não 1000) e a permissão da chave privada passou para `644` (o frontend roda como usuário não-root e só precisa ler o arquivo).
+{{< /alert >}}
 
 Neste [repositório do GitHub](https://github.com/zabbix/zabbix-docker/) tem várias informações sobre o uso das imagens oficiais do [Zabbix](http://zabbix.com) no Docker.
 
@@ -20,11 +22,11 @@ Se você não sabe o que é Docker, recomendo começar lendo os links abaixo. Va
 
 [/primeiros-passos-com-docker/](/primeiros-passos-com-docker/)
 
-Também realizo curso de Docker: [/curso-docker](/curso-docker)
+Também ministro curso de Docker: [/curso-docker](/curso-docker)
 
 * * *
 
-Neste tutorial, será mostrado como executar o Zabbix usando conteineres [Docker,](https://www.docker.com/) o que deixa a instalação bem simples e rápida. Será mostrado como iniciar os conteineres Zabbix e MySQL persistindo os dados.
+Neste tutorial, será mostrado como executar o Zabbix usando conteineres [Docker](https://www.docker.com/), o que deixa a instalação bem simples e rápida. Será mostrado como iniciar os conteineres Zabbix e MySQL persistindo os dados.
 
 0) Instale o Docker seguindo um dos tutoriais abaixo.
 
@@ -32,7 +34,7 @@ Neste tutorial, será mostrado como executar o Zabbix usando conteineres [Docke
 - No Debian: [https://docs.docker.com/engine/install/debian](https://docs.docker.com/engine/install/debian)
 - No CentOS: [https://docs.docker.com/engine/install/centos](https://docs.docker.com/engine/install/centos)
 
-1) Crie um diretório para persistir os dados do MySQL, Mibs e SNMP Traps.
+1) Crie um diretório para persistir os dados do MySQL, MIBs e SNMP Traps.
 
 ```bash
 sudo mkdir -p /docker/zabbix/mysql/data \
@@ -42,7 +44,7 @@ sudo mkdir -p /docker/zabbix/mysql/data \
 sudo chown -R 999:999 /docker/zabbix/mysql/data/
 ```
 
-**Atenção:** O volume permite adicionar novos arquivos de MIB ( _Management Information Bases_). Esse volume não suporta subdiretórios, todos os arquivos de MIBs devem ser colocados em **/docker/zabbix/mibs**. Fonte: [https://www.zabbix.com/documentation/current/en/manual/installation/containers](https://www.zabbix.com/documentation/current/en/manual/installation/containers)
+**Atenção:** O volume permite adicionar novos arquivos de MIB ( _Management Information Bases_). Esse volume não suporta subdiretórios; todos os arquivos de MIBs devem ser colocados em **/docker/zabbix/mibs**. Fonte: [https://www.zabbix.com/documentation/current/en/manual/installation/containers](https://www.zabbix.com/documentation/current/en/manual/installation/containers)
 
 2) **OPCIONAL** \- Crie o diretório de certificado para uso do Zabbix via HTTPS (isso é recomendado por questões de segurança).
 
@@ -50,7 +52,7 @@ sudo chown -R 999:999 /docker/zabbix/mysql/data/
 sudo mkdir -p /docker/zabbix/ssl
 ```
 
-Depois disso, **copie o arquivo do certificado, da autoridade certificadora chave pública e privada para esse diretório**.
+Depois disso, **copie os arquivos do certificado, da autoridade certificadora e das chaves pública e privada para esse diretório**.
 
 3) Baixe as [imagens Docker de alguns componentes do Zabbix](https://hub.docker.com/u/zabbix). Altere os valores conforme as necessidades do seu ambiente.
 
@@ -59,7 +61,7 @@ ZABBIX_VERSION="ubuntu-8.0-latest"
 MYSQL_VERSION="9.7"
 ```
 
-4) Crie um rede virtual no Docker dedicada aos componentes do Zabbix. Altere os valores conforme as necessidades do seu ambiente.
+4) Crie uma rede virtual no Docker dedicada aos componentes do Zabbix. Altere os valores conforme as necessidades do seu ambiente.
 
 ```bash
 ZABBIX_SUBNET="172.50.0.0/16"
@@ -155,7 +157,7 @@ docker run -d --name zabbix-web \
 
 Ou inicie o conteiner docker do Zabbix-Web **COM HTTPS** acessando o banco de dados criado no MySQL e o conteiner Zabbix-Server. Altere os valores conforme as necessidades do seu ambiente.
 
-OBS.: No fim deste tutorial, tem a seção **EXTRA: Criando um certificado auto-assinado para uso com o Nginx**, que pode ser utilizada como exemplo para configurar o uso do Nginx com HTTPS.
+OBS.: No fim deste tutorial, tem a seção **EXTRA: Criando um certificado autoassinado para uso com o Nginx**, que pode ser utilizada como exemplo para configurar o uso do Nginx com HTTPS.
 
 ```bash
 docker run -d --name zabbix-web \
@@ -247,7 +249,7 @@ docker stop nome-conteiner
 docker rm nome-conteiner
 ```
 
-15) Para obter mais informações sobre o Zabbix, sobre as imagens docker e como customizar parâmetros de configuração, acesse os links abaixo.
+15) Para obter mais informações sobre o Zabbix, sobre as imagens Docker e sobre como customizar parâmetros de configuração, acesse os links abaixo.
 
 [https://scaron.info/blog/improve-your-nginx-ssl-configuration.html](https://scaron.info/blog/improve-your-nginx-ssl-configuration.html)
 
@@ -259,13 +261,13 @@ docker rm nome-conteiner
 
 [https://www.zabbix.com/documentation/current/manual/installation/containers](https://www.zabbix.com/documentation/current/manual/installation/containers)
 
-16) **OPCIONAL** \- Se precisar fazer o dump de todos os bancos de dados do conteiner MySQL criado anteriormente, use o comando abaixo. Altere os dados em negrito e em vermelho conforme as necessidades do seu ambiente. Lembrando que os dados do banco são persistidos no diretório **/docker/zabbix/mysql/data** do Docker Host no qual o conteiner está sendo executado.
+16) **OPCIONAL** \- Se precisar fazer o dump de todos os bancos de dados do conteiner MySQL criado anteriormente, use o comando abaixo. Altere os valores conforme as necessidades do seu ambiente. Lembrando que os dados do banco são persistidos no diretório **/docker/zabbix/mysql/data** do Docker Host no qual o conteiner está sendo executado.
 
 ```bash
 docker exec zabbix-mysql sh -c 'exec mysqldump zabbix -uroot -p"MYSQL_ROOT_PASSWORD"' > /home/zabbix.sql
 ```
 
-17- **OPCIONAL** \- Se precisar restaurar o dump, siga os passos abaixo.
+17) **OPCIONAL** \- Se precisar restaurar o dump, siga os passos abaixo.
 
 Remova o banco antigo e crie-o novamente.
 
@@ -306,9 +308,9 @@ docker start zabbix-server
 docker start zabbix-web
 ```
 
-## EXTRA: Criando um certificado auto-assinado para uso com o Nginx
+## EXTRA: Criando um certificado autoassinado para uso com o Nginx
 
-Instale o pacote **opensssl**.
+Instale o pacote **openssl**.
 
 No Debian/Ubuntu:
 
@@ -332,17 +334,17 @@ sudo openssl genrsa -aes256 -out ssl.key 4096
 sudo cp ssl.key ssl.key.org
 sudo openssl rsa -in ssl.key.org -out ssl.key
 
-sudo chmod 755 ssl.key
+sudo chmod 644 ssl.key
 sudo rm ssl.key.org
 ```
 
-Agora crie uma requisição de assinatura de certificado com validade para 1000 anos (ou 365000 dias). Execute o comando abaixo.
+Agora crie uma requisição de assinatura de certificado. Execute o comando abaixo.
 
 ```bash
 sudo openssl req -new -sha256 -key ssl.key -out ssl.csr
 ```
 
-Durante a execução do comando acima será solicitado a senha da chave privada e os dados do certificado e que serão exibidos no navegador do usuário. Veja o exemplo abaixo.
+Durante a execução do comando acima serão solicitados os dados do certificado, que serão exibidos no navegador do usuário. Veja o exemplo abaixo.
 
 - Country Name (2 letter code) [GB]: **BR**
 - State or Province Name (full name) [Berkshire]: **Estado**
@@ -362,7 +364,7 @@ Agora assine o certificado.
 sudo openssl x509 -req -days 3650 -sha256 -in ssl.csr -signkey ssl.key -out ssl.crt
 ```
 
-Usando, o comando acima, você estará assinando o certificado com validade de 10 anos (aproximadamente 3650 dias). Se quiser mudar este tempo, altere a quantidade de dias no parâmetro **-days**.
+Usando o comando acima, você estará assinando o certificado com validade de 10 anos (aproximadamente 3650 dias). Se quiser mudar este tempo, altere a quantidade de dias no parâmetro **-days**.
 
 Agora crie um par de chaves Diffie-Hellman com o seguinte comando:
 

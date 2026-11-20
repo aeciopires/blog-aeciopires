@@ -2,7 +2,7 @@
 title: "Instalando o Docker, Docker Registry e Portainer"
 slug: "instalando-o-docker-docker-swarm-docker-registry-e-portainer"
 date: 2017-08-16T18:25:06-03:00
-lastmod: 2026-10-07T08:27:28-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["docker", "tutoriais"]
 tags: ["containers", "docker", "portainer", "swarm"]
@@ -10,7 +10,9 @@ description: "O Docker pode ser instalado no Ubuntu seguindo o seguinte tutorial
 wp_id: 1507
 ---
 
-**Atualizado em: 7 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** comandos testados: Docker Registry com a imagem `registry:3` (3.1.2), envio de uma imagem para o registry local, e Portainer CE `lts` (2.45.4) com o `setup_token` exibido no log. Nenhuma alteração foi necessária.
+{{< /alert >}}
 
 ## Instalando o Docker
 
@@ -34,9 +36,9 @@ docker run -d --name registry \
 ```
 
 O conteiner do Registry será iniciado como serviço. Mesmo que o conteiner pare, ele será reiniciado.  
-O registry ficará acessível em: **http://ip-servidor:5000/**
+O Registry ficará acessível em: **http://ip-servidor:5000/**
 
-Testando o download da imagem Ubuntu do Docker Hub e na sequencia enviando para o registry local.
+Testando o download da imagem Ubuntu do Docker Hub e, na sequência, enviando para o registry local.
 
 ```bash
 docker pull ubuntu
@@ -70,11 +72,11 @@ docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /va
 
 O Portainer gera e usa automaticamente um certificado autoassinado para a porta 9443/TCP.
 
-Como no conteiner, os dados são perdidos quando o mesmo é removido, os dados do Portainer serão persistidos no volume Docker **portainer\_data**. Saiba mais sobre o Portainer em: **http://portainer.io**
+Como os dados de um conteiner são perdidos quando ele é removido, os dados do Portainer serão persistidos no volume Docker **portainer\_data**. Saiba mais sobre o Portainer em: **http://portainer.io**
 
-O portainer ficará acessível em: **https://ip-servidor:9443/** (com HTTPS).
+O Portainer ficará acessível em: **https://ip-servidor:9443/** (com HTTPS).
 
-> Atenção!!! Segundo a documentação oficial ([https://docs.portainer.io/start/install-ce/server/docker/linux](https://docs.portainer.io/start/install-ce/server/docker/linux)), a porta 8000/TCP não é a interface web com HTTP. Ela expõe um servidor de túnel TCP, que é opcional e só é necessário se você for usar os recursos de \*Edge compute\* com \*Edge agents\*. Se você precisar da interface web sem HTTPS na porta 9000/TCP, por motivos de compatibilidade, adicione a opção `-p 9000:9000` ao comando `docker run`.
+> Atenção!!! Segundo a documentação oficial ([https://docs.portainer.io/start/install-ce/server/docker/linux](https://docs.portainer.io/start/install-ce/server/docker/linux)), a porta 8000/TCP não é a interface web com HTTP. Ela expõe um servidor de túnel TCP, que é opcional e só é necessário se você for usar os recursos de _Edge compute_ com _Edge agents_. Se você precisar da interface web sem HTTPS na porta 9000/TCP, por motivos de compatibilidade, adicione a opção `-p 9000:9000` ao comando `docker run`.
 
 A partir das versões 2.43 e 2.39.4 do Portainer, novas instalações exigem um **setup token** para concluir a configuração inicial (criação do usuário administrador). Esse token é exibido no log do conteiner, na linha que contém `setup_token=`. Para obtê-lo, execute o comando abaixo e cole o valor no campo **Setup token** da interface web. Mais detalhes em: [https://docs.portainer.io/faqs/installing/setup-token](https://docs.portainer.io/faqs/installing/setup-token)
 

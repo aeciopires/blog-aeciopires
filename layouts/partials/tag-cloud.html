@@ -1,6 +1,7 @@
 {{- /*
   Nuvem de tags (PLAN.md 3.2.2): tamanho proporcional ao número de posts (escala logarítmica
-  entre 14 e 44 px), contagem visível e no title, cor por faixa. Lista acessível, sem JavaScript.
+  entre 14 e 44 px) e cor por faixa. A contagem não aparece na tela (o tamanho já indica a
+  frequência): fica no title e num texto só para leitor de tela. Lista acessível, sem JavaScript.
   Parâmetros: limite (int, 0 = todas), botoes (bool: mostra "Ver todas as tags" e "Categorias").
 */ -}}
 {{- $limite := .limite | default 0 -}}
@@ -34,7 +35,7 @@
         <li>
           <a class="tag-cloud__tag tag-cloud__tag--{{ $nivel }}" style="font-size: {{ $px }}px"
             href="{{ .Page.RelPermalink }}" title="{{ .Page.Title }}: {{ .Count }} {{ cond (eq .Count 1) "post" "posts" }}">
-            {{- .Page.Title -}}<sup>{{ .Count }}</sup>
+            {{- .Page.Title -}}<span class="tag-cloud__contagem"> ({{ .Count }} {{ cond (eq .Count 1) "post" "posts" }})</span>
           </a>
         </li>
       {{- end }}

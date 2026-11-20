@@ -2,13 +2,17 @@
 title: "Instalando o Hashicorp Vault no Kubernetes (GKE) usando o Helm e configurando um bucket GCS para armazenamento"
 slug: "instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento"
 date: 2024-09-28T03:30:19-03:00
-lastmod: 2026-08-18T12:04:19-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["cluster", "devops", "docker", "kubernetes", "tutoriais", "vault"]
 tags: ["gcp", "helm", "kubernetes", "vault"]
 description: "Este é o segundo post da série sobre o Vault. Clique aqui para ver o primeiro post e conhecer um pouco sobre essa ferramenta."
 wp_id: 2932
 ---
+
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** chart `hashicorp/vault` 0.34.1, Vault 2.2.2 e vault-k8s 1.7.7. Testado num cluster kind com 3 workers (Kubernetes 1.37): HA com 3 réplicas, armazenamento `gcs` (num emulador local da API do GCS), init, unseal, login e configuração do método de autenticação `kubernetes`. O auto-unseal pelo Cloud KMS não pôde ser testado localmente. A conferência do token da service account passou a usar `kubectl describe secret`, porque o kubectl atual não mostra mais o campo `Tokens`. Incluído um aviso sobre o `helm upgrade` com o Helm 4.
+{{< /alert >}}
 
 Este é o segundo post da série sobre o Vault. [Clique aqui para ver o primeiro post](/conhecendo-o-hashicorp-vault/) e conhecer um pouco sobre essa ferramenta.
 
@@ -38,7 +42,7 @@ Obrigado [Filipe Maia](https://www.linkedin.com/in/filipebsmaia/), [André Luis 
 
 O [Helm](https://helm.sh/) facilita muito a instalação de aplicações no cluster Kubernetes. Execute os passos a seguir.
 
-**Adicione o repositório Helm do HashiCorp.**
+**Adicione o repositório Helm da HashiCorp.**
 
 ```bash
 helm repo add hashicorp https://helm.releases.hashicorp.com
@@ -59,12 +63,12 @@ helm search repo vault --versions
 **Obtenha o helm values padrão para um arquivo e customize os valores de acordo com a necessidade.** Tem muita opção!!! Após as referências deste tutorial, tem um arquivo de exemplo para um ambiente de dev/test. Mas lembre-se de mudar os valores que começam com a palavra **change**.
 
 ```bash
-VAULT_CHART_VERSION=0.28.1
+VAULT_CHART_VERSION=0.34.1
 
 helm show values hashicorp/vault --version "$VAULT_CHART_VERSION" > values.yaml
 ```
 
-**Crie uma secret no kubernetes associando o arquivo** **credentials.json** da service account a ser usada pelo vault para acessar o bucket GCS e o KMS.
+**Crie uma secret no Kubernetes associando o arquivo** **credentials.json** da service account a ser usada pelo Vault para acessar o bucket GCS e o KMS.
 
 ```bash
 kubectl create namespace vault
@@ -80,7 +84,11 @@ helm upgrade --install vault \
   --namespace vault --create-namespace --debug --timeout=900s --wait
 ```
 
-**Visualize todos os objetos relacionados ao vault.**
+{{< alert >}}
+**Helm 4:** a partir da segunda execução (`helm upgrade` de uma release já instalada), o comando pode falhar com `conflict ... clientConfig.caBundle`, porque o injector do Vault atualiza esse campo e o Helm 4 aplica os manifestos no modo _server-side_. Acrescente `--server-side=false` ao comando, como indicado no [repositório oficial do chart](https://github.com/hashicorp/vault-helm/pull/1223). O Helm 3 não tem esse problema.
+{{< /alert >}}
+
+**Visualize todos os objetos relacionados ao Vault.**
 
 ```bash
 kubectl get all -n vault
@@ -100,7 +108,7 @@ O comando status relata que o Vault não foi inicializado e que está lacrado. P
 
 ### Inicializando e unseal do Vault
 
-**Crie um port-forward do pod** `vault-0` para acessar a interface web do vault e inicializá-lo.
+**Crie um port-forward do pod** `vault-0` para acessar a interface web do Vault e inicializá-lo.
 
 ```bash
 kubectl port-forward pod/vault-0 8200:8200 -n vault
@@ -126,7 +134,7 @@ vault login
 # vault operator generate-root
 ```
 
-**Atenção!!!** Caso o vault continue com o status sealed após a execução do comando "vault operator unseal", acesse a interface web na URL [http://127.0.0.1:8200](http://127.0.0.1:8200) e informe a quantidade os valores das 3 primeiras chaves unseal geradas pelo comando "vault operator init".
+**Atenção!!!** Caso o Vault continue com o status sealed após a execução do comando "vault operator unseal", acesse a interface web na URL [http://127.0.0.1:8200](http://127.0.0.1:8200) e informe os valores das 3 primeiras chaves unseal geradas pelo comando "vault operator init".
 
 **Obtenha novamente o status do Vault no pod** `vault-0`.
 
@@ -138,18 +146,20 @@ O servidor Vault é inicializado e deslacrado ( _unsealed_).
 
 ### Crie um token inicial k8s
 
-Obtenha os detalhes da service account do vault no cluster Kubernetes.
+Obtenha os detalhes da service account do Vault no cluster Kubernetes.
 
 ```bash
 kubectl describe serviceaccount vault -n vault
 ```
 
-No fim do resultado do comando anterior deve ter algo semelhante:
+Nas versões antigas do kubectl, o fim do resultado mostrava algo semelhante a:
 
 ```text
 Tokens: <nenhum>
 Eventos: <nenhum>
 ```
+
+O kubectl atual (testado na versão 1.37) não exibe mais o campo `Tokens`.
 
 ATENÇÃO!!! No Kubernetes 1.24+, o token não é criado automaticamente, e você deve criá-lo explicitamente.
 
@@ -167,7 +177,7 @@ type: kubernetes.io/service-account-token
 EOF
 ```
 
-Cria a secret com o seguinte comando.
+Crie a secret com o seguinte comando.
 
 ```bash
 kubectl apply -f vault-secret.yaml -n vault
@@ -179,10 +189,10 @@ Crie uma variável chamada VAULT\_HELM\_SECRET\_NAME que armazena o token gerado
 VAULT_HELM_SECRET_NAME=$(kubectl -n vault get secrets --output=json | jq -r '.items[].metadata | select(.name|startswith("vault-token-")).name')
 ```
 
-Descreva novamente a conta de serviço e observe que ela foi atualizada com o segredo e o token.
+Confira se o Kubernetes preencheu o token na secret (campos `token` e `ca.crt`), como mostra a [documentação oficial](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#manually-create-an-api-token-for-a-serviceaccount).
 
 ```bash
-kubectl describe serviceaccount vault -n vault
+kubectl describe secret vault-token-g955r -n vault
 ```
 
 ## Configure o acesso do Kubernetes à API do Vault
@@ -216,7 +226,7 @@ Recupere o certificado da CA do Kubernetes.
 KUBE_CA_CERT=$(kubectl config view --raw --minify --flatten --output='jsonpath={.clusters[].cluster.certificate-authority-data}' | base64 --decode)
 ```
 
-Recupere o cluster interno da URL do host do GKE.
+Recupere a URL interna do host do cluster GKE.
 
 ```text
 CLUSTER_NAME="change-gke-name"
@@ -226,7 +236,7 @@ GKE_PROJECT="change-gcp-project"
 KUBE_HOST=$(gcloud container clusters describe $CLUSTER_NAME --region $GKE_REGION --project $GKE_PROJECT --format="value(privateClusterConfig.privateEndpoint)")
 ```
 
-Você pode cadastrar no vault o nome do emissor do cluster Kubernetes usando este método.
+Você pode cadastrar no Vault o nome do emissor do cluster Kubernetes usando este método.
 
 ```bash
 vault write auth/kubernetes/config \
@@ -238,7 +248,7 @@ vault write auth/kubernetes/config \
 
 ### **Desistalando o Vault**
 
-Se precisar remover o vault, use o seguinte comando:
+Se precisar remover o Vault, use o seguinte comando:
 
 ```bash
 helm uninstall vault -n vault
@@ -282,7 +292,7 @@ injector:
   # image sets the repo and tag of the vault-k8s image to use for the injector.
   image:
     repository: "hashicorp/vault-k8s"
-    tag: "1.4.2"
+    tag: "1.7.7"
     pullPolicy: IfNotPresent
 
   # agentImage sets the repo and tag of the Vault image to use for the Vault Agent
@@ -290,7 +300,7 @@ injector:
   # required.
   agentImage:
     repository: "hashicorp/vault"
-    tag: "1.17.2"
+    tag: "2.2.2"
 
   # The default values for the injected Vault Agent containers.
   agentDefaults:
@@ -386,7 +396,7 @@ server:
 
   image:
     repository: "hashicorp/vault"
-    tag: "1.17.2"
+    tag: "2.2.2"
     # Overrides the default Image Pull Policy
     pullPolicy: IfNotPresent
 

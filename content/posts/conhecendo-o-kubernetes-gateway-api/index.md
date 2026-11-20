@@ -2,7 +2,7 @@
 title: "Conhecendo o Kubernetes Gateway API"
 slug: "conhecendo-o-kubernetes-gateway-api"
 date: 2025-11-21T02:24:01-03:00
-lastmod: 2026-10-11T01:55:12-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["cluster", "devops", "docker", "git", "gitops", "kubernetes"]
 tags: ["docker", "helm", "kubernetes", "linux"]
@@ -10,11 +10,13 @@ description: "Este é o primeiro post de uma série sobre o Kubernetes Gateway A
 wp_id: 3456
 ---
 
-**Atualizado em: 10 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** a referência da especificação foi atualizada para a Gateway API v1.7.0 (lançada em 29/10/2026). Os conceitos descritos aqui continuam válidos; as novidades estão nas [notas da versão](https://github.com/kubernetes-sigs/gateway-api/releases/tag/v1.7.0).
+{{< /alert >}}
 
 Este é o primeiro post de uma série sobre o [Kubernetes Gateway API](https://gateway-api.sigs.k8s.io).
 
-Antes de continuar, se você não sabe o que é Docker e/ou Kubernetes recomendo fazer os cursos abaixo comigo ou ler e praticar o conteúdo desses links.
+Antes de continuar, se você não sabe o que é Docker e/ou Kubernetes, recomendo fazer os cursos abaixo comigo ou ler e praticar o conteúdo desses links.
 
 - [/primeiros-passos-com-docker-e-kubernetes/](/primeiros-passos-com-docker/)
 - [/?s=docker](/?s=docker)
@@ -29,7 +31,7 @@ O gerenciamento de tráfego no [Kubernetes](https://kubernetes.io/) não é simp
 
 Tradicionalmente, essas aplicações podem ser expostas usando uma combinação de objetos do Kubernetes, tais como: [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/), [Services](https://kubernetes.io/docs/concepts/services-networking/service/), [load balancers](https://spacelift.io/blog/kubernetes-load-balancer), e [NetworkPolicies](https://kubernetes.io/docs/concepts/services-networking/network-policies/). O uso dessa combinação em larga escala gera uma grande configuração fragmentada que cria desafios operacionais e complexos, que podem atrasar novos _deploys_ e dificultar a adaptação às novas demandas de microsserviços, onde: escalabilidade, confiabilidade e custos são requisitos cruciais para o negócio.
 
-O objeto _**Ingress**_ utiliza regras para o roteamento do tráfego [HTTP](https://pt.wikipedia.org/wiki/HTTP) e [HTTPS](https://pt.wikipedia.org/wiki/HTTPS) com base em [paths](https://swagger.io/docs/specification/v3_0/paths-and-operations/) e [nomes DNS](https://aws.amazon.com/pt/route53/what-is-dns/) para direcionar as requests vindas de fora do cluster para as aplicações implantadas no Kubernetes, e isso é mais eficiente do que o uso direto do objeto _**Service**_, do tipo _[LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer)_ ou _[NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport)_. O Ingress atua em conjunto com um [_Ingress Controller_](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), que pode ser implementado por diferentes softwares. Um desses softwares é o o famoso [ingress-nginx,](https://github.com/kubernetes/ingress-nginx) que teve [anunciado o fim do desenvolvimento de novas versões](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/) a partir de Março de 2026. O _Ingress_ atua apenas na camada 7 do [modelo OSI](https://pt.wikipedia.org/wiki/Modelo_OSI) (Layer 7 ou apenas L7).
+O objeto _**Ingress**_ utiliza regras para o roteamento do tráfego [HTTP](https://pt.wikipedia.org/wiki/HTTP) e [HTTPS](https://pt.wikipedia.org/wiki/HTTPS) com base em [paths](https://swagger.io/docs/specification/v3_0/paths-and-operations/) e [nomes DNS](https://aws.amazon.com/pt/route53/what-is-dns/) para direcionar as requests vindas de fora do cluster para as aplicações implantadas no Kubernetes, e isso é mais eficiente do que o uso direto do objeto _**Service**_, do tipo _[LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer)_ ou _[NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport)_. O Ingress atua em conjunto com um [_Ingress Controller_](https://kubernetes.io/docs/concepts/services-networking/ingress-controllers/), que pode ser implementado por diferentes softwares. Um desses softwares é o famoso [ingress-nginx](https://github.com/kubernetes/ingress-nginx), que teve [anunciado o fim do desenvolvimento de novas versões](https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/) a partir de março de 2026. O _Ingress_ atua apenas na camada 7 do [modelo OSI](https://pt.wikipedia.org/wiki/Modelo_OSI) (Layer 7 ou apenas L7).
 
 > _Obrigado a [Ricardo Katz](https://www.linkedin.com/in/katzricardo/) e demais contribuidores de código do ingress-nginx_ e também no Gateway API.
 
@@ -41,11 +43,11 @@ A figura acima mostra que o _Ingress Controller_ implanta, configura e gerencia 
 
 ### **O que é o Kubernetes Gateway API?**
 
-O **Kubernetes Gateway API** é uma especificação que padroniza a forma como o roteamento de tráfego é gerenciado no Kubernetes. Ele foi criado pelo Kubernetes [SIG-NETWORK group](https://github.com/kubernetes/community/tree/master/sig-network) como uma alternativa mais flexível e robusta às limitações _Ingress_, possibilitando uma abordagem modular, configuração mais granular e declarativa, melhor compatibilidade entre diferentes _controllers_, separação clara de responsabilidades e suporte nativo a diversos protocolos, tais como: [HTTP](https://pt.wikipedia.org/wiki/HTTP), [TCP](https://pt.wikipedia.org/wiki/Protocolo_de_Controle_de_Transmiss%C3%A3o), [UDP](https://pt.wikipedia.org/wiki/Protocolo_de_datagrama_do_usu%C3%A1rio), [TLS](https://pt.wikipedia.org/wiki/Transport_Layer_Security), [gRPC](https://grpc.io/) e [WebSocket](https://pt.wikipedia.org/wiki/WebSocket). [Nesse post](https://www.cncf.io/blog/2025/05/02/understanding-kubernetes-gateway-api-a-modern-approach-to-traffic-management/), você poderá ver mais detalhes sobre o Kubernetes Gateway API e o Ingress, bem como casos de uso e que limitações do Ingress o Gateway API promete resolver.
+O **Kubernetes Gateway API** é uma especificação que padroniza a forma como o roteamento de tráfego é gerenciado no Kubernetes. Ele foi criado pelo Kubernetes [SIG-NETWORK group](https://github.com/kubernetes/community/tree/master/sig-network) como uma alternativa mais flexível e robusta às limitações do _Ingress_, possibilitando uma abordagem modular, configuração mais granular e declarativa, melhor compatibilidade entre diferentes _controllers_, separação clara de responsabilidades e suporte nativo a diversos protocolos, tais como: [HTTP](https://pt.wikipedia.org/wiki/HTTP), [TCP](https://pt.wikipedia.org/wiki/Protocolo_de_Controle_de_Transmiss%C3%A3o), [UDP](https://pt.wikipedia.org/wiki/Protocolo_de_datagrama_do_usu%C3%A1rio), [TLS](https://pt.wikipedia.org/wiki/Transport_Layer_Security), [gRPC](https://grpc.io/) e [WebSocket](https://pt.wikipedia.org/wiki/WebSocket). [Nesse post](https://www.cncf.io/blog/2025/05/02/understanding-kubernetes-gateway-api-a-modern-approach-to-traffic-management/), você poderá ver mais detalhes sobre o Kubernetes Gateway API e o Ingress, bem como casos de uso e que limitações do Ingress o Gateway API promete resolver.
 
-O principal ganho do uso Kubernetes Gateway API é a simplificação do gerenciamento de tráfego, permitindo que as equipes escalem as aplicações com menos esforço que usando o Ingress, mantendo a eficiência operacional e a segurança. Embora o Kubernetes não ofereça uma implementação padrão, existem diversas ferramentas populares de código aberto e comerciais, que suportam o Gateway API. A lista completa pode ser vista em: [https://gateway-api.sigs.k8s.io/implementations/](https://gateway-api.sigs.k8s.io/implementations/).
+O principal ganho do uso do Kubernetes Gateway API é a simplificação do gerenciamento de tráfego, permitindo que as equipes escalem as aplicações com menos esforço que usando o Ingress, mantendo a eficiência operacional e a segurança. Embora o Kubernetes não ofereça uma implementação padrão, existem diversas ferramentas populares de código aberto e comerciais que suportam o Gateway API. A lista completa pode ser vista em: [https://gateway-api.sigs.k8s.io/implementations/](https://gateway-api.sigs.k8s.io/implementations/).
 
-> É importante dizer que o Gateway API não substitui o Ingress. É uma evolução a partir dele, que traz soluções para demandas mais complexas e necessidades não eram atendidas pelo Ingress. O Gateway API atua nas camadas 4 e 7 do [modelo OSI](https://pt.wikipedia.org/wiki/Modelo_OSI) (Layer 4 e7 ou apenas L4 e L7).
+> É importante dizer que o Gateway API não substitui o Ingress. É uma evolução a partir dele, que traz soluções para demandas mais complexas e necessidades que não eram atendidas pelo Ingress. O Gateway API atua nas camadas 4 e 7 do [modelo OSI](https://pt.wikipedia.org/wiki/Modelo_OSI) (Layer 4 e 7 ou apenas L4 e L7).
 
 ### **Componentes do Gateway API**
 
@@ -65,7 +67,7 @@ A especificação do Gateway API introduz vários novos **[CRDs (Custom Resource
 Mais detalhes dos CRDs podem ser obtidos em:
 
 - [https://gateway-api.sigs.k8s.io/guides/crd-management/](https://gateway-api.sigs.k8s.io/guides/crd-management/)
-- [https://gateway-api.sigs.k8s.io/reference/api-spec/1.6/spec/](https://gateway-api.sigs.k8s.io/reference/api-spec/1.6/spec/)
+- [https://gateway-api.sigs.k8s.io/reference/api-spec/1.7/spec/](https://gateway-api.sigs.k8s.io/reference/api-spec/1.7/spec/)
 
 ### **Como funciona o Gateway API?**
 
@@ -131,7 +133,7 @@ A tabela abaixo mostra as principais diferenças entre o Gateway API e o Ingress
 
 ### **Migrando do Ingress para o Gateway API**
 
-Em linhas gerais, a estratégia de migração do Ingress para o Gateway API, envolve:
+Em linhas gerais, a estratégia de migração do Ingress para o Gateway API envolve:
 
 - Escolha uma aplicação menos crítica ao negócio
 - Mapeie todas necessidades do tráfego dessa aplicação

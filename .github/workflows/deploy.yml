@@ -12,6 +12,9 @@ on:
   # O GitHub atrasa crons em horários de pico e os desativa após 60 dias sem atividade no repo.
   schedule:
     - cron: "5 3 1 1 *"
+    # Toda segunda (06:15 em Recife = 09:15 UTC): atualiza "Mais lidos"/"Menos lidos" da home
+    # (data/visualizacoes.json, gerado a partir do Cloudflare Web Analytics).
+    - cron: "15 9 * * 1"
 
 permissions:
   contents: read
@@ -54,6 +57,13 @@ jobs:
       - name: Validar links internos e imagens
         # build com o baseURL padrão (caminhos a partir de /) só para o lychee
         run: make build validate-links
+
+      - name: Visualizações por página (Mais/Menos lidos da home)
+        # Sem o secret ou a variable, o script não faz nada e os botões de leitura ficam ocultos.
+        env:
+          CLOUDFLARE_ANALYTICS_TOKEN: ${{ secrets.CLOUDFLARE_ANALYTICS_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+        run: make visualizacoes
 
       - name: Build para publicação
         env:

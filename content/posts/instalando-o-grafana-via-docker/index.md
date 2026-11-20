@@ -2,7 +2,7 @@
 title: "Instalando o Grafana via Docker"
 slug: "instalando-o-grafana-via-docker"
 date: 2018-06-08T12:08:14-03:00
-lastmod: 2026-10-07T10:02:21-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["docker", "grafana"]
 tags: ["docker", "grafana"]
@@ -10,7 +10,9 @@ description: "Observando as páginas abaixo sobre a documentação da instalaç�
 wp_id: 1678
 ---
 
-**Atualizado em: 7 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** comandos testados com a imagem `grafana/grafana` (Grafana 13.3.1) por HTTP e por HTTPS, usando um certificado gerado como no post [Configurando o Grafana para funcionar sobre HTTPS](/configurando-o-grafana-para-funcionar-sobre-https/). Nenhuma alteração foi necessária: o `chown 472:472` deste post já garante que o Grafana consiga ler os arquivos.
+{{< /alert >}}
 
 Observando as páginas abaixo sobre a documentação da instalação do Grafana via Docker, foi elaborado o seguinte tutorial para instalá-lo.
 
@@ -34,7 +36,7 @@ sudo chown -R 472:472 /docker/grafana/data
 sudo chmod -R 775 /docker/grafana
 ```
 
-2) OPCIONAL: Para usar o grafana com HTTPS, crie o diretório abaixo e em seguida copie a chave pública (EX.: certificado.crt) e privada (EX.: certificado.key) do certificado a ser usado.
+2) OPCIONAL: Para usar o Grafana com HTTPS, crie o diretório abaixo e em seguida copie a chave pública (EX.: certificado.crt) e privada (EX.: certificado.key) do certificado a ser usado.
 
 ```bash
 sudo mkdir -p /docker/grafana/certs
@@ -59,7 +61,7 @@ docker run -d --name=grafana \
  grafana/grafana
 ```
 
-Lembre-se de alterar o nome certificado.key e certificador.crt pelo nomes dos arquivos dos arquivos de certificado que você copiou no passo 2.
+Lembre-se de alterar os nomes certificado.key e certificado.crt pelos nomes dos arquivos de certificado que você copiou no passo 2.
 
 Ou, inicie o conteiner docker do Grafana com HTTP.
 
@@ -93,7 +95,7 @@ docker stop grafana
 docker start grafana
 ```
 
-Mais informações sobre o Grafana e como configurá-lo, acesse os links abaixo.
+Para mais informações sobre o Grafana e sobre como configurá-lo, acesse os links abaixo.
 
 - [http://docs.grafana.org](http://docs.grafana.org)
 - [https://github.com/monitoringartist/Zabbix-Docker-Monitoring](https://github.com/monitoringartist/Zabbix-Docker-Monitoring)

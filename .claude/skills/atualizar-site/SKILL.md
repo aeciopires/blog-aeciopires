@@ -20,7 +20,7 @@ Atualiza os softwares do blog com segurança, **uma coisa por vez**, sempre numa
 2. Para cada item, leia as **notas de versão oficiais** (releases do Hugo e do Blowfish no GitHub, página *Updating* do Blowfish, changelog de cada ferramenta) procurando mudanças incompatíveis e *deprecations*. Cite os links no PR.
 3. Atualize **um item por vez**, numa branch (`atualiza/<item>-<versao>`):
    - ferramenta do mise: editar a versão exata no `mise.toml` → `mise install`;
-   - Blowfish: `make update-theme TAG=vX.Y.Z` (mostra changelog, diff da skill e faixa de Hugo). Se a faixa mudou, ajuste o Hugo **no mesmo PR**. Revise o diff da skill do Blowfish como código (sem hooks/comandos inesperados) e os overrides listados pelo alvo;
+   - Blowfish: `make update-theme TAG=vX.Y.Z` (mostra changelog, diff da skill e faixa de Hugo). Se a faixa mudou, ajuste o Hugo **no mesmo PR**. Revise o diff da skill do Blowfish como código (sem hooks/comandos inesperados) e os overrides listados pelo alvo (inclusive `layouts/partials/recent-articles/cardview.html` da ordenação da home: siga o checklist de `docs/MAINTENANCE.md`, seção 8);
    - imagem do mermaid-cli: `MERMAID_IMAGE` no `Makefile` (e a tabela da política em `docs/MAINTENANCE.md`).
 4. Valide: `make validate`, `hugo --logLevel info` (corrigir *deprecations*), `make validate-diagrams` se mexeu em docs, e `make serve` + `make serve-prod` para revisão visual nos modos claro e escuro e no celular.
 5. Se mudou `Makefile`, scripts ou `mise.toml`: peça ao autor para testar também em macOS (ou Ubuntu, se você estiver no macOS).

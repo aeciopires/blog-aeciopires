@@ -316,11 +316,17 @@ html.dark .tecnologias__titulos h2 {
   text-decoration: none;
 }
 
-.tag-cloud__tag sup {
-  margin-left: 0.1em;
-  font-size: 0.55em;
-  font-weight: 500;
-  color: var(--t9-texto-sec);
+/* contagem só para leitor de tela (o tamanho da tag já mostra a frequência) */
+.tag-cloud__contagem {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 .tag-cloud__tag--alto {
@@ -511,4 +517,50 @@ figure.logo-post img {
   height: 5rem;
   width: auto;
   max-width: 100%;
+}
+
+/* Ordenação dos posts da home (layouts/partials/recent-articles/cardview.html +
+   assets/js/ordenar-home.js): botões em grupo, só um ativo por vez. */
+.ordenar-home {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: -1.5rem 0 1.5rem;
+}
+.ordenar-home[hidden] {
+  display: none;
+}
+.ordenar-home__rotulo {
+  font-size: 0.875rem;
+  color: rgb(var(--color-neutral-500));
+}
+.ordenar-home__botao {
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid rgb(var(--color-primary-500));
+  border-radius: 9999px;
+  color: rgb(var(--color-primary-700));
+  background: transparent;
+  cursor: pointer;
+}
+html.dark .ordenar-home__botao {
+  color: rgb(var(--color-primary-300));
+}
+.ordenar-home__botao:hover {
+  background: rgba(var(--color-primary-500), 0.12);
+}
+.ordenar-home__botao[aria-pressed="true"],
+html.dark .ordenar-home__botao[aria-pressed="true"] {
+  background: rgb(var(--color-primary-600));
+  border-color: rgb(var(--color-primary-600));
+  color: #fff;
+}
+.ordenar-home__botao:focus-visible {
+  outline: 2px solid rgb(var(--color-primary-400));
+  outline-offset: 2px;
+}
+.ordenar-home__item[hidden] {
+  display: none;
 }

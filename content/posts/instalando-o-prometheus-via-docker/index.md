@@ -2,7 +2,7 @@
 title: "Instalando o Prometheus via Docker"
 slug: "instalando-o-prometheus-via-docker"
 date: 2019-11-17T13:17:45-03:00
-lastmod: 2026-10-07T10:28:54-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["docker", "tutoriais"]
 tags: ["docker", "prometheus"]
@@ -10,7 +10,9 @@ description: "O Prometheus é um kit de ferramentas de monitoramento e alerta de
 wp_id: 2198
 ---
 
-**Atualizado em: 7 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** comandos testados com a imagem `prom/prometheus` (Prometheus 3.16.0): o `prometheus.yml` deste post passa no `promtool check config`, e o alvo `172.17.0.1:9090` aparece como `up`. Nenhuma alteração foi necessária.
+{{< /alert >}}
 
 O [Prometheus](https://prometheus.io) é um kit de ferramentas de monitoramento e alerta de sistemas de código aberto inspirado no [BorgMon](https://landing.google.com/sre/sre-book/chapters/practical-alerting/) (o sistema de monitoramento do [Borg](https://ai.google/research/pubs/pub43438), plataforma de gerenciamento de conteiners do Google que inspirou o desenvolvimento do [Kubernetes](https://kubernetes.io/)).
 
@@ -18,9 +20,9 @@ Foi criado originalmente por ex-funcionários do Google que trabalharam na [Soun
 
 O Prometheus é um projeto de código aberto independente e mantido independentemente de qualquer empresa. Para enfatizar isso e esclarecer a estrutura de governança do projeto, o Prometheus ingressou na [Cloud Native Computing Foundation](https://www.cncf.io) em 2016 como o segundo projeto hospedado, depois do Kubernetes.
 
-O código fonte do Prometheus está disponível em: [https://github.com/prometheus/prometheus](https://github.com/prometheus/prometheus)
+O código-fonte do Prometheus está disponível em: [https://github.com/prometheus/prometheus](https://github.com/prometheus/prometheus)
 
-O Prometheus é formado por vários componentes descritos [aqui](https://prometheus.io/docs/introduction/overview/). E o código fonte desses componentes está disponível em: [https://github.com/prometheus](https://github.com/prometheus)
+O Prometheus é formado por vários componentes descritos [aqui](https://prometheus.io/docs/introduction/overview/). E o código-fonte desses componentes está disponível em: [https://github.com/prometheus](https://github.com/prometheus)
 
 A instalação usando o Docker é bem mais simples e rápida.
 
@@ -36,7 +38,7 @@ Também ministro curso de Docker: [/curso-docker](/curso-docker)
 sudo mkdir -p /docker/prometheus
 ```
 
-2) Crie o arquivo de configuração **/docker/prometheus/prometheus.yml** com o seguinte conteúdo. Pode ser que esse conteúdo mude com o tempo e mais informações sobre configuração pode ser obtida em: [https://prometheus.io/docs/prometheus/latest/getting\_started/](https://prometheus.io/docs/prometheus/latest/getting_started/)
+2) Crie o arquivo de configuração **/docker/prometheus/prometheus.yml** com o seguinte conteúdo. Pode ser que esse conteúdo mude com o tempo e mais informações sobre a configuração podem ser obtidas em: [https://prometheus.io/docs/prometheus/latest/getting\_started/](https://prometheus.io/docs/prometheus/latest/getting_started/)
 
 ```yaml
 global:
@@ -95,4 +97,4 @@ docker start prometheus
 docker logs -f prometheus
 ```
 
-Para obter a documentação sobre o uso do Prometheus acesse: [https://prometheus.io/docs/introduction/overview/](https://prometheus.io/docs/introduction/overview/)
+Para obter a documentação sobre o uso do Prometheus, acesse: [https://prometheus.io/docs/introduction/overview/](https://prometheus.io/docs/introduction/overview/)

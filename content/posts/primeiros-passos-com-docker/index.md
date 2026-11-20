@@ -2,13 +2,17 @@
 title: "Primeiros passos com Docker, Kubernetes, Helm e Istio"
 slug: "primeiros-passos-com-docker"
 date: 2016-05-28T21:03:37-03:00
-lastmod: 2020-09-14T22:00:43-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["docker"]
 tags: ["docker", "kubernetes", "helm", "istio", "swarm"]
 description: "Estou começando a dar os primeiros passos com o Docker, Kubernetes, Helm e Istio."
 wp_id: 1010
 ---
+
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** links conferidos. Os que deixaram de funcionar foram trocados por cópias arquivadas no [Internet Archive](https://web.archive.org/) (marcadas como "cópia arquivada") ou pelo endereço atual. Foram removidos os cursos do Katacoda, serviço encerrado, e dois links sem cópia útil.
+{{< /alert >}}
 
 {{< figure src="/wp-content/uploads/2016/05/thumbnail2253.png" alt="Logo do Docker" figureClass="logo-post" nozoom=true >}}
 {{< figure src="kubernetes-logo.svg" alt="Logo do Kubernetes" figureClass="logo-post" nozoom=true >}}
@@ -23,44 +27,43 @@ Quero compartilhar os links que já estudei até aqui e que servem de bússola p
 
 - [Curso Docker](/curso-docker/)
 - [https://www.docker.com/what-docker](https://www.docker.com/what-docker)
-- [https://porter.io/github.com/veggiemonk/awesome-docker](https://porter.io/github.com/veggiemonk/awesome-docker)
+- [https://github.com/veggiemonk/awesome-docker](https://github.com/veggiemonk/awesome-docker)
 - [https://docs.docker.com/engine/installation/](https://docs.docker.com/engine/installation/)
 - [https://docs.docker.com/engine/installation/linux/linux-postinstall/](https://docs.docker.com/engine/installation/linux/linux-postinstall/)
 - [https://docs.docker.com/engine/userguide/](https://docs.docker.com/engine/userguide/)
 - [https://www.tutorialspoint.com/docker/index.htm](https://www.tutorialspoint.com/docker/index.htm)
 - [https://github.com/collabnix/dockerlabs](https://github.com/collabnix/dockerlabs)
-- [https://jstobigdata.com/docker/advanced-docker-tutorial](https://jstobigdata.com/docker/advanced-docker-tutorial)
+- [https://jstobigdata.com/docker/advanced-docker-tutorial](https://web.archive.org/web/20251006113713/https://jstobigdata.com/docker/advanced-docker-tutorial/) (cópia arquivada)
 - [http://tableless.com.br/iniciando-com-o-docker-dicas-praticas-para-comecar-usar-agora-mesmo/](http://tableless.com.br/iniciando-com-o-docker-dicas-praticas-para-comecar-usar-agora-mesmo/)
-- [http://devopslab.com.br/docker-como-instalar-o-docker-criacao-de-imagens-e-container/](http://devopslab.com.br/docker-como-instalar-o-docker-criacao-de-imagens-e-container/)
+- [http://devopslab.com.br/docker-como-instalar-o-docker-criacao-de-imagens-e-container/](https://web.archive.org/web/20210127031934/http://devopslab.com.br/docker-como-instalar-o-docker-criacao-de-imagens-e-container/) (cópia arquivada)
 - [https://docs.docker.com/engine/userguide/networking/default\_network/custom-docker0/](https://docs.docker.com/engine/userguide/networking/default_network/custom-docker0/)
 - [https://medium.com/@renato.groffe/asp-net-core-2-2-implementando-load-balancing-com-nginx-docker-e-docker-compose-d8949aa61b](https://medium.com/@renato.groffe/asp-net-core-2-2-implementando-load-balancing-com-nginx-docker-e-docker-compose-d8949aa61b)
 - [https://medium.com/bhargav-bachina-kubernetes-training/docker-container-management-with-examples-c280906158a8](https://medium.com/bhargav-bachina-kubernetes-training/docker-container-management-with-examples-c280906158a8)
 - [https://blog.docker.com/2019/07/intro-guide-to-dockerfile-best-practices/](https://blog.docker.com/2019/07/intro-guide-to-dockerfile-best-practices/)
 - [https://nickjanetakis.com/blog/docker-tip-85-define-healthcheck-in-your-docker-compose-file](https://nickjanetakis.com/blog/docker-tip-85-define-healthcheck-in-your-docker-compose-file)
 - [https://www.upguard.com/articles/docker-vs.-vmware-how-do-they-stack-up](https://www.upguard.com/articles/docker-vs.-vmware-how-do-they-stack-up)
-- [https://training.docker.com/category/self-paced-online](https://training.docker.com/category/self-paced-online)
 - [http://pointful.github.io/docker-intro/#/](http://pointful.github.io/docker-intro/#/)
 - [http://pt.slideshare.net/Docker/presentations](http://pt.slideshare.net/Docker/presentations)
-- [https://wiki.aquasec.com/plugins/servlet/mobile?contentId=9601103#content/view/9601103](https://wiki.aquasec.com/plugins/servlet/mobile?contentId=9601103#content/view/9601103)
+- [https://wiki.aquasec.com/plugins/servlet/mobile?contentId=9601103#content/view/9601103](https://web.archive.org/web/20211017091934/https://wiki.aquasec.com/plugins/servlet/mobile?contentId=9601103) (cópia arquivada)
 - [https://www.docker.com/blog/intro-guide-to-dockerfile-best-practices/](https://www.docker.com/blog/intro-guide-to-dockerfile-best-practices/)
 
 **Livros sobre Docker:**
 
 - [https://www.dockerbook.com](https://www.dockerbook.com)
 - [http://www.novatec.com.br/livros/usando-docker/](http://www.novatec.com.br/livros/usando-docker/)
-- [http://www.novatec.com.br/livros/aprendendo-docker/](http://www.novatec.com.br/livros/aprendendo-docker/)
+- [http://www.novatec.com.br/livros/aprendendo-docker/](https://web.archive.org/web/20261011091942/https://novatec.com.br/livros/aprendendo-docker/) (cópia arquivada)
 - [http://www.novatec.com.br/livros/primeiros-passos-docker/](http://www.novatec.com.br/livros/primeiros-passos-docker/)
 - [https://www.packtpub.com/catalogsearch/result/?q=docker](https://www.packtpub.com/catalogsearch/result/?q=docker)
 - [https://www.safaribooksonline.com/search/?query=docker](https://www.safaribooksonline.com/search/?query=docker)
 
 **Comandos Docker:**
 
-- [https://jstobigdata.com/docker-compose-cheatsheet](https://jstobigdata.com/docker-compose-cheatsheet)
+- [https://jstobigdata.com/docker-compose-cheatsheet](https://web.archive.org/web/20260117092329/https://jstobigdata.com/docker-compose-cheatsheet/) (cópia arquivada)
 - [https://woliveiras.com.br/posts/comandos-mais-utilizados-no-docker/](https://woliveiras.com.br/posts/comandos-mais-utilizados-no-docker/)
 - [https://medium.com/dockerbr/principais-comandos-docker-f9b02e6944cd](https://medium.com/dockerbr/principais-comandos-docker-f9b02e6944cd)
 - [https://gist.github.com/morvanabonin/862a973c330107540f28fab0f26181d8](https://gist.github.com/morvanabonin/862a973c330107540f28fab0f26181d8)
 - [https://stack.desenvolvedor.expert/appendix/docker/comandos.html](https://stack.desenvolvedor.expert/appendix/docker/comandos.html)
-- [https://raccoon.ninja/pt/dev-pt/comandos-basicos-do-docker/](https://raccoon.ninja/pt/dev-pt/comandos-basicos-do-docker/)
+- [https://raccoon.ninja/pt/dev-pt/comandos-basicos-do-docker/](https://web.archive.org/web/20241004060712/https://raccoon.ninja/pt/dev-pt/comandos-basicos-do-docker/) (cópia arquivada)
 
 **Vídeos Container Week 2019:**
 
@@ -76,13 +79,8 @@ Quero compartilhar os links que já estudei até aqui e que servem de bússola p
 - [https://labs.play-with-k8s.com/](https://labs.play-with-k8s.com/)
 - [https://github.com/franela/play-with-docker](https://github.com/franela/play-with-docker)
 - [https://sreeninet.wordpress.com/2016/12/23/docker-in-docker-and-play-with-docker/](https://sreeninet.wordpress.com/2016/12/23/docker-in-docker-and-play-with-docker/)
-- [https://www.katacoda.com/courses/docker](https://www.katacoda.com/courses/docker)
-- [https://www.katacoda.com/courses/kubernetes](https://www.katacoda.com/courses/kubernetes)
-- [https://www.katacoda.com/courses/helm](https://www.katacoda.com/courses/helm)
-- [https://www.katacoda.com/courses/istio](https://www.katacoda.com/courses/istio)
-- [https://www.katacoda.com/courses/servicemesh](https://www.katacoda.com/courses/servicemesh)
 - [https://www.eksworkshop.com/](https://www.eksworkshop.com/)
-- [https://codelabs.developers.google.com/codelabs/k8s-kickstart](https://codelabs.developers.google.com/codelabs/k8s-kickstart)
+- [https://codelabs.developers.google.com/codelabs/k8s-kickstart](https://web.archive.org/web/20200930170038/https://codelabs.developers.google.com/codelabs/k8s-kickstart/) (cópia arquivada)
 
 **Kubernetes:**
 
@@ -98,10 +96,10 @@ Quero compartilhar os links que já estudei até aqui e que servem de bússola p
 - [https://github.com/darkbitio/mkit?utm\_sq=gee50f1zcp](https://github.com/darkbitio/mkit?utm_sq=gee50f1zcp)
 - [https://github.com/cyberark/KubiScan](https://github.com/cyberark/KubiScan)
 - [https://docs.google.com/presentation/d/1GEJLhFaks7MDZLV1TvN2tHqHgesZVP3gQ9wDSMUeADo/mobilepresent#slide=id.g714406e38db71814\_1](https://docs.google.com/presentation/d/1GEJLhFaks7MDZLV1TvN2tHqHgesZVP3gQ9wDSMUeADo/mobilepresent#slide=id.g714406e38db71814_1)
-- [https://www.profissionaisti.com.br/2018/07/o-que-e-o-kubernetes-e-sua-importancia/](https://www.profissionaisti.com.br/2018/07/o-que-e-o-kubernetes-e-sua-importancia/)
-- [https://blog.marcelocavalcante.net/conhecendo-o-kubernetes-clusters-de-containers/](https://blog.marcelocavalcante.net/conhecendo-o-kubernetes-clusters-de-containers/)
+- [https://www.profissionaisti.com.br/2018/07/o-que-e-o-kubernetes-e-sua-importancia/](https://web.archive.org/web/20191112180738/https://www.profissionaisti.com.br/2018/07/o-que-e-o-kubernetes-e-sua-importancia/) (cópia arquivada)
+- [https://blog.marcelocavalcante.net/conhecendo-o-kubernetes-clusters-de-containers/](https://web.archive.org/web/20240618204835/https://blog.marcelocavalcante.net/conhecendo-o-kubernetes-clusters-de-containers/) (cópia arquivada)
 - [https://www.magalix.com/blog/kubernetes-101-concepts-and-why-it-matters](https://www.magalix.com/blog/kubernetes-101-concepts-and-why-it-matters)
-- [http://fabriciosanchez.azurewebsites.net/3/kubernetes-visao-geral/](http://fabriciosanchez.azurewebsites.net/3/kubernetes-visao-geral/)
+- [http://fabriciosanchez.azurewebsites.net/3/kubernetes-visao-geral/](https://web.archive.org/web/20220926100326/http://fabriciosanchez.azurewebsites.net/3/kubernetes-visao-geral/) (cópia arquivada)
 - [https://imasters.com.br/desenvolvimento/tudo-o-que-voce-precisa-saber-sobre-kubernetes-parte-01](https://imasters.com.br/desenvolvimento/tudo-o-que-voce-precisa-saber-sobre-kubernetes-parte-01)
 - [https://imasters.com.br/desenvolvimento/tudo-o-que-voce-precisa-saber-sobre-o-kubernetes-parte-02](https://imasters.com.br/desenvolvimento/tudo-o-que-voce-precisa-saber-sobre-o-kubernetes-parte-02)
 - [70 Best Kubernetes Tutorials](https://www.aquasec.com/wiki/display/containers/70+Best+Kubernetes+Tutorials)
@@ -113,15 +111,15 @@ Quero compartilhar os links que já estudei até aqui e que servem de bússola p
 - [https://www.digitalocean.com/resources/kubernetes/](https://www.digitalocean.com/resources/kubernetes/)
 - Projeto usado como exemplo na Container Week 2019: [https://github.com/badtuxx/k8s-canary-deploy-example](https://github.com/badtuxx/k8s-canary-deploy-example)
 - Docs para instalação do Kubernetes: [https://kubernetes.io/docs/tasks/tools/install-kubectl/](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-- [https://samratpriyadarshi.com/kubernetes-tutorial-series-kubernetes-architecture-installation/](https://samratpriyadarshi.com/kubernetes-tutorial-series-kubernetes-architecture-installation/)
-- [https://samratpriyadarshi.com/kubernetes-tutorial-series-kubernetes-objects-pods-deployments-services/](https://samratpriyadarshi.com/kubernetes-tutorial-series-kubernetes-objects-pods-deployments-services/)
-- [https://samratpriyadarshi.com/kubernetes-tutorial-series-storage-in-kubernetes/](https://samratpriyadarshi.com/kubernetes-tutorial-series-storage-in-kubernetes/)
-- [https://samratpriyadarshi.com/kubernetes-tutorial-series-resource-allocation-for-containers/](https://samratpriyadarshi.com/kubernetes-tutorial-series-resource-allocation-for-containers/)
-- [https://hectorvido.dev/kubernetes/basico](https://hectorvido.dev/kubernetes/basico)
+- [https://samratpriyadarshi.com/kubernetes-tutorial-series-kubernetes-architecture-installation/](https://web.archive.org/web/20191117193323/https://samratpriyadarshi.com/kubernetes-tutorial-series-kubernetes-architecture-installation/) (cópia arquivada)
+- [https://samratpriyadarshi.com/kubernetes-tutorial-series-kubernetes-objects-pods-deployments-services/](https://web.archive.org/web/20191215085927/https://samratpriyadarshi.com/kubernetes-tutorial-series-kubernetes-objects-pods-deployments-services/) (cópia arquivada)
+- [https://samratpriyadarshi.com/kubernetes-tutorial-series-storage-in-kubernetes/](https://web.archive.org/web/20200812041633/https://samratpriyadarshi.com/kubernetes-tutorial-series-storage-in-kubernetes/) (cópia arquivada)
+- [https://samratpriyadarshi.com/kubernetes-tutorial-series-resource-allocation-for-containers/](https://web.archive.org/web/20191117211633/https://samratpriyadarshi.com/kubernetes-tutorial-series-resource-allocation-for-containers/) (cópia arquivada)
+- [https://hectorvido.dev/kubernetes/basico](https://web.archive.org/web/20241004181307/https://hectorvido.dev/kubernetes/basico) (cópia arquivada)
 - [https://dev.to/azure/learn-kubernetes-with-this-5-part-series-29km](https://dev.to/azure/learn-kubernetes-with-this-5-part-series-29km)
 - [https://medium.com/faun/35-advanced-tutorials-to-learn-kubernetes-dae5695b1f18](https://medium.com/faun/35-advanced-tutorials-to-learn-kubernetes-dae5695b1f18)
 - [https://medium.com/better-programming/yet-another-kubernetes-k8s-guide-52377a72ce65](https://medium.com/better-programming/yet-another-kubernetes-k8s-guide-52377a72ce65)
-- [https://techbeacon.com/devops/one-year-using-kubernetes-production-lessons-learned?amp](https://techbeacon.com/devops/one-year-using-kubernetes-production-lessons-learned?amp)
+- [https://techbeacon.com/devops/one-year-using-kubernetes-production-lessons-learned?amp](https://web.archive.org/web/20240228213048/https://techbeacon.com/devops/one-year-using-kubernetes-production-lessons-learned?amp) (cópia arquivada)
 - [https://k8s.af/](https://k8s.af/)
 - [https://learnk8s.io/production-best-practices](https://learnk8s.io/production-best-practices)
 - [https://www.hashicorp.com/blog/injecting-vault-secrets-into-kubernetes-pods-via-a-sidecar/](https://www.hashicorp.com/blog/injecting-vault-secrets-into-kubernetes-pods-via-a-sidecar/)
@@ -180,10 +178,9 @@ Quero compartilhar os links que já estudei até aqui e que servem de bússola p
 - [https://www.tutorialspoint.com/kubernetes/kubernetes\_kubectl\_commands.htm](https://www.tutorialspoint.com/kubernetes/kubernetes_kubectl_commands.htm)
 - [https://kubernetes.io/docs/reference/kubectl/cheatsheet/](https://kubernetes.io/docs/reference/kubectl/cheatsheet/)
 - [https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands)
-- [https://architecturecoding.com/series/kubernetes-series.html](https://architecturecoding.com/series/kubernetes-series.html)
-- [https://linuxacademy.com/site-content/uploads/2019/04/Kubernetes-Cheat-Sheet\_07182019.pdf](https://linuxacademy.com/site-content/uploads/2019/04/Kubernetes-Cheat-Sheet_07182019.pdf)
-- [https://developer.sh/posts/kubernetes-client-tools-overview](https://developer.sh/posts/kubernetes-client-tools-overview)
-- [https://caylent.com/50+-useful-kubernetes-tools-list-part-2](https://caylent.com/50+-useful-kubernetes-tools-list-part-2)
+- [https://architecturecoding.com/series/kubernetes-series.html](https://web.archive.org/web/20200405125337/http://architecturecoding.com:80/series/kubernetes-series.html) (cópia arquivada)
+- [https://linuxacademy.com/site-content/uploads/2019/04/Kubernetes-Cheat-Sheet\_07182019.pdf](https://web.archive.org/web/20201120231057/https://linuxacademy.com/site-content/uploads/2019/04/Kubernetes-Cheat-Sheet_07182019.pdf) (cópia arquivada)
+- [https://developer.sh/posts/kubernetes-client-tools-overview](https://web.archive.org/web/20200926022958/https://developer.sh/posts/kubernetes-client-tools-overview/) (cópia arquivada)
 - [https://medium.com/dev-genius/kubernetes-imperative-commands-every-engineer-should-learn-3b5d8217fa29](https://medium.com/dev-genius/kubernetes-imperative-commands-every-engineer-should-learn-3b5d8217fa29)
 - [https://medium.com/uptime-99/kubernetes-202-making-it-fully-operational-7416e4bb15ab](https://medium.com/uptime-99/kubernetes-202-making-it-fully-operational-7416e4bb15ab)
 - [https://medium.com/swlh/kubernetes-in-a-nutshell-tutorial-for-beginners-caa442dfd6c0](https://medium.com/swlh/kubernetes-in-a-nutshell-tutorial-for-beginners-caa442dfd6c0)
@@ -205,18 +202,18 @@ Quero compartilhar os links que já estudei até aqui e que servem de bússola p
 - Documentação do Helm: [https://helm.sh/docs/](https://helm.sh/docs/)
 - [https://github.com/cdwv/awesome-helm](https://github.com/cdwv/awesome-helm)
 - [https://github.com/deislabs/helm-workshop](https://github.com/deislabs/helm-workshop)
-- [https://spinnaker.io/guides/user/kubernetes-v2/deploy-helm/](https://spinnaker.io/guides/user/kubernetes-v2/deploy-helm/)
+- [https://spinnaker.io/guides/user/kubernetes-v2/deploy-helm/](https://web.archive.org/web/20210514064801/https://spinnaker.io/guides/user/kubernetes-v2/deploy-helm/) (cópia arquivada)
 - [https://github.com/deislabs/helm-workshop](https://github.com/deislabs/helm-workshop)
 - [https://www.digitalocean.com/community/tutorials/an-introduction-to-helm-the-package-manager-for-kubernetes](https://www.digitalocean.com/community/tutorials/an-introduction-to-helm-the-package-manager-for-kubernetes)
 - [https://s3.us.cloud-object-storage.appdomain.cloud/developer/videos/helm-101/static/helm101.pdf](https://s3.us.cloud-object-storage.appdomain.cloud/developer/videos/helm-101/static/helm101.pdf)
-- [https://banzaicloud.com/blog/creating-helm-charts/](https://banzaicloud.com/blog/creating-helm-charts/)
+- [https://banzaicloud.com/blog/creating-helm-charts/](https://web.archive.org/web/20230928170613/https://banzaicloud.com/blog/creating-helm-charts/) (cópia arquivada)
 - [https://medium.com/kubernetes-tutorials/simplifying-app-deployment-in-kubernetes-with-helm-charts-b824a8e8c79b](https://medium.com/kubernetes-tutorials/simplifying-app-deployment-in-kubernetes-with-helm-charts-b824a8e8c79b)
 - [https://github.com/praqma-training/learn-helm](https://github.com/praqma-training/learn-helm)
 - [https://www.baeldung.com/kubernetes-helm](https://www.baeldung.com/kubernetes-helm)
 - [https://www.ibm.com/cloud/architecture/content/course/helm-fundamentals/helm-def](https://www.ibm.com/cloud/architecture/content/course/helm-fundamentals/helm-def)
 - [https://gist.github.com/tuannvm/4e1bcc993f683ee275ed36e67c30ac49](https://gist.github.com/tuannvm/4e1bcc993f683ee275ed36e67c30ac49)
 - [Digital Ocean - Fernando Pimenta - Tutoriais em Português-BR](https://www.linkedin.com/pulse/digitalocean-tutoriais-em-portugu%C3%AAs-fernando-pimenta/)
-- [https://www.spinnaker.io/guides/user/kubernetes-v2/deploy-helm/](https://www.spinnaker.io/guides/user/kubernetes-v2/deploy-helm/)
+- [https://www.spinnaker.io/guides/user/kubernetes-v2/deploy-helm/](https://web.archive.org/web/20210514064801/https://spinnaker.io/guides/user/kubernetes-v2/deploy-helm/) (cópia arquivada)
 - [https://medium.com/swlh/helm-chart-development-guide-bbc525d3b448](https://medium.com/swlh/helm-chart-development-guide-bbc525d3b448)
 - [https://medium.com/analytics-vidhya/multi-namespace-helm-deploy-in-kubernetes-26d1baf1ca5c](https://medium.com/analytics-vidhya/multi-namespace-helm-deploy-in-kubernetes-26d1baf1ca5c)
 - [https://searchitoperations.techtarget.com/tutorial/Use-this-Kubernetes-and-Helm-tutorial-to-simplify-app-deployments?amp=1&\_\_twitter\_impression=true](https://searchitoperations.techtarget.com/tutorial/Use-this-Kubernetes-and-Helm-tutorial-to-simplify-app-deployments?amp=1&__twitter_impression=true)
@@ -234,9 +231,9 @@ Quero compartilhar os links que já estudei até aqui e que servem de bússola p
 - [https://medium.com/swlh/getting-started-with-istio-524628c025](https://medium.com/swlh/getting-started-with-istio-524628c025)
 - [https://github.com/debianmaster/awesome-istio](https://github.com/debianmaster/awesome-istio)
 - [https://medium.com/better-programming/istio-service-mesh-on-multi-cluster-kubernetes-environment-518094cdcdc4](https://medium.com/better-programming/istio-service-mesh-on-multi-cluster-kubernetes-environment-518094cdcdc4)
-- [https://sensedia.com/api/service-mesh-o-que-e/](https://sensedia.com/api/service-mesh-o-que-e/)
+- [https://sensedia.com/api/service-mesh-o-que-e/](https://web.archive.org/web/20210124121826/https://sensedia.com/api/service-mesh-o-que-e/) (cópia arquivada)
 - [https://www.singlestoneconsulting.com/blog/what-are-service-meshes/](https://www.singlestoneconsulting.com/blog/what-are-service-meshes/)
-- [https://blog.envoyproxy.io/service-mesh-data-plane-vs-control-plane-2774e720f7fc](https://blog.envoyproxy.io/service-mesh-data-plane-vs-control-plane-2774e720f7fc)
+- [https://blog.envoyproxy.io/service-mesh-data-plane-vs-control-plane-2774e720f7fc](https://web.archive.org/web/20190603132747/https://blog.envoyproxy.io/service-mesh-data-plane-vs-control-plane-2774e720f7fc) (cópia arquivada)
 - [https://github.com/k8s-dev/awesome-servicemesh](https://github.com/k8s-dev/awesome-servicemesh)
 - [https://github.com/festum/awesome-servicemesh](https://github.com/festum/awesome-servicemesh)
 - Manual: [https://istio.io/docs/](https://istio.io/docs/)

@@ -2,15 +2,19 @@
 title: "HashiCorp Vault: Entregando segredos para uma aplicação no Kubernetes"
 slug: "hashicorp-vault-entregando-segredos-para-uma-aplicacao-no-kubernetes"
 date: 2024-11-10T15:40:50-03:00
-lastmod: 2025-02-10T11:08:45-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["cluster", "devops", "docker", "kubernetes", "tutoriais", "vault"]
 tags: ["vault", "kubernetes", "helm", "gcp"]
-description: "Este é o quarto post da série sobre o vault. Você pode ver os posts anteriores clicando nos links a seguir:"
+description: "Este é o quarto post da série sobre o Vault. Você pode ver os posts anteriores clicando nos links a seguir:"
 wp_id: 2972
 ---
 
-Este é o quarto post da série sobre o vault. Você pode ver os posts anteriores clicando nos links a seguir:
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** testado com Vault 2.2.2, chart 0.34.1 e kind (Kubernetes 1.37): as duas aplicações recebem os segredos pelo Vault Agent. Correções: os arquivos dos deployments agora são criados com `<<'EOF'` (sem aspas, o shell apagava `$k` e `$v` do template do Vault Agent); aviso para liberar o namespace da aplicação no injector; imagem `hello-kubernetes` 1.11.0, que inicia com `node server.js` (não traz mais o `npm`).
+{{< /alert >}}
+
+Este é o quarto post da série sobre o Vault. Você pode ver os posts anteriores clicando nos links a seguir:
 
 - [Conhecendo o Hashicorp Vault](/conhecendo-o-hashicorp-vault/)
 - [Instalando o Hashicorp Vault no Kubernetes (GKE) usando o Helm e configurando um bucket GCS para armazenamento](/instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento/)
@@ -28,7 +32,7 @@ Primeiro, vamos criar o path do tipo **kv** no Vault, que é o repositório onde
 
 Acesse o cluster Kubernetes (esse passo será omitido, pois pode ser feito de diferentes formas. Escolha a mesma que usou para acessar o cluster durante a execução do segundo tutorial dessa série).
 
-**Crie um port-forward do pod** `vault-0` para acessar a interface web do vault e inicializá-lo.
+**Crie um port-forward do pod** `vault-0` para acessar a interface web do Vault e inicializá-lo.
 
 ```bash
 kubectl port-forward pod/vault-0 8200:8200 -n vault
@@ -43,18 +47,18 @@ export VAULT_ADDR=http://127.0.0.1:8200
 vault login
 ```
 
-Crie o path **kv** no Vault para agrupar o conjunto de secrets de diferentes aplicações/microsserviços que se relacionam entre si. É nesse path que serão criados subpaths, uma para cada aplicação/microsserviço, para hospedar os segredos.
+Crie o path **kv** no Vault para agrupar o conjunto de secrets de diferentes aplicações/microsserviços que se relacionam entre si. É nesse path que serão criados subpaths, um para cada aplicação/microsserviço, para hospedar os segredos.
 
-**Atenção!!! Mude o nome do path kv de acordo com a sua necessidade.** Se preferir, pode usar a interface web do vault ao invés da linha de comando.
+**Atenção!!! Mude o nome do path kv de acordo com a sua necessidade.** Se preferir, pode usar a interface web do Vault em vez da linha de comando.
 
 ```bash
 PATH_KV_NAME="my-group-secrets"
 vault secrets enable -path=$PATH_KV_NAME --version=2 kv
 ```
 
-Crie alguns segredos para cada aplicação no path recém criado.
+Crie alguns segredos para cada aplicação no path recém-criado.
 
-**Atenção!!! Mude o nome das aplicações, kv, nome de variável e valores de acordo com a sua necessidade.** Se preferir, pode usar a interface web do vault ao invés da linha de comando.
+**Atenção!!! Mude o nome das aplicações, kv, nome de variável e valores de acordo com a sua necessidade.** Se preferir, pode usar a interface web do Vault em vez da linha de comando.
 
 ```bash
 vault kv put $PATH_KV_NAME/my-app-1 \
@@ -114,13 +118,17 @@ EOF
 
 **Atenção!!! Para fins de demonstração, estou usando manifests YAML de forma simples, mas esses arquivos podem ser incorporados no helm chart de cada aplicação com configurações mais complexas, se necessário.**
 
-Execute o seguinte comando para criar as service account no Kubernetes.
+Execute o seguinte comando para criar as service accounts no Kubernetes.
 
 ```bash
 MY_NAMESPACE=my-namespace
 kubectl create namespace $MY_NAMESPACE
 kubectl apply -f sa-my-app-1.yaml -f sa-my-app-2.yaml -n $MY_NAMESPACE
 ```
+
+{{< alert >}}
+**Atenção:** o Vault Agent Injector só injeta o sidecar nos namespaces liberados no `values.yaml` do [post anterior](/instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento/) (`injector.namespaceSelector`, valor de exemplo `change-app-namespace`). Inclua o namespace da aplicação (aqui, `my-namespace`) nessa lista e reaplique o chart com o mesmo `helm upgrade --install` usado na instalação. Sem isso, os pods sobem sem o sidecar e sem os segredos.
+{{< /alert >}}
 
 Agora crie duas roles (uma para cada aplicação) associando a service account com a política `policy-my-group-secrets` para conseguir ler os segredos no path específico.
 
@@ -142,14 +150,14 @@ vault write "auth/kubernetes/role/role-my-app-2" \
 
 ### Etapa 3: Configurando o Sidecar do Vault Agent no Deployment
 
-Para que cada aplicação obtenha os segredos diretamente do Vault, adicione o Vault Agent como um container sidecar no deployment. Os arquivos de deployment completo serão mostrados adiante.
+Para que cada aplicação obtenha os segredos diretamente do Vault, adicione o Vault Agent como um container sidecar no deployment. Os arquivos de deployment completos serão mostrados adiante.
 
 Perceba que na seção de annotations é correlacionada a role criada anteriormente para cada aplicação para conseguir ler os segredos no path específico.
 
 Crie os arquivos de deployment de cada aplicação com os seguintes comandos.
 
 ```bash
-cat <<EOF > deployment-my-app-1.yaml
+cat <<'EOF' > deployment-my-app-1.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -205,12 +213,12 @@ spec:
       serviceAccountName: sa-my-app-1
       containers:
       - name: my-app-1
-        image: paulbouwer/hello-kubernetes:1.10.1
+        image: paulbouwer/hello-kubernetes:1.11.0
         ports:
           - containerPort: 8080
         imagePullPolicy: IfNotPresent
         command: ["sh", "-c"]
-        args: ["source /vault/secrets/config && npm start"]
+        args: ["source /vault/secrets/config && node server.js"]
         resources:
           limits:
             memory: "128Mi"
@@ -229,7 +237,7 @@ EOF
 ```
 
 ```bash
-cat <<EOF > deployment-my-app-2.yaml
+cat <<'EOF' > deployment-my-app-2.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -285,12 +293,12 @@ spec:
       serviceAccountName: sa-my-app-2
       containers:
       - name: my-app-2
-        image: paulbouwer/hello-kubernetes:1.10.1
+        image: paulbouwer/hello-kubernetes:1.11.0
         ports:
           - containerPort: 8080
         imagePullPolicy: IfNotPresent
         command: ["sh", "-c"]
-        args: ["source /vault/secrets/config && npm start"]
+        args: ["source /vault/secrets/config && node server.js"]
         resources:
           limits:
             memory: "128Mi"
@@ -322,11 +330,11 @@ kubectl describe pod/NAME_POD1 -n $MY_NAMESPACE
 kubectl describe pod/NAME_POD2 -n $MY_NAMESPACE
 ```
 
-Se tudo estiver configurado corretamente, dentro de cada conteiner principal será criado o arquivo `/vault/secrets/config` conteúdo todos os segredos cadastrados no path **kv** de cada aplicação no Vault.
+Se tudo estiver configurado corretamente, dentro de cada conteiner principal será criado o arquivo `/vault/secrets/config` contendo todos os segredos cadastrados no path **kv** de cada aplicação no Vault.
 
-Apesar de não aparecer na lista de variáveis de ambiente do container principal, esses segredos são carregado automaticamente com o comando `source /vault/secrets/config` no conteiner principal. Dessa forma, a aplicação conseguirá acessar os segredos corretamente.
+Apesar de não aparecer na lista de variáveis de ambiente do container principal, esses segredos são carregados automaticamente com o comando `source /vault/secrets/config` no conteiner principal. Dessa forma, a aplicação conseguirá acessar os segredos corretamente.
 
-Atenção!!! O Vault precisa estar configurado para injetar o conteineres sidecar no namespace que você está fazendo o deploy das aplicações. Isso é definido no arquivo `values.yaml` da instalação do Vault usando helm chart, conforme mostrado no segundo tutorial desta série: [/instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento/](/instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento/)
+Atenção!!! O Vault precisa estar configurado para injetar os conteineres sidecar no namespace que você está fazendo o deploy das aplicações. Isso é definido no arquivo `values.yaml` da instalação do Vault usando helm chart, conforme mostrado no segundo tutorial desta série: [/instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento/](/instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento/)
 
 ## Conclusão
 

@@ -2,27 +2,29 @@
 title: "Instalando o Locust no Kubernetes para testes de carga"
 slug: "instalando-o-locust-no-kubernetes-para-testes-de-carga"
 date: 2025-04-22T10:34:26-03:00
-lastmod: 2026-10-11T02:15:15-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["cluster", "devops", "docker", "go", "kubernetes", "tutoriais"]
 tags: ["docker", "git", "helm", "kubernetes", "linux"]
-description: "Locust é uma ferramenta de código fonte aberto usada para fazer testes de desempenho/carga no protocolo HTTP e outros."
+description: "Locust é uma ferramenta de código-fonte aberto usada para fazer testes de desempenho/carga no protocolo HTTP e outros."
 wp_id: 3372
 ---
 
-**Atualizado em: 10 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** Locust 2.47.0 com o chart `deliveryhero/locust` 0.35.0, testado num cluster kind (Kubernetes 1.37). Corrigida a opção `--csv` da execução por linha de comando, que gerava arquivos com nome diferente do usado no `kubectl cp`.
+{{< /alert >}}
 
-[Locust](https://locust.io/) é uma ferramenta de código fonte aberto usada para fazer testes de desempenho/carga no protocolo HTTP e outros.
+[Locust](https://locust.io/) é uma ferramenta de código-fonte aberto usada para fazer testes de desempenho/carga no protocolo HTTP e outros.
 
 Os testes do Locust podem ser executados a partir da linha de comando ou usando sua interface web. A taxa de transferência, os tempos de resposta e os erros podem ser visualizados em tempo real e/ou exportados para análise posterior.
 
 O Locust permite a escrita e execução de códigos e bibliotecas Python para a execução dos testes, simulando usuários interagindo com o site.
 
-Um caso de uso no Kubernetes é usar Locust para testar a carga de uma aplicação web (backend ou frontend) para estudar o comportamento e o scaling gerenciados pelo [Horizontal Pod Autoscaling (HPA)](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/), o [Keda](https://keda.sh/) ou [Knative](https://knative.dev/).
+Um caso de uso no Kubernetes é usar o Locust para testar a carga de uma aplicação web (backend ou frontend) para estudar o comportamento e o scaling gerenciados pelo [Horizontal Pod Autoscaling (HPA)](https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/), o [Keda](https://keda.sh/) ou [Knative](https://knative.dev/).
 
 ## Requisitos
 
-1. Neste tutorial, usaremos o [Kind](https://kind.sigs.k8s.io/) para simular um cluster Kubernetes rodando localmente. Se você tiver acesso a cluster on-premisse ou gerenciado na cloud pelo EKS, GKE, AKS, DKS ou outro, pode ignorar o uso do kind.
+1. Neste tutorial, usaremos o [Kind](https://kind.sigs.k8s.io/) para simular um cluster Kubernetes rodando localmente. Se você tiver acesso a um cluster on-premises ou gerenciado na cloud pelo EKS, GKE, AKS, DKS ou outro, pode ignorar o uso do kind.
 1. Também será necessário o uso do [Docker](https://www.docker.com/), [`kubectl`](https://kubernetes.io/docs/reference/kubectl/introduction/), [git](https://git-scm.com/) e [`helm`](https://helm.sh/). Esses softwares podem ser instalados seguindo o tutorial disponível em: [https://github.com/aeciopires/adsoft/blob/master/REQUIREMENTS.md](https://github.com/aeciopires/adsoft/blob/master/REQUIREMENTS.md)
 
 ## Instalando uma aplicação de teste
@@ -132,7 +134,7 @@ kubectl -n $MYNAMESPACE create configmap my-loadtest-locustfile --from-file /tmp
 
 ```
 
-No mesmo path do script `main.py`, existe as libs, podendo ser alteradas em caso de necessidade. No exemplo que temos, basta aplicar o seguinte comando seguinte para criar outro `configmap` referente as libs.
+No mesmo path do script `main.py`, existem as libs, que podem ser alteradas em caso de necessidade. No exemplo que temos, basta aplicar o seguinte comando para criar outro `configmap` referente às libs.
 
 ```bash
 kubectl -n $MYNAMESPACE create configmap my-loadtest-lib --from-file /tmp/helm-charts/stable/locust/locustfiles/example/lib/
@@ -145,16 +147,16 @@ kubectl get configmap -n $MYNAMESPACE
 
 ```
 
-Por padrão, o helm chart vem com o arquivo `/tmp/helm-charts/stable/locust/values.yaml` configurado para fazer uso da imagem Docker `locustio/locust` na versão `2.32.2`, caso seja necessário alterar, é possível visualizar outras versões dessa imagem disponível em [https://hub.docker.com/r/locustio/locust/tags](https://hub.docker.com/r/locustio/locust/tags).
+Por padrão, o helm chart vem com o arquivo `/tmp/helm-charts/stable/locust/values.yaml` configurado para fazer uso da imagem Docker `locustio/locust` na versão `2.32.2`. Caso seja necessário alterar, é possível visualizar outras versões dessa imagem disponíveis em [https://hub.docker.com/r/locustio/locust/tags](https://hub.docker.com/r/locustio/locust/tags).
 
 > Como neste caso, eu só preciso alterar alguns poucos valores, vou ignorar o uso do arquivo `values.yaml` e configurar algumas coisas usando o parâmetro `--set` do helm.
 >
-> O paramêtro `--set worker.replicas` determina quantos pods work do locust serão instanciados no teste. Neste caso, estarei usando 10. Isso afeta diretamente nos resultados dos testes. Cada worker tende a usar 1 CPU inteira. Poucos workers pode dar a impressão que sua aplicação é lenta ou não aguenta uma carga alta de requisições, mas na verdade pode ser o Locust não conseguindo fazer mais requisições paralelas. Por isso é importante aumentar esse valor para descobrir o limite real de requisições simultâneas que a aplicação suporta.
+> O parâmetro `--set worker.replicas` determina quantos pods worker do Locust serão instanciados no teste. Neste caso, estarei usando 10. Isso afeta diretamente os resultados dos testes. Cada worker tende a usar 1 CPU inteira. Poucos workers podem dar a impressão que sua aplicação é lenta ou não aguenta uma carga alta de requisições, mas na verdade pode ser o Locust não conseguindo fazer mais requisições paralelas. Por isso é importante aumentar esse valor para descobrir o limite real de requisições simultâneas que a aplicação suporta.
 
-Com os configmap criados no cluster, execute o seguinte comando para instalar o locust:
+Com os configmaps criados no cluster, execute o seguinte comando para instalar o Locust:
 
 ```text
-LOCUST_VERSION="2.46.7"
+LOCUST_VERSION="2.47.0"
 CHART_VERSION="0.35.0"
 
 helm -n $MYNAMESPACE upgrade --install locust deliveryhero/locust \
@@ -178,7 +180,7 @@ kubectl -n $MYNAMESPACE port-forward service/locust 8089:8089
 
 E acessado no browser por meio da URL: [http://127.0.0.1:8089](http://127.0.0.1:8089)
 
-Abaixo estão algumas imagens com o resultado dos testes com o Locust
+Abaixo estão algumas imagens com o resultado dos testes com o Locust:
 
 **Imagem 1 – Gráficos de desempenho no Locust**
 
@@ -231,7 +233,7 @@ No topo da tela aparecem os dados globais do teste:
 
 ## Alterações no script do Locust
 
-Se precisar fazer ajustes no script... após os ajustes, remova o configmap `my-loadtest-locustfile`
+Se precisar fazer ajustes no script, após os ajustes remova o configmap `my-loadtest-locustfile`
 
 ```bash
 kubectl -n $MYNAMESPACE delete configmap my-loadtest-locustfile
@@ -254,7 +256,7 @@ kubectl rollout restart deployment/locust-master -n $MYNAMESPACE
 
 ```
 
-Exemplo da interface web do locust, exibindo os resultados após os testes
+Exemplo da interface web do Locust, exibindo os resultados após os testes
 
 ## Removendo os configmaps
 
@@ -265,7 +267,7 @@ kubectl -n $MYNAMESPACE delete configmap my-loadtest-lib my-loadtest-locustfile
 
 ```
 
-## Removendo o locust
+## Removendo o Locust
 
 Execute o seguinte comando:
 
@@ -276,10 +278,10 @@ helm -n $MYNAMESPACE uninstall locust
 
 ## Locust por linha de comando
 
-Para executar o Locust por terminal é necessário estar conectado no cluster que contém o Locust aplicado, como descrito no passo anterior. Assim, acessar o pod locust-master executando os passos a seguir.
+Para executar o Locust pelo terminal, é necessário estar conectado ao cluster em que o Locust foi instalado, como descrito nos passos anteriores. Em seguida, acesse o pod locust-master executando os passos a seguir.
 
 ```bash
-NAMESPACE="CHANGE HERE"
+MYNAMESPACE="CHANGE HERE"
 
 # Descobrir o nome do pod locust-master
 kubectl get pod -n $MYNAMESPACE -l component=master
@@ -291,7 +293,7 @@ kubectl exec -it pod/$POD_NAME -n $MYNAMESPACE -- bash
 
 ```
 
-Dentro do pod, o Locust permite setar os seguintes parâmetros para execução:
+Dentro do pod, o Locust permite definir os seguintes parâmetros para execução:
 
 | Parâmetros | Descrição |
 |---|---|
@@ -306,11 +308,11 @@ Dentro do pod, o Locust permite setar os seguintes parâmetros para execução:
 Exemplo:
 
 ```text
-locust -f main.py --headless -u 800 -r 800 -t 5m --html report.html --csv dados.csv --host http://kube-pires.test.svc.cluster.local
+locust -f main.py --headless -u 800 -r 800 -t 5m --html report.html --csv dados --host http://kube-pires.test.svc.cluster.local
 
 ```
 
-Para exportar o relatório dados.csv gerado pelo teste executado, em outro terminal execute o comando:
+Para exportar os relatórios gerados pelo teste (`dados_stats.csv` e `report.html`), execute os comandos abaixo em outro terminal:
 
 ```text
 POD_NAME="CHANGE HERE"

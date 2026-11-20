@@ -34,7 +34,8 @@ fi
 echo
 echo "== Overrides do projeto para revisar contra o tema novo"
 echo "  layouts/tags/terms.html (baseado em _default/terms.html do tema)"
-git -C themes/blowfish diff --stat "$ANTIGA..$TAG" -- layouts/_default/terms.html layouts/partials/home/background.html layouts/partials/footer.html config/_default || true
+echo "  layouts/partials/recent-articles/cardview.html (ordenação da home; ver docs/MAINTENANCE.md, seção 8)"
+git -C themes/blowfish diff --stat "$ANTIGA..$TAG" -- layouts/_default/terms.html layouts/partials/home/background.html layouts/partials/footer.html layouts/partials/recent-articles/ layouts/partials/article-link/card.html config/_default || true
 echo
 bash scripts/skill-sync.sh
 make validate

@@ -2,7 +2,7 @@
 title: "Usando o Argo CD para implementar a abordagem GitOps nos clusters Kubernetes"
 slug: "usando-o-argo-cd-para-implementar-a-abordagem-gitops-nos-clusters-kubernetes"
 date: 2021-09-04T21:42:42-03:00
-lastmod: 2026-10-11T02:38:21-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["cluster", "devops", "docker", "git", "gitops", "kubernetes", "tutoriais"]
 tags: ["argocd", "docker", "git", "kubernetes", "linux"]
@@ -10,13 +10,15 @@ description: "GitOps é uma estrutura operacional que utiliza as melhores práti
 wp_id: 2653
 ---
 
-**Atualizado em: 10 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** Argo CD 3.6.2 (manifesto `stable` e CLI), testado em dois clusters kind (Kubernetes 1.37 e 1.36): guestbook, sync, rollback, políticas de sync, deploy do chart Helm no outro cluster e self-heal. O repositório de exemplo do autor não existe mais; a guestbook agora vem do repositório oficial `argoproj/argocd-example-apps` e o chart kube-pires do GitLab (`gitlab.com/aeciopires/kube-pires`, diretório `helm-chart`). Incluída dica para registrar um cluster kind no Argo CD.
+{{< /alert >}}
 
 ## **Sobre o GitOps**
 
-**GitOps** é uma estrutura operacional que utiliza as melhores práticas da cultura DevOps durante o ciclo de vida das aplicações, tais como: controle de versão, colaboração, conformidade e ferramentas de integração, entrega e deploy contínuo (CI/CD), e as aplica à automação da infraestrutura. Fonte: [Gitlab](https://about.gitlab.com/topics/gitops/).
+**GitOps** é uma estrutura operacional que utiliza as melhores práticas da cultura DevOps durante o ciclo de vida das aplicações, tais como: controle de versão, colaboração, conformidade e ferramentas de integração, entrega e deploy contínuo (CI/CD), e as aplica à automação da infraestrutura. Fonte: [GitLab](https://about.gitlab.com/topics/gitops/).
 
-Imagine o seguinte cenário: você tem várias alterações a serem aplicadas em diferentes aplicações sendo executadas em diferentes clusters [Kubernetes](https://kubernetes.io/), distribuídos em mais de um _cloud provider_ e/ou no ambiente _on-premisse_. Para fazer isso, você pode executar de forma manual ou desenvolver um ou mais pipelines. De qualquer forma, neste cenário existe uma grande complexidade e o esforço técnico de um time de operação, além do risco envolvido quando for necessário fazer rollback. Outra preocupação é evitar as divergências entre o que está aplicado no cluster Kubernetes e o que está versionado no [git](https://git-scm.com/).
+Imagine o seguinte cenário: você tem várias alterações a serem aplicadas em diferentes aplicações sendo executadas em diferentes clusters [Kubernetes](https://kubernetes.io/), distribuídos em mais de um _cloud provider_ e/ou no ambiente _on-premises_. Para fazer isso, você pode executar de forma manual ou desenvolver um ou mais pipelines. De qualquer forma, neste cenário existe uma grande complexidade e o esforço técnico de um time de operação, além do risco envolvido quando for necessário fazer rollback. Outra preocupação é evitar as divergências entre o que está aplicado no cluster Kubernetes e o que está versionado no [git](https://git-scm.com/).
 
 Para ajudar na execução de atividades semelhantes a essa, a abordagem GitOps trata a infraestrutura como código tendo as informações versionadas em um ou mais repositórios git, tratando-os como fonte da verdade e faz uso de ferramentas para aplicar continuamente as mudanças a partir de um ponto central.
 
@@ -57,11 +59,11 @@ Se você ainda não sabe o que é Docker, Kubernetes ou mesmo o Git, recomendo a
 
 ## **Sobre o Argo CD**
 
-[Argo CD](https://argoproj.github.io/argo-cd/), é uma ferramenta declarativa que usa a abordagem GitOps para implantar aplicações no Kubernetes.
+[Argo CD](https://argoproj.github.io/argo-cd/) é uma ferramenta declarativa que usa a abordagem GitOps para implantar aplicações no Kubernetes.
 
-Achei o Argo CD bem fácil de instalar e configurar. Além disso, ele pode ser usado para gerenciar várias aplicações em diferentes clusters Kubernetes a partir de um único ponto. Ele pode se conectar a repositórios git públicos e privados, é gratuito, tem o código fonte aberto, é um projeto [incubado pela CNCF](https://landscape.cncf.io/?project=incubating&selected=argo), possui uma interface web de visualização e gerenciamento dos recursos, mas também pode ser configurado via linha de comando.
+Achei o Argo CD bem fácil de instalar e configurar. Além disso, ele pode ser usado para gerenciar várias aplicações em diferentes clusters Kubernetes a partir de um único ponto. Ele pode se conectar a repositórios git públicos e privados, é gratuito, tem o código-fonte aberto, é um projeto [incubado pela CNCF](https://landscape.cncf.io/?project=incubating&selected=argo), possui uma interface web de visualização e gerenciamento dos recursos, mas também pode ser configurado via linha de comando.
 
-Para saber mais informações sobre o Argo CD acesse os links que estão nas referências, no fim deste tutorial.
+Para saber mais informações sobre o Argo CD, acesse os links que estão nas referências, no fim deste tutorial.
 
 Neste tutorial você aprenderá a instalar o Argo CD no Kubernetes. Em seguida, você configurará o Argo CD para extrair arquivos de configuração das aplicações a partir de um repositório público no GitHub e verá o Argo CD aplicando as mudanças no Kubernetes.
 
@@ -73,7 +75,7 @@ Para a execução deste tutorial, partirei da premissa que você está usando al
 - [helm](https://helm.sh/docs/intro/install/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 
-Além disso, você precisa ter acesso a 1 ou 2 clusters Kubernetes (sejam eles no ambiente on-premisse, cloud ([EKS](https://aws.amazon.com/eks/), [GKE](https://cloud.google.com/kubernetes-engine) ou [AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) ou ainda, usando [minikube](https://minikube.sigs.k8s.io/docs/start/), [kind](https://kind.sigs.k8s.io/docs/user/quick-start/), [k0s](https://k0sproject.io/), [microk8s](https://microk8s.io/) ou [k3s](https://k3s.io/)).
+Além disso, você precisa ter acesso a 1 ou 2 clusters Kubernetes (sejam eles no ambiente on-premises, cloud ([EKS](https://aws.amazon.com/eks/), [GKE](https://cloud.google.com/kubernetes-engine) ou [AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) ou ainda, usando [minikube](https://minikube.sigs.k8s.io/docs/start/), [kind](https://kind.sigs.k8s.io/docs/user/quick-start/), [k0s](https://k0sproject.io/), [microk8s](https://microk8s.io/) ou [k3s](https://k3s.io/)).
 
 ## **Instalando o Argo CD**
 
@@ -88,7 +90,7 @@ kubectl apply -n argocd --server-side --force-conflicts \
 
 > **Atenção:**
 >
-> Segundo a [documentação oficial](https://argo-cd.readthedocs.io/en/stable/getting_started/), as opções `--server-side --force-conflicts` são necessárias porque alguns CRDs do Argo CD (como o ApplicationSet) excedem o limite de 262KB da anotação usada pelo `kubectl apply` no modo client-side. A documentação também recomenda usar uma versão fixa (exemplo: `v3.5.4`) em vez da branch `stable` em ambientes de produção.
+> Segundo a [documentação oficial](https://argo-cd.readthedocs.io/en/stable/getting_started/), as opções `--server-side --force-conflicts` são necessárias porque alguns CRDs do Argo CD (como o ApplicationSet) excedem o limite de 262KB da anotação usada pelo `kubectl apply` no modo client-side. A documentação também recomenda usar uma versão fixa (exemplo: `v3.6.2`) em vez da branch `stable` em ambientes de produção.
 >
 > Os manifestos de instalação incluem recursos ClusterRoleBinding que fazem referência ao namespace **argocd**. Se você estiver instalando o Argo CD em um namespace diferente, certifique-se de atualizar a referência do namespace.
 
@@ -102,7 +104,7 @@ Port-Forward:
 kubectl -n argocd port-forward svc/argocd-server -n argocd 8443:443
 ```
 
-Isso criará um encaminhamento da aplicação que executa no cluster Kubernetes na porta 443/TCP para a porta 8443/TCP do host local. Dessa forma, você pode abrir um navegador no endereço: [https://localhost:8443](https://localhost:8443). Se você fechar o terminal ou der CRTL+C, o port-forward será encerrado e você perderá o acesso.
+Isso criará um encaminhamento da aplicação que executa no cluster Kubernetes na porta 443/TCP para a porta 8443/TCP do host local. Dessa forma, você pode abrir um navegador no endereço: [https://localhost:8443](https://localhost:8443). Se você fechar o terminal ou der CTRL+C, o port-forward será encerrado e você perderá o acesso.
 
 > **Atenção**:
 >
@@ -116,7 +118,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 Após fazer o login no Argo CD, altere a senha no seguinte endereço: [https://localhost:8443/user-info?changePassword=true](https://localhost:8443/user-info?changePassword=true)
 
-Após mudar a senha na interface web, você pode remover a secret **argocd-initial-admin-secret**, que contém a senha inicial com o seguinte comando:
+Após mudar a senha na interface web, você pode remover a secret **argocd-initial-admin-secret**, que contém a senha inicial, com o seguinte comando:
 
 ```bash
 kubectl -n argocd delete secret argocd-initial-admin-secret
@@ -126,7 +128,7 @@ kubectl -n argocd delete secret argocd-initial-admin-secret
 
 O Argo CD também pode ser gerenciado pela linha de comando. Para isso, execute os seguintes comandos para instalar o binário:
 
-> Na página [https://argo-cd.readthedocs.io/en/stable/cli\_installation/](https://argo-cd.readthedocs.io/en/stable/cli_installation/) existe diferentes forma de instalar o CLI do ArgoCD, mas neste tutorial optarei por instalar usando o comando [mise](https://mise.jdx.dev/) como gerenciar de pacotes.
+> Na página [https://argo-cd.readthedocs.io/en/stable/cli\_installation/](https://argo-cd.readthedocs.io/en/stable/cli_installation/) existem diferentes formas de instalar a CLI do Argo CD, mas neste tutorial optarei por instalar usando o [mise](https://mise.jdx.dev/) como gerenciador de pacotes.
 >
 > **Instalando o mise**
 >
@@ -139,7 +141,7 @@ O Argo CD também pode ser gerenciado pela linha de comando. Para isso, execute 
 **Instalando o ArgoCD usando o mise**
 
 ```bash
-mise use -g argocd@3.5.4 # Instala o argocd e define a versão global do argocd-cli a ser utilizada, se não for especificada uma versão diferente no diretório corrente
+mise use -g argocd@3.6.2 # Instala o argocd e define a versão global do argocd-cli a ser utilizada, se não for especificada uma versão diferente no diretório corrente
 
 argocd version --client
 ```
@@ -160,19 +162,19 @@ argocd login localhost:8443
 
 > **Atenção:**
 >
-> As configurações do Argo CD também pode ser declaradas em arquivos YAML e versionadas no Git conforme apresentado neste tutorial: [https://medium.com/devopsturkiye/self-managed-argo-cd-app-of-everything-a226eb100cf0](https://medium.com/devopsturkiye/self-managed-argo-cd-app-of-everything-a226eb100cf0) e nesta página da documentação: [https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup)
+> As configurações do Argo CD também podem ser declaradas em arquivos YAML e versionadas no Git conforme apresentado neste tutorial: [https://medium.com/devopsturkiye/self-managed-argo-cd-app-of-everything-a226eb100cf0](https://medium.com/devopsturkiye/self-managed-argo-cd-app-of-everything-a226eb100cf0) e nesta página da documentação: [https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup](https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup)
 
 ## Implantando uma aplicação ( _deploy_)
 
-O repositório [https://github.com/argoproj/argocd-example-apps](https://github.com/argoproj/argocd-example-apps) possui vários exemplos de aplicações que podem ser implantadas usando o Argo CD. Eu fiz um clone desse repositório em: [https://github.com/aeciopires/argocd-example-apps](https://github.com/aeciopires/argocd-example-apps)
+O repositório [https://github.com/argoproj/argocd-example-apps](https://github.com/argoproj/argocd-example-apps) possui vários exemplos de aplicações que podem ser implantadas usando o Argo CD. Para acompanhar as alterações via GitOps mais adiante, faça um _fork_ dos repositórios usados neste tutorial na sua conta e use a URL do seu _fork_ nos comandos.
 
-Implante a aplicação **guestbook** no mesmo cluster do Argo CD, no namespace **myapp** a partir do código que está em [https://github.com/aeciopires/argocd-example-apps](https://github.com/aeciopires/argocd-example-apps), mais precisamente no diretório **guestbook**:
+Implante a aplicação **guestbook** no mesmo cluster do Argo CD, no namespace **myapp** a partir do código que está em [https://github.com/argoproj/argocd-example-apps](https://github.com/argoproj/argocd-example-apps), mais precisamente no diretório **guestbook**:
 
 ```bash
 kubectl create namespace myapp
 
 argocd app create guestbook \
---repo https://github.com/aeciopires/argocd-example-apps.git \
+--repo https://github.com/argoproj/argocd-example-apps.git \
 --path guestbook \
 --dest-server https://kubernetes.default.svc \
 --dest-namespace myapp
@@ -180,7 +182,7 @@ argocd app create guestbook \
 
 > **Atenção:**
 >
-> O endereço **https://kubernetes.default.svc** corresponde a identificação padrão do cluster Kubernetes no qual está implantado o Argo CD. Esse nome sempre é atribuído durante a instalação e você pode obter na interface web do Argo CD em: [https://localhost:8443/settings/clusters](https://localhost:8443/settings/clusters)  
+> O endereço **https://kubernetes.default.svc** corresponde à identificação padrão do cluster Kubernetes no qual está implantado o Argo CD. Esse nome sempre é atribuído durante a instalação e você pode obtê-lo na interface web do Argo CD em: [https://localhost:8443/settings/clusters](https://localhost:8443/settings/clusters)  
 
 Na interface web, você pode visualizar as aplicações criadas no Argo CD a partir do seguinte endereço [https://localhost:8443/applications](https://localhost:8443/applications). No caso da aplicação **guestbook**, o status e outras configurações estarão disponíveis a partir do endereço: [https://localhost:8443/applications/guestbook](https://localhost:8443/applications/guestbook).
 
@@ -224,7 +226,7 @@ Sincronize novamente a aplicação.
 argocd app sync guestbook
 ```
 
-Observe o histório de mudanças da aplicação:
+Observe o histórico de mudanças da aplicação:
 
 ```bash
 argocd app history guestbook
@@ -244,7 +246,7 @@ Observe que foi necessário sincronizar manualmente as alterações no Argo CD p
 argocd app set guestbook --sync-policy automated
 ```
 
-Se precisa desabilitar a sincronização automática, execute o seguinte comando:
+Se precisar desabilitar a sincronização automática, execute o seguinte comando:
 
 ```bash
 argocd app set guestbook --sync-policy none
@@ -266,9 +268,9 @@ argocd app resources guestbook
 
 > **Atenção:**
 >
-> Argo CD não tem opinião sobre como os segredos devem ser gerenciados, por exemplo usando helm secrets + sops. Há muitas maneiras de fazer isso e não há uma solução única para todos os casos. Alguns tutoriais dão algumas alternativas e estes são citados nas Referências na seção **Argo CD + Sops + Helm Secrets**.
+> O Argo CD não tem opinião sobre como os segredos devem ser gerenciados, por exemplo usando helm secrets + sops. Há muitas maneiras de fazer isso e não há uma solução única para todos os casos. Alguns tutoriais dão algumas alternativas e estes são citados nas Referências na seção **Argo CD + Sops + Helm Secrets**.
 >
-> Eu criei uma imagem Docker customizada do Argo CD para dar suporte ao sops + helm secrets + helm plugin e adicionei instruções sobre como usar o AWS KMS junto com o sops e criar um secret no Kubernetes relacionada ao arquivo de credenciais de acesso da AWS. Se tiver interesse, acesse este repositório: [https://github.com/aeciopires/custom-argocd](https://github.com/aeciopires/custom-argocd)
+> Eu criei uma imagem Docker customizada do Argo CD para dar suporte ao sops + helm secrets + helm plugin e adicionei instruções sobre como usar o AWS KMS junto com o sops e criar uma secret no Kubernetes relacionada ao arquivo de credenciais de acesso da AWS. Se tiver interesse, acesse este repositório: [https://github.com/aeciopires/custom-argocd](https://github.com/aeciopires/custom-argocd)
 
 Como falei, o Argo CD pode gerenciar muitos clusters a partir de um único ponto. Para testar isso, adicione outro cluster com o seguinte comando:
 
@@ -278,20 +280,31 @@ kubectl config get-contexts -o name
 argocd cluster add CONTEXT_NAME
 ```
 
+{{< alert icon="circle-info" >}}
+**Se o outro cluster for do kind:** o kubeconfig padrão do kind aponta para `127.0.0.1`, que o Argo CD (rodando dentro do primeiro cluster) não alcança. Gere um kubeconfig com o IP do control-plane na rede Docker do kind e use-o no `cluster add`:
+
+```bash
+IP=$(docker inspect -f '{{(index .NetworkSettings.Networks "kind").IPAddress}}' NOME-DO-CLUSTER-control-plane)
+kind get kubeconfig --internal --name NOME-DO-CLUSTER | sed "s#https://NOME-DO-CLUSTER-control-plane:6443#https://$IP:6443#" > kubeconfig-kind
+argocd cluster add kind-NOME-DO-CLUSTER --kubeconfig kubeconfig-kind
+```
+
+{{< /alert >}}
+
 > **Atenção**:
 >
-> Altere CONTEXT\_NAME pelo nome do cluster que você já tem acesso.
+> Altere CONTEXT\_NAME pelo nome do cluster ao qual você já tem acesso.
 
 Visualize a lista de clusters cadastrados no Argo CD no seguinte endereço: [https://localhost:8443/settings/clusters](https://localhost:8443/settings/clusters)
 
-Implante a aplicação **aecio** no outro cluster, no namespace **aecions** a partir do código que está em [https://github.com/aeciopires/argocd-example-apps](https://github.com/aeciopires/argocd-example-apps), mais precisamente no diretório **kube-pires**. :
+Implante a aplicação **aecio** no outro cluster, no namespace **aecions** a partir do código que está em [https://gitlab.com/aeciopires/kube-pires](https://gitlab.com/aeciopires/kube-pires), mais precisamente no diretório **helm-chart**:
 
 ```bash
 CLUSTER_URL=CHANGE_HERE
 
 argocd app create aecio \
---repo https://github.com/aeciopires/argocd-example-apps.git \
---path kube-pires \
+--repo https://gitlab.com/aeciopires/kube-pires.git \
+--path helm-chart \
 --release-name aecioapp \
 --values values.yaml \
 --dest-server $CLUSTER_URL \
@@ -302,15 +315,15 @@ argocd app create aecio \
 
 > **Atenção:**
 >
-> Com o uso da opção **--sync-option CreateNamespace=true**, o namespace **aecions** será criado automaticamente se não existir no cluster. Caso contrário o Argo CD faria 5 tentativas (por padrão) para tentar implantar a aplicação sem obter sucesso.
+> Com o uso da opção **--sync-option CreateNamespace=true**, o namespace **aecions** será criado automaticamente se não existir no cluster. Caso contrário, o Argo CD faria 5 tentativas (por padrão) para tentar implantar a aplicação sem obter sucesso.
 >
 > A opção **--sync-policy auto** faz com que a cada alteração enviada ao Git, as mudanças sejam aplicadas imediatamente.
 >
-> **kube-pires** é um helm chart de teste usado para implantar a aplicação **aecioapp** usando os valores definidos no arquivo **kube-pires/values.yaml**.
+> **kube-pires** é um helm chart de teste usado para implantar a aplicação **aecioapp** usando os valores definidos no arquivo **helm-chart/values.yaml**.
 >
-> **CLUSTER\_URL** é o endereço interno do cluster que você pode obter na interface web do Argo CD em: [https://localhost:8443/settings/clusters](https://localhost:8443/settings/clusters)
+> **CLUSTER\_URL** é o endereço interno do cluster que você pode obtê-lo na interface web do Argo CD em: [https://localhost:8443/settings/clusters](https://localhost:8443/settings/clusters)
 >
-> A aplicação **aecioapp** e **aecio** são diferentes. A primeira se refere a uma aplicação helm. A segunda é uma aplicação no Argo CD.  
+> As aplicações **aecioapp** e **aecio** são diferentes. A primeira se refere a uma aplicação helm. A segunda é uma aplicação no Argo CD.  
 Neste caso, a sincronização entre os arquivos do git e o Kubernetes está habilitada para ocorrer de forma automática. Para saber mais sobre os conceitos do Argo CD, acesse a página: [https://argo-cd.readthedocs.io/en/stable/core\_concepts](https://argo-cd.readthedocs.io/en/stable/core_concepts)
 
 Visualize a aplicação na interface web: [https://localhost:8443/applications/aecio](https://localhost:8443/applications/aecio):
@@ -327,13 +340,13 @@ Visualize os recursos implantados da aplicação:
 argocd app resources aecio
 ```
 
-Visualize as possíveis diferenças entre o que está no git e o no Kubernetes:
+Visualize as possíveis diferenças entre o que está no git e o que está no Kubernetes:
 
 ```bash
 argocd app diff aecio
 ```
 
-Mude o número de réplicas no arquivo **kube-pires/values.yaml**. Faça commit e push das alterações no repositório git.
+Mude o número de réplicas no arquivo **helm-chart/values.yaml**. Faça commit e push das alterações no repositório git.
 
 Visualize as mudanças na interface web do Argo CD.
 
@@ -341,16 +354,16 @@ Visualize as mudanças na interface web do Argo CD.
 >
 > Por padrão, o Argo CD não impede que alterações manuais sejam realizadas nos recursos e objetos do Kubernetes, para corrigir um incidente por exemplo. Se isso ocorrer, ele não vai substituir as configurações manuais automaticamente.
 >
-> Você pode vizualizar as diferenças e ajustar o arquivo no git para manter as alterações como código ou substituir as alterações manuais sincronizando sob demanda o código do Git com a aplicação implantada no Kubernetes.
+> Você pode visualizar as diferenças e ajustar o arquivo no git para manter as alterações como código ou substituir as alterações manuais sincronizando sob demanda o código do Git com a aplicação implantada no Kubernetes.
 
-Se você deseja forçar que no Kubernetes execute apenas o que estiver versionado no Git, substituindo imediatamente qualquer alteração manual, então você pode remover a aplicação e criar novamente com os seguintes comandos:
+Se você deseja garantir que o Kubernetes execute apenas o que estiver versionado no Git, substituindo imediatamente qualquer alteração manual, então você pode remover a aplicação e criá-la novamente com os seguintes comandos:
 
 ```bash
 argocd app delete aecio
 
 argocd app create aecio \
---repo https://github.com/aeciopires/argocd-example-apps.git \
---path kube-pires \
+--repo https://gitlab.com/aeciopires/kube-pires.git \
+--path helm-chart \
 --release-name aecioapp \
 --values values.yaml \
 --dest-server CLUSTER_URL \
@@ -366,11 +379,11 @@ Ou melhor ainda, você pode alterar as configurações de uma aplicação existe
 argocd app set aecio --self-heal
 ```
 
-Agora qualquer alteração manual nos recursos dessa aplicação no cluster, será imediatamente substituída pelo o que está definido no Git.
+Agora qualquer alteração manual nos recursos dessa aplicação no cluster será imediatamente substituída pelo que está definido no Git.
 
-Tem muitas opções de sincronização que podem ser consultadas nos links que estão nas referências ao fim do tutorial.
+Há muitas opções de sincronização que podem ser consultadas nos links que estão nas referências ao fim do tutorial.
 
-Mude o **readnessprobe.path** e **livenessprobe.path** no arquivo **kube-pires/values.yaml**. Faça commit e push das alterações no repositório git.
+Mude o **readinessProbe.path** e **livenessProbe.path** no arquivo **helm-chart/values.yaml**. Faça commit e push das alterações no repositório git.
 
 Visualize as mudanças na interface web do Argo CD.
 
@@ -378,7 +391,7 @@ Visualize as mudanças na interface web do Argo CD.
 
 > **Atenção:**
 >
-> o Argo CD passou a dar suporte a múltiplas fontes ( _multiple sources_) em uma mesma aplicação, o que permite usar um helm chart de um repositório e os arquivos de values de outro repositório git. Veja a documentação em _https://argo-cd.readthedocs.io/en/stable/user-guide/multiple\_sources/_ e o meu tutorial [Deploy de aplicações no Kubernetes usando Argo CD com suporte a Helm, Sops e Multiple Sources](/deploy-no-kubernetes-usando-argo-cd-com-suporte-a-helm-sops-e-multiple-sources/).
+> O Argo CD passou a dar suporte a múltiplas fontes ( _multiple sources_) em uma mesma aplicação, o que permite usar um helm chart de um repositório e os arquivos de values de outro repositório git. Veja a documentação em _https://argo-cd.readthedocs.io/en/stable/user-guide/multiple\_sources/_ e o meu tutorial [Deploy de aplicações no Kubernetes usando Argo CD com suporte a Helm, Sops e Multiple Sources](/deploy-no-kubernetes-usando-argo-cd-com-suporte-a-helm-sops-e-multiple-sources/).
 
 Remova as aplicações do Argo CD e dos clusters Kubernetes ( _undeploy_):
 
@@ -407,7 +420,7 @@ O que achou?
 
 Mais informações podem ser obtidas nos links das referências.
 
-Este tutorial mostrou apenas o básico e a parte simples que pode ser feito com o Argo CD. Há muitas funcionalidades e possibilidades que podem ser exploradas e por isso incentivo você a ler e praticar o conhecimento que está publicado nos links das referências. Bons testes e estudos!
+Este tutorial mostrou apenas o básico e a parte simples do que pode ser feito com o Argo CD. Há muitas funcionalidades e possibilidades que podem ser exploradas e por isso incentivo você a ler e praticar o conhecimento que está publicado nos links das referências. Bons testes e estudos!
 
 ## **Referências**
 
@@ -430,9 +443,9 @@ Este tutorial mostrou apenas o básico e a parte simples que pode ser feito com 
 
 > **Atenção:**
 >
-> Argo CD não tem opinião sobre como os segredos devem ser gerenciados, por exemplo usando helm secrets + sops. Há muitas maneiras de fazer isso e não há uma solução única para todos os casos. Os tutoriais a seguir dão algumas alternativas.
+> O Argo CD não tem opinião sobre como os segredos devem ser gerenciados, por exemplo usando helm secrets + sops. Há muitas maneiras de fazer isso e não há uma solução única para todos os casos. Os tutoriais a seguir dão algumas alternativas.
 >
-> Eu criei uma imagem Docker customizada do Argo CD para dar suporte ao sops + helm secrets + helm plugin e adicionei instruções sobre como usar o AWS KMS junto com o sops e criar um secret no Kubernetes relacionada ao arquivo de credenciais de acesso da AWS. Se tiver interesse, acesse este repositório: [https://github.com/aeciopires/custom-argocd](https://github.com/aeciopires/custom-argocd)
+> Eu criei uma imagem Docker customizada do Argo CD para dar suporte ao sops + helm secrets + helm plugin e adicionei instruções sobre como usar o AWS KMS junto com o sops e criar uma secret no Kubernetes relacionada ao arquivo de credenciais de acesso da AWS. Se tiver interesse, acesse este repositório: [https://github.com/aeciopires/custom-argocd](https://github.com/aeciopires/custom-argocd)
 
 - [https://argoproj.github.io/argo-cd/operator-manual/secret-management/](https://argoproj.github.io/argo-cd/operator-manual/secret-management/)
 - [https://faun.pub/handling-kubernetes-secrets-with-argocd-and-sops-650df91de173](https://faun.pub/handling-kubernetes-secrets-with-argocd-and-sops-650df91de173)

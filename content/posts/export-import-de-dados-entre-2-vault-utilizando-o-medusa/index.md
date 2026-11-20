@@ -2,15 +2,19 @@
 title: "Export/Import de dados entre 2 Vault utilizando o Medusa"
 slug: "export-import-de-dados-entre-2-vault-utilizando-o-medusa"
 date: 2024-09-28T03:46:51-03:00
-lastmod: 2025-03-17T08:44:22-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["devops", "gitops", "kubernetes", "tutoriais", "vault"]
 tags: ["docker", "kubernetes", "vault"]
-description: "Este é o terceiro post da série sobre o vault. Você pode ver os posts anteriores clicando nos links a seguir:"
+description: "Este é o terceiro post da série sobre o Vault. Você pode ver os posts anteriores clicando nos links a seguir:"
 wp_id: 2934
 ---
 
-Este é o terceiro post da série sobre o vault. Você pode ver os posts anteriores clicando nos links a seguir:
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** testado com Medusa 0.7.3 (Linux amd64) e Vault 2.2.2: export de um Vault no Kubernetes (kind) e import num segundo Vault, além da seção de usuários e policies. Corrigido o endereço nos comandos do Medusa (os sinais `<` e `>` em volta da URL faziam o comando falhar), corrigida a explicação do limite de versões do KV e incluído o equivalente em linha de comando para criar o path. A partir do Vault 2.1.2, prefira nomes de usuários e policies em minúsculas ([mudanças importantes](https://developer.hashicorp.com/vault/docs/updates/important-changes)).
+{{< /alert >}}
+
+Este é o terceiro post da série sobre o Vault. Você pode ver os posts anteriores clicando nos links a seguir:
 
 - [Conhecendo o Hashicorp Vault](/conhecendo-o-hashicorp-vault/)
 - [Instalando o Hashicorp Vault no Kubernetes (GKE) usando o Helm e configurando um bucket GCS para armazenamento](/instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento/)
@@ -22,11 +26,11 @@ Obrigado [Filipe Maia](https://www.linkedin.com/in/filipebsmaia/), [André Luis 
 
 O **[Medusa](https://github.com/jonasvinther/medusa)** é uma ferramenta projetada para auxiliar na exportação e importação dos dados do Vault. Ela tem a capacidade de exportar e importar todas as credenciais salvas para um único arquivo [JSON](https://www.json.org/json-pt.html) ou [YAML](https://www.redhat.com/pt-br/topics/automation/what-is-yaml).
 
-Para instalar o binário `medusa`, acesse a página de releases [https://github.com/jonasvinther/medusa/releases](https://github.com/jonasvinther/medusa/releases) e baixe o arquivo zip referente ao sistema operacional que está utilizando.
+Para instalar o binário `medusa`, acesse a página de releases [https://github.com/jonasvinther/medusa/releases](https://github.com/jonasvinther/medusa/releases) e baixe o arquivo compactado (`.tar.gz`) referente ao sistema operacional que está utilizando.
 
-> Atenção! Durante a elaboração deste documento foi utilizada a versão 0.7.2 e o sistema operacional MacOS Darwin ARM64
+> Atenção! Durante a elaboração deste documento foi utilizada a versão 0.7.2 e o sistema operacional macOS (Darwin ARM64).
 
-Descompacte o arquivo de download do medusa e acesse o diretório descompactado.
+Descompacte o arquivo de download do Medusa e acesse o diretório descompactado.
 
 Mais informações sobre a execução podem ser obtidas com os comandos:
 
@@ -36,7 +40,7 @@ Mais informações sobre a execução podem ser obtidas com os comandos:
 ./medusa import -h
 ```
 
-Mais instruções e exemplos sobre a execução do medusa estão na página inicial da ferramenta: [https://github.com/jonasvinther/medusa/blob/main/README.md](https://github.com/jonasvinther/medusa/blob/main/README.md)
+Mais instruções e exemplos sobre a execução do Medusa estão na página inicial da ferramenta: [https://github.com/jonasvinther/medusa/blob/main/README.md](https://github.com/jonasvinther/medusa/blob/main/README.md)
 
 ### Export
 
@@ -44,7 +48,7 @@ Abra 2 abas do terminal.
 
 Na **primeira aba do terminal**, acesse o cluster Kubernetes que tem o **Vault de origem** instalado.
 
-Em seguida, crie um port-forward para vault com o seguinte comando:
+Em seguida, crie um port-forward para o Vault com o seguinte comando:
 
 ```bash
  kubectl port-forward svc/vault 8200:8200 -n vault
@@ -54,20 +58,20 @@ Em seguida, crie um port-forward para vault com o seguinte comando:
 Na segunda **aba do terminal**, acesse o diretório em que está o binário `medusa` e exporte os dados usando o seguinte comando:
 
 ```bash
-./medusa export CHANGE_PATH_SECRET --address="<http://127.0.0.1:8200>" --token="CHANGE_HERE" --insecure --format=json > "$HOME/vault_export_$(date +%Y%m%d).json"
+./medusa export CHANGE_PATH_SECRET --address="http://127.0.0.1:8200" --token="CHANGE_HERE" --insecure --format=json > "$HOME/vault_export_$(date +%Y%m%d).json"
 ```
 
 Acesse o arquivo gerado e valide/altere os dados de acordo com a necessidade.
 
 ### Import
 
-> Atenção!!! Certifique-se do path secret ter sido previamente criado no **vault de destino**, no qual está sendo feita a importação das secrets. Isso pode ser criado, conforme as instruções da seção a seguir.
+> Atenção!!! Certifique-se de que o path de secret foi criado previamente no **Vault de destino**, no qual está sendo feita a importação das secrets. Ele pode ser criado conforme as instruções da seção a seguir.
 
 Abra 2 abas do terminal.
 
 Na **primeira aba do terminal**, acesse o cluster Kubernetes que tem o **Vault de destino** instalado.
 
-Em seguida, crie um port-forward para vault com o seguinte comando:
+Em seguida, crie um port-forward para o Vault com o seguinte comando:
 
 ```bash
 kubectl port-forward svc/vault 8200:8200 -n vault
@@ -77,19 +81,19 @@ kubectl port-forward svc/vault 8200:8200 -n vault
 Na segunda **aba do terminal**, acesse o diretório em que está o binário `medusa` e importe os dados usando o seguinte comando:
 
 ```bash
-./medusa import CHANGE_PATH_SECRET "CHANGE_FILE_NAME.json" --address="<http://127.0.0.1:8200>" --token="CHANGE_HERE" --insecure
+./medusa import CHANGE_PATH_SECRET "CHANGE_FILE_NAME.json" --address="http://127.0.0.1:8200" --token="CHANGE_HERE" --insecure
 
 ```
 
-Acesse a interface web do vault na URL: [http://localhost:8200](http://localhost:8200) e valide a criação dos dados.
+Acesse a interface web do Vault na URL: [http://localhost:8200](http://localhost:8200) e valide a criação dos dados.
 
-### Criando o path de secret e ACL, caso não exista no vault antes da importação
+### Criando o path de secret e ACL, caso não exista no Vault antes da importação
 
-Caso o **Vault de destino** que você irá importar as secrets seja uma instalação do zero, provavelmente o path de secret não existirá. Ele pode ser criado com as instruções abaixo.
+Caso o **Vault de destino**, no qual você irá importar as secrets, seja uma instalação do zero, provavelmente o path de secret não existirá. Ele pode ser criado com as instruções abaixo.
 
 Abra 1 aba do terminal e acesse o cluster Kubernetes que tem o **Vault de destino** instalado.
 
-Em seguida, crie um port-forward para vault com o seguinte comando:
+Em seguida, crie um port-forward para o Vault com o seguinte comando:
 
 ```bash
 kubectl port-forward svc/vault 8200:8200 -n vault
@@ -102,11 +106,18 @@ Clique em **Secrets Engines.** Em seguida, clique em **Enable new engine**.
 
 Na seção **Generic**, clique em **KV**.
 
-No campo **Path**, digite o nome do path de secret. No campo **Maximum number of versions**, informe 50. Se deixar o valor 0 ou não informar nada, o vault manterá apenas as 10 primeiras alterações de cada secret cadastrada e automaticamente removerá as demais.
+No campo **Path**, digite o nome do path de secret. No campo **Maximum number of versions**, informe 50. Se deixar o valor 0 ou não informar nada, o Vault manterá apenas as 10 versões mais recentes de cada secret cadastrada e apagará automaticamente as mais antigas ([documentação](https://developer.hashicorp.com/vault/api-docs/secret/kv/kv-v2#max_versions)).
 
-Agora crie uma ACL Policy no vault. Essa ACL deverá ter o nome que você já tem no vault de origem e será usada para definir a permissão de acesso a cada path de secret cadastrada no Vault de destino e que será usada pelas aplicações.
+Se preferir a linha de comando (depois do `vault login` mostrado abaixo), o equivalente é:
 
-Faça login no vault com os seguintes comandos:
+```bash
+vault secrets enable -path=CHANGE_PATH_SECRET -version=2 kv
+vault write CHANGE_PATH_SECRET/config max_versions=50
+```
+
+Agora crie uma ACL Policy no Vault. Essa ACL deverá ter o nome que você já tem no Vault de origem e será usada para definir a permissão de acesso a cada path de secret cadastrado no Vault de destino e que será usada pelas aplicações.
+
+Faça login no Vault com os seguintes comandos:
 
 ```bash
 export VAULT_ADDR=http://127.0.0.1:8200
@@ -127,11 +138,11 @@ EOF
 vault policy write CHANGE_PATH_SECRET vault_acl_policy.hcl
 ```
 
-> Agora você pode voltar a seção **Import** para continuar com a importação dos dados.
+> Agora você pode voltar à seção **Import** para continuar com a importação dos dados.
 
-## Gerenciando usuários e policies no vault
+## Gerenciando usuários e policies no Vault
 
-Os links abaixo ensinam como cadastrar usuários e policies no vault, bem como exportar policies existentes de um vault.
+Os comandos abaixo mostram como cadastrar usuários e policies no Vault.
 
 - [https://developer.hashicorp.com/vault/docs/auth/userpass](https://developer.hashicorp.com/vault/docs/auth/userpass)
 - [https://stackoverflow.com/questions/51003019/how-do-i-set-up-username-password-authentication-with-hashicorp-vault](https://stackoverflow.com/questions/51003019/how-do-i-set-up-username-password-authentication-with-hashicorp-vault)
@@ -152,7 +163,7 @@ vault write auth/userpass/users/CHANGE_USER password=CHANGE_PASSWORD policies=CH
 
 ```
 
-> Atenção!!! Você pode criar um policy diferente para cada usuário informando o nome do mesmo no campo policies do comando anterior ou informar uma policy diferente pré-existente
+> Atenção!!! Você pode criar uma policy diferente para cada usuário informando o nome do mesmo no campo policies do comando anterior ou informar uma policy diferente preexistente.
 
 Crie a ACL Policy com o nome de cada usuário com os seguintes comandos:
 
@@ -170,7 +181,7 @@ vault policy write CHANGE_USER_NAME vault_users_acl_policy.hcl
 
 ```
 
-> Atenção!!! A policy acima dá permissão para os usuários ler, criar, alterar senhas no path de secret criados durante a importação. Mas não dá permissão para remover.
+> Atenção!!! A policy acima permite que os usuários leiam, criem e alterem secrets no path criado durante a importação, mas não permite removê-las.
 
 Se precisar trocar a senha de um usuário existente, use o comando:
 
@@ -179,7 +190,7 @@ vault write auth/userpass/users/CHANGE_USER password=CHANGE_NEW_PASSWORD
 
 ```
 
-Para testar o login com o novo usuário pode ser o login com o seguinte comando.
+Para testar o login com o novo usuário, use o seguinte comando.
 
 ```bash
 vault login -method=userpass username=CHANGE_USER password=CHANGE_PASSWORD

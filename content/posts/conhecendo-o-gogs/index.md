@@ -2,21 +2,23 @@
 title: "Conhecendo o Gogs"
 slug: "conhecendo-o-gogs"
 date: 2018-08-27T17:35:56-03:00
-lastmod: 2026-10-07T10:07:28-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["tutoriais"]
 tags: ["docker", "gogs"]
-description: "O Gogs é um software de código fonte aberto que oferece uma interface web ao gerenciamento de repositórios git similar ao GitHub, GitLab e Bitbucket,…"
+description: "O Gogs é um software de código-fonte aberto que oferece uma interface web para o gerenciamento de repositórios git similar ao GitHub, GitLab e Bitbucket,…"
 wp_id: 1780
 ---
 
-**Atualizado em: 7 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** comandos testados com `gogs/gogs:0.14` (0.14.4) e a imagem `postgres` sem tag fixa, que hoje instala o PostgreSQL 19: instalação pelo navegador, login, criação de repositório e clone. Nenhuma alteração foi necessária.
+{{< /alert >}}
 
-O [Gogs](https://gogs.io/) é um software de código fonte aberto que oferece uma interface web ao gerenciamento de repositórios git similar ao [GitHub](http://github.com), [GitLab](http://gitlab.com) e [Bitbucket](http://www.bitbucket.org), só que muito mais simples e leve que os três anteriores. O impressionante é que um conteiner Docker do Gogs estava consumindo apenas 50 MB de memória RAM. Isso é muito bom quando você desejar hospedar repositórios git sem muita complexidade.
+O [Gogs](https://gogs.io/) é um software de código-fonte aberto que oferece uma interface web para o gerenciamento de repositórios git similar ao [GitHub](http://github.com), [GitLab](http://gitlab.com) e [Bitbucket](http://www.bitbucket.org), só que muito mais simples e leve que os três anteriores. O impressionante é que um conteiner Docker do Gogs estava consumindo apenas 50 MB de memória RAM. Isso é muito bom quando você quiser hospedar repositórios git sem muita complexidade.
 
-Conheci o Gogs em 2018 a partir de um post de [Daniel Requena no Twitter.](https://twitter.com/Daniel_Requena/status/1034067717509316608)
+Conheci o Gogs em 2018 a partir de um post de [Daniel Requena no Twitter](https://twitter.com/Daniel_Requena/status/1034067717509316608).
 
-A documentação do Gogs pode ser encontrada na página [https://gogs.io/getting-started/introduction](https://gogs.io/getting-started/introduction) [.](https://gogs.io/docs)
+A documentação do Gogs pode ser encontrada na página [https://gogs.io/getting-started/introduction](https://gogs.io/getting-started/introduction).
 
 Na página [https://github.com/gogs/gogs/tree/master/docker](https://github.com/gogs/gogs/tree/master/docker) tem um tutorial de como executar o Gogs num conteiner Docker.
 
@@ -58,7 +60,7 @@ docker run -d --name gogs \
 docker logs -f gogs
 ```
 
-4) Acesse o Gogs na URL **http://IP-Servidor**. E preencha as informações para configurá-lo e crie também o usuário e senha de admin. Veja um exemplo na sequência de imagens abaixo.
+4) Acesse o Gogs na URL **http://IP-Servidor** e preencha as informações para configurá-lo e crie também o usuário e senha de admin. Veja um exemplo na sequência de imagens abaixo.
 
 {{< figure src="/wp-content/uploads/2018/08/gogs1.png" alt="gogs1" >}}
 
@@ -66,7 +68,7 @@ docker logs -f gogs
 
 {{< figure src="/wp-content/uploads/2018/08/gogs3.png" alt="gogs3" >}}
 
-5) Depois de configurado, você será redirecionado para página de login conforme mostra a imagem abaixo.
+5) Depois de configurado, você será redirecionado para a página de login conforme mostra a imagem abaixo.
 
 {{< figure src="/wp-content/uploads/2018/08/gogs4.png" alt="gogs4" >}}
 

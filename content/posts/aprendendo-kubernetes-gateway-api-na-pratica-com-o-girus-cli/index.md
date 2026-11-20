@@ -2,7 +2,7 @@
 title: "Aprendendo Kubernetes Gateway API na prática com o girus-cli"
 slug: "aprendendo-kubernetes-gateway-api-na-pratica-com-o-girus-cli"
 date: 2025-11-21T18:49:43-03:00
-lastmod: 2026-10-11T01:43:05-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["cluster", "devops", "docker", "git", "kubernetes", "tutoriais"]
 tags: ["docker", "git", "helm", "kubernetes"]
@@ -10,11 +10,13 @@ description: "Há alguns meses eu comecei a estudar e publiquei o primeiro post 
 wp_id: 3468
 ---
 
-**Atualizado em: 10 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** testado com o girus-cli 0.6.1 (a versão mais recente), inclusive pela interface web: `repo add`, `repo list`, `lab list`, `create cluster`, `create lab -f`, execução de todas as tarefas do laboratório `gateway-api-install` e remoção. O laboratório foi atualizado no [repositório](https://github.com/aeciopires/mylabs-for-girus-cli) para o NGINX Gateway Fabric 2.9.0 (Gateway API v1.7.0), ganhou validação automática em cada tarefa, e o índice do repositório passou a usar o formato que o `girus lab list` desta versão reconhece.
+{{< /alert >}}
 
 Há alguns meses eu comecei a estudar e publiquei o [primeiro post da série sobre o Kubernetes Gateway API](/conhecendo-o-kubernetes-gateway-api/).
 
-Dando continuidade na série, hoje vou compartilhar a parte prática utilizando uma ferramenta fantástica chamada **[girus-cli](https://github.com/badtuxx/girus-cli)**, que permite rodar laboratórios interativos diretamente no terminal. O girus-cli será utilizado para executar os laboratórios que fiz sobre o Gateway API, desde a instalação até o monitoramento com Datadog e Prometheus.
+Dando continuidade à série, hoje vou compartilhar a parte prática utilizando uma ferramenta fantástica chamada **[girus-cli](https://github.com/badtuxx/girus-cli)**, que permite rodar laboratórios interativos diretamente no terminal. O girus-cli será utilizado para executar os laboratórios que fiz sobre o Gateway API, desde a instalação até o monitoramento com Datadog e Prometheus.
 
 ## **O que é o girus-cli?**
 
@@ -41,7 +43,7 @@ Mais informações sobre essa ferramenta podem ser encontradas nos links abaixo:
 
 Antes de continuar, você vai precisar de:
 
-- Um sistema GNU/Linux, MacOS ou [WSL](https://learn.microsoft.com/pt-br/windows/wsl/install) (no Windows).
+- Um sistema GNU/Linux, macOS ou [WSL](https://learn.microsoft.com/pt-br/windows/wsl/install) (no Windows).
 - **Docker**. Siga as instruções de acordo com o sistema operacional: [https://docs.docker.com/engine/install/](https://docs.docker.com/engine/install/)
 - **kubectl** e **kind**. Siga as instruções: [https://kubernetes.io/docs/tasks/tools/](https://kubernetes.io/docs/tasks/tools/)
 - **Helm**. Siga as instruções: [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/)
@@ -64,9 +66,9 @@ girus version
 
 ## **Obtendo os Laboratórios de Gateway API**
 
-Criei um repositório git [https://github.com/aeciopires/mylabs-for-girus-cli](https://github.com/aeciopires/mylabs-for-girus-cli) contendo alguns laboratórios práticos sobre os seguinte tópicos:
+Criei um repositório git [https://github.com/aeciopires/mylabs-for-girus-cli](https://github.com/aeciopires/mylabs-for-girus-cli) contendo alguns laboratórios práticos sobre os seguintes tópicos:
 
-- Instalação (Nginx Fabric Gateway) _**(Done)**_
+- Instalação (NGINX Gateway Fabric) _**(Done)**_
 - HTTPRoute _**(Done)**_
 - TCPRoute _(ToDo)_
 - UDPRoute _(ToDo)_
@@ -75,7 +77,7 @@ Criei um repositório git [https://github.com/aeciopires/mylabs-for-girus-cli](h
 - GRPCRoute _(ToDo)_
 - GAMMA (Mesh) _**(Done)**_
 
-> Atenção!!! Se você não estiver realizado o login no Github, pode ocorrer de tomar um erro 429 HTTP por atingir o rate limit da API. Mais detalhes sobre este tema estão disponíveis nos links abaixo.
+> Atenção!!! Se você não estiver autenticado no GitHub, pode receber um erro HTTP 429 por atingir o limite de requisições (_rate limit_) da API. Mais detalhes sobre este tema estão disponíveis nos links abaixo.
 
 - [https://docs.github.com/en/rest/rate-limit/rate-limit?apiVersion=2022-11-28](https://docs.github.com/en/rest/rate-limit/rate-limit?apiVersion=2022-11-28)
 - [https://github.blog/changelog/2025-05-08-updated-rate-limits-for-unauthenticated-requests/](https://github.blog/changelog/2025-05-08-updated-rate-limits-for-unauthenticated-requests/)
@@ -98,7 +100,7 @@ Crie um cluster kind para ser utilizado para execução dos labs com o girus-cli
 girus create cluster
 ```
 
-Tem um bug na importação do lab a partir do repo remoto... enquanto eu não resolvo, é necessário clonar o repositório e iniciar cada um manualmente como no exemplo abaixo.
+O comando `girus lab install` da versão 0.6.1 apenas baixa o laboratório para o cache local, sem aplicá-lo no cluster. Por isso, clone o repositório e crie cada laboratório com o `girus create lab -f`, como no exemplo abaixo.
 
 ```bash
 cd /tmp
@@ -110,9 +112,9 @@ Acesse o Girus no navegador para usar o novo laboratório: [http://localhost:800
 
 Localize e execute as instruções dos laboratórios do Gateway API e/ou quaisquer outros que estiverem disponíveis.
 
-O `girus` vai te apresentar o passo a passa em cada laboratório. Leia a instrução, abra outro terminal, execute os comandos solicitados e depois volte para a tela do `girus` e pressione `Enter` para que ele verifique ( **_Verify_**).
+Na interface web, cada laboratório mostra as tarefas de um lado e um terminal do outro. Leia as instruções, execute os comandos solicitados no terminal e use a validação da tarefa para que o Girus confira se ela foi concluída.
 
-Se estiver tudo verde, ele libera o próximo passo!
+Se estiver tudo certo, siga para a próxima tarefa!
 
 ## **Removendo os laboratórios**
 
@@ -126,10 +128,10 @@ girus repo remove gateway-api
 
 ## **Considerações Finais**
 
-Espero que o conhecimento compartilhado nesse post e nos demais dessa série possam lhe ajudar a entender como usar o Gateway API.
+Espero que o conhecimento compartilhado neste post e nos demais desta série possa ajudar você a entender como usar o Gateway API.
 
-Minha jornada está só no início e essa ferramenta evolui muito rápido. Então, isso é apenas uma "gota no oceano". Publicar esses posts é uma forma de aprender melhor, procurar a informação direto na fonte e ajudar outros iniciantes como eu dando um retorno à comunidade sobre o que aprendi e usei de graça a partir do que outras pessoas criaram e compartilharam algo realmente relevante à minha profissão.
+Minha jornada está só no início e essa ferramenta evolui muito rápido. Então, isso é apenas uma "gota no oceano". Publicar esses posts é uma forma de aprender melhor, procurar a informação direto na fonte e ajudar outros iniciantes como eu, dando um retorno à comunidade sobre o que aprendi e usei de graça a partir do que outras pessoas criaram e compartilharam.
 
-Outros laboratórios podem ser publicados no repositório, então fica de olho. Além disso, estou aberto a sugestões de melhoria e contribuições com novos laboratórios.
+Outros laboratórios podem ser publicados no repositório, então fique de olho. Além disso, estou aberto a sugestões de melhoria e contribuições com novos laboratórios.
 
 Até a próxima!

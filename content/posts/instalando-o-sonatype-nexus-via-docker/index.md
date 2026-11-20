@@ -2,7 +2,7 @@
 title: "Instalando o Sonatype Nexus via Docker"
 slug: "instalando-o-sonatype-nexus-via-docker"
 date: 2017-08-15T17:45:45-03:00
-lastmod: 2026-10-07T09:57:39-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["docker", "tutoriais"]
 tags: ["docker", "maven", "nexus"]
@@ -10,15 +10,17 @@ description: "Neste repositório do GitHub tem um tutorial para executar o Sonat
 wp_id: 1482
 ---
 
-{{< figure src="/wp-content/uploads/2017/08/nexus.jpg" alt="nexus" >}}
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** comandos testados com a imagem `sonatype/nexus3` (Nexus 3.98.3 Community Edition): inicialização, log, arquivo `admin.password` e login de administrador. Nenhuma alteração foi necessária.
+{{< /alert >}}
 
-**Atualizado em:7 de outubro de 2026**
+{{< figure src="/wp-content/uploads/2017/08/nexus.jpg" alt="nexus" >}}
 
 Neste [repositório do GitHub](https://github.com/sonatype/docker-nexus3) tem um tutorial para executar o [Sonatype Nexus](https://help.sonatype.com/en/sonatype-nexus-repository.html) (repositório de artefatos gerados pelo [Apache Maven](https://maven.apache.org/)).
 
 > A partir da versão 3.77.0, a edição gratuita do Nexus Repository passou a se chamar **Sonatype Nexus Repository Community Edition**, que tem algumas limitações de uso. Mais detalhes em: [https://help.sonatype.com/en/ce-onboarding.html](https://help.sonatype.com/en/ce-onboarding.html)
 
-Segundo o tutorial, o Nexus é executado usando um conteiner [Docker,](https://www.docker.com/) o que deixa a configuração bem simples e rapidamente você tem o serviço funcionando.
+Segundo o tutorial, o Nexus é executado usando um conteiner [Docker](https://www.docker.com/), o que deixa a configuração bem simples e rapidamente você tem o serviço funcionando.
 
 Se você não sabe o que é Docker, recomendo começar lendo os links desta página. É um longo caminho, mas vale a pena conhecer essa tecnologia.
 
@@ -57,7 +59,7 @@ tail -f /docker/nexus/data/log/nexus.log
 curl http://localhost:8081/
 ```
 
-5) Obtenha a senha inicial do nexus:
+5) Obtenha a senha inicial do Nexus:
 
 ```bash
 sudo cat /docker/nexus/data/admin.password
@@ -77,7 +79,7 @@ docker stop nexus
 docker start nexus
 ```
 
-Mais informações sobre o Nexus e como configurá-lo, acesse os links abaixo.
+Para mais informações sobre o Nexus e sobre como configurá-lo, acesse os links abaixo.
 
 [https://help.sonatype.com/en/sonatype-nexus-repository.html](https://help.sonatype.com/en/sonatype-nexus-repository.html)
 
