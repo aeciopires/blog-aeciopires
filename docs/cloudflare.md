@@ -142,8 +142,12 @@ Conferido contra todas as URLs do build e de `static/wp-content/` (nenhuma casa 
 | R1 | `/feed/`, `/feed`, `/comments/feed/` | `https://blog.aeciopires.com/index.xml` | 301 |
 | R2 | wildcard `https://blog.aeciopires.com/*/feed/` | `https://blog.aeciopires.com/${1}/index.xml` | 301 |
 | R3 | `aeciopires.com` e `www.aeciopires.com` (qualquer caminho) | `https://blog.aeciopires.com` + mesmo caminho | 301 |
+| R4 | `jenkins.aeciopires.com` | `https://aeciopires.github.io/blog-livro-jenkins/` | 301 |
+| R5 | `puppet.aeciopires.com` | `https://aeciopires.github.io/blog-livro-puppet/` | 301 |
 
 ### Domínio raiz e `www` (erro 1016)
+
+**Status:** corrigido pelo autor em 20/11/2026 (conferido: `aeciopires.com` e `www.aeciopires.com/sobre/` → 301 para o blog, mantendo o caminho).
 
 **Sintoma (20/11/2026):** `https://aeciopires.com/` mostrava *Error 1016 — Origin DNS error* (HTTP 530). O blog não era afetado.
 
@@ -151,11 +155,11 @@ Conferido contra todas as URLs do build e de `static/wp-content/` (nenhuma casa 
 
 **Solução:** o domínio raiz e o `www` só redirecionam para o blog (R3):
 
-1. [ ] **DNS → Records:** anotar os registros atuais de `@` e `www` (para voltar atrás). Trocar ambos por `A` → `192.0.2.1`, **Proxied** (nuvem laranja). É um IP reservado para documentação, padrão do Cloudflare para nomes que só existem para redirecionar; o tráfego nunca chega a ele. Não mexer em `MX`, `TXT` (SPF/DKIM/DMARC, `_github-pages-challenge-*`) nem no `blog`.
-2. [ ] **Rules → Redirect Rules → Create rule** (`Domínio raiz para o blog`):
+1. [x] **DNS → Records:** anotar os registros atuais de `@` e `www` (para voltar atrás). Trocar ambos por `A` → `192.0.2.1`, **Proxied** (nuvem laranja). É um IP reservado para documentação, padrão do Cloudflare para nomes que só existem para redirecionar; o tráfego nunca chega a ele. Não mexer em `MX`, `TXT` (SPF/DKIM/DMARC, `_github-pages-challenge-*`) nem no `blog`.
+2. [x] **Rules → Redirect Rules → Create rule** (`Domínio raiz para o blog`):
    - *Custom filter expression*: `(http.host eq "aeciopires.com") or (http.host eq "www.aeciopires.com")`
    - *Then*: **Dynamic**, expressão `concat("https://blog.aeciopires.com", http.request.uri.path)`, código **301**, **Preserve query string** marcado.
-3. [ ] Conferir:
+3. [x] Conferir:
 
    ```bash
    curl -sI https://aeciopires.com/ | grep -iE '^(HTTP|location)'            # 301 → https://blog.aeciopires.com/
@@ -166,7 +170,28 @@ Conferido contra todas as URLs do build e de `static/wp-content/` (nenhuma casa 
 - Sem WAF/headers extras para o domínio raiz: ele só responde 301. O rate limit já inclui `aeciopires.com`.
 - **Volta atrás:** restaurar os registros anotados no passo 1 e desativar a regra.
 
+### Subdomínios dos livros: `jenkins` e `puppet` (R4, R5)
+
+`jenkins.aeciopires.com` e `puppet.aeciopires.com` só redirecionam (301) para os sites dos livros no GitHub Pages
+(`aeciopires.github.io/blog-livro-jenkins/` e `aeciopires.github.io/blog-livro-puppet/`). Não dependem do WordPress nem deste repositório.
+
+**Status:** configurado pelo autor em 20/11/2026 e conferido (301 para os destinos acima, `server: cloudflare`).
+
+- **DNS:** `A` → `192.0.2.1`, **Proxied** (mesmo padrão do domínio raiz). O 301 é respondido na borda do Cloudflare, que nunca consulta o destino do registro; por isso o desligamento da hospedagem antiga não os afeta. **Nunca** deixar esses nomes com nuvem cinza (sem proxy, o redirect não roda) nem apontando para um CNAME de hospedagem que pode deixar de existir (erro 1016).
+- **Regras:** *Redirect Rules* (no lugar das antigas *Page Rules*, que o Cloudflare está descontinuando). Para cada subdomínio:
+  - *Custom filter expression*: `http.host eq "jenkins.aeciopires.com"` (ou `puppet`)
+  - *Then*: **Static**, URL de destino acima, código **301**.
+- **Conferir:**
+
+  ```bash
+  for n in jenkins puppet; do curl -s -o /dev/null -w "$n: %{http_code} -> %{redirect_url}\n" "https://$n.aeciopires.com/"; done
+  ```
+
+- **Mudar o destino** (ex.: livro com domínio próprio): editar só a regra; o DNS fica igual.
+
 ## 5. Headers de segurança (Transform Rules → Response Headers, só `blog.aeciopires.com`)
+
+**Status (20/11/2026):** regra aplicada; CSP já efetiva (`Content-Security-Policy`); securityheaders.com nota **A**. Pendente: HSTS ainda em `max-age=300` (passo 7).
 
 | Header | Valor |
 |---|---|
@@ -245,10 +270,12 @@ O GitHub renova o certificado da origem (~90 dias). Com o proxy ligado, a valida
 
 ## 9. Testes após a virada
 
-- [ ] `curl -sI https://blog.aeciopires.com/` → `server: cloudflare`; 2ª requisição com `cf-cache-status: HIT`.
-- [ ] `/feed/` e `/tag/helm/feed/` → 301 para `index.xml`.
-- [ ] `/wp-login.php` e `POST /` → 403.
-- [ ] `/wp-content/uploads/…` → 200.
-- [ ] `https://aeciopires.com/` e `https://www.aeciopires.com/` → 301 para o blog (R3).
-- [ ] SSL Labs nota A; securityheaders.com nota A (após CSP aplicada).
+- [x] `curl -sI https://blog.aeciopires.com/` → `server: cloudflare`; 2ª requisição com `cf-cache-status: HIT`.
+- [x] `/feed/` e `/tag/helm/feed/` → 301 para `index.xml`.
+- [x] `/wp-login.php` e `POST /` → 403.
+- [x] `/wp-content/uploads/…` → 200.
+- [x] `https://aeciopires.com/` e `https://www.aeciopires.com/` → 301 para o blog (R3).
+- [x] `jenkins.aeciopires.com` e `puppet.aeciopires.com` → 301 para os sites dos livros (R4, R5).
+- [ ] SSL Labs nota A.
+- [x] securityheaders.com nota A (CSP efetiva, 20/11/2026).
 - [ ] Deploy de teste aparece em ~2 min (purge ok); Web Analytics registrando; `origin-cert.yml` verde.
