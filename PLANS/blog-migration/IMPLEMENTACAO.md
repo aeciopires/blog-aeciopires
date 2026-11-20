@@ -11,7 +11,7 @@ Acompanha o [PLAN.md](PLAN.md) (registro histórico, não reescrito). Atualizado
 | 2 — Tema | Feito (local) | T9 aplicado e revisado por capturas (escuro/claro, computador/celular). Aviso MIT preservado no CSS minificado. **Logos:** 21 de 27 oficiais; 6 em texto por diretriz de marca (Docker, AWS, Google Cloud, Gemini, ChatGPT) e macOS sem logo |
 | 3 — Conversão | Feito (local) | `scripts/migracao/migrar.sh` (reproduzível): 81 posts, 5 páginas fixas (sobre, cursos, curso-docker, curso-kubernetes-k8s, contato; revisadas à mão em 20/11/2026), 5 páginas rascunho como redirecionamento, 161 comentários arquivados (sanitizados), 251 mídias, 67 tags com aliases das antigas, 19 categorias. `compare-urls`: 216/216 URLs preservadas; lychee: 0 links internos quebrados; lint: 0 problemas; build sem avisos |
 | 4 — Revisão | **Concluída em 20/11/2026** (autor validou todo o conteúdo: posts, páginas e comentários) | Lista em [revisao-fase-4.md](revisao-fase-4.md). Auditoria WordPress × Hugo (`scripts/migracao/comparar_wordpress.py`) sem pendências. Tags resolvidas: **57 tags** (inclui a nova `fe`); 6 removidas por decisão do autor e 5 que ficaram sem posts após o enxugamento (`alertmanager`, `azure`, `cert-manager`, `fargate`, `ingress-nginx`), todas com `/tag/<nome>/` → `/tags/`. `make validate` OK; PDF externo quebrado com o shortcode `removido` |
-| 5 — Staging | **Em andamento** (desde 20/11/2026) | PR #1 (`aa2ed57`) e PR #2 (`b85b2dd`: hook de segredos, imagens no próprio site, busca) mesclados; deploys `44740864708` e `44746971510` OK em <https://aeciopires.github.io/blog-aeciopires/>; check `validate` exigido no ruleset da `main`; branches temporárias removidas. A virada aconteceu antes do roteiro de testes; ele passa a valer no domínio final (ver Fase 5 abaixo) |
+| 5 — Staging | **Concluída** (20/11/2026) | PR #1 (`aa2ed57`) e PR #2 (`b85b2dd`: hook de segredos, imagens no próprio site, busca) mesclados; deploys `44740864708` e `44746971510` OK em <https://aeciopires.github.io/blog-aeciopires/>; check `validate` exigido no ruleset da `main`; branches temporárias removidas. Roteiro de testes funcionais executado pelo autor no domínio final (20/11/2026) |
 | 6 — Virada de DNS | **Quase concluída** (20/11/2026) | Seções 1 a 5 e 7 de `docs/cloudflare.md` feitas pelo autor. PR #3 (`2754a7c`) mesclado; deploy `44760468192` OK. O HTML no cache do Cloudflare ainda vinha do build com o prefixo `/blog-aeciopires/` (CSS 404) até o *Purge Everything* manual. Conferido: `server: cloudflare`, feeds → 301, `/wp-login.php` e `POST /` → 403, `/wp-content/uploads/` → 200, beacon do Web Analytics, CSP efetiva com nota **A** no securityheaders.com. Erro 1016 do domínio raiz corrigido (R3); `jenkins`/`puppet` migrados para Redirect Rules com `A 192.0.2.1` (R4, R5). Secret `CLOUDFLARE_API_TOKEN` e variable `CLOUDFLARE_ZONE_ID` criados pelo autor (20/11/2026; conferido via API). Hospedagem do WordPress desligada pelo autor (20/11/2026). PR #4 mesclado; deploy `44766555983` com o passo "Limpar cache do Cloudflare" verde (purge automático funcionando). SSL Labs nota **A**. Variables `DOMINIO_ATIVO=true` e `MIGRACAO_CONCLUIDA=true` criadas. HSTS de 1 ano aplicado. Search Console: propriedade de **domínio** `aeciopires.com` com TXT `google-site-verification` criado no Cloudflare (visível no DNS público; aguardando o Google validar). Web Analytics registrando métricas (conferido pelo autor). `origin-cert.yml` verde (run `44773088455`, disparo manual): certificado do GitHub Pages para `blog.aeciopires.com` válido até 18/02/2027 (89 dias). **Pendente:** validar a propriedade no Search Console e enviar o sitemap |
 
 ## Desvios em relação ao plano (e motivo)
@@ -79,19 +79,19 @@ Situação em 20/11/2026. Nada foi commitado: todo o trabalho está na branch `f
 - ~~`make install-hooks`~~; ~~commit e PR #1~~ (`validate` verde na CI); ~~merge na `main`~~; ~~deploy no GitHub Pages~~ (build 39 s + deploy 8 s; páginas, redirecionamentos, RSS, sitemap e busca respondem 200); ~~check `validate` no ruleset da `main`~~ (conferido via API).
 - Fase 0: exportação de analytics dispensada pelo autor; anotação do DNS antigo dispensada (virada concluída); 2FA ativado (20/11/2026).
 
-### Fase 5 — Testes funcionais (agora no domínio final)
+### Fase 5 — Testes funcionais — concluída em 20/11/2026
 
-A virada de DNS aconteceu antes destes testes. Roteiro (autor), agora em <https://blog.aeciopires.com/>:
+A virada de DNS aconteceu antes destes testes; o autor executou o roteiro no domínio final, <https://blog.aeciopires.com/>:
 
-- [ ] Celular (Android/iOS) e computador: home, um post longo, Categorias, Tags, Cursos, Sobre.
-- [ ] Modos claro/escuro (botão e preferência do sistema).
-- [ ] Busca: `kubernetes helm`, `instalacao zabbix`, `kubernets` (`Ctrl K` no computador).
-- [ ] RSS: `/index.xml` num leitor de feeds.
-- [ ] Lighthouse (Chrome DevTools → Lighthouse, mobile): anotar Performance, Accessibility, Best Practices e SEO.
-- [ ] Formulário de Contato (Jotform): enviar uma mensagem de teste e conferir o recebimento.
-- [ ] Botões "Quero fazer o curso" (Docker e Kubernetes) abrem o formulário certo.
-- [ ] giscus: comentar num post como teste, conferir em Discussions → Comentários e apagar.
-- [ ] Redirecionamentos: `/arquivos/`, `/testemunho-de-uma-norte-coreana/`, `/category/zabbix-2/`.
+- [x] Celular (Android/iOS) e computador: home, um post longo, Categorias, Tags, Cursos, Sobre.
+- [x] Modos claro/escuro (botão e preferência do sistema).
+- [x] Busca: `kubernetes helm`, `instalacao zabbix`, `kubernets` (`Ctrl K` no computador).
+- [x] RSS: `/index.xml` num leitor de feeds.
+- [x] Lighthouse (Chrome DevTools → Lighthouse, mobile): anotar Performance, Accessibility, Best Practices e SEO.
+- [x] Formulário de Contato (Jotform): enviar uma mensagem de teste e conferir o recebimento.
+- [x] Botões "Quero fazer o curso" (Docker e Kubernetes) abrem o formulário certo.
+- [x] giscus: comentar num post como teste, conferir em Discussions → Comentários e apagar.
+- [x] Redirecionamentos: `/arquivos/`, `/testemunho-de-uma-norte-coreana/`, `/category/zabbix-2/`.
 
 **Limitação do staging (histórico):** imagens e links internos escritos no corpo dos posts usam caminho absoluto (`/wp-content/...`, `/slug/`) e dão 404 no staging (subpasta `/blog-aeciopires/`). No domínio final (raiz) funcionam; conferir o conteúdo localmente com `make serve-prod`. O `make validate-links` cobre esses caminhos.
 
