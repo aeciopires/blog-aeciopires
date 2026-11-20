@@ -1,0 +1,247 @@
+# Proposta de limpeza das tags (levantamento de 20/11/2026, API pública do WordPress)
+# Antes: 224 tags (116 sem posts publicados, 108 em uso). Depois: 67 tags.
+# Contagens "depois" são o máximo possível: um post com k8s e kubernetes conta uma vez só após a conversão.
+# Aplicado por scripts/normalize-tags na Fase 3; revisado na Fase 4.
+
+unir:   # tag antiga -> tag que fica (a antiga vira alias /tag/<antiga>/ -> /tag/<nova>/)
+  argo-cd: argocd   # 1 post(s)
+  container: containers   # 1 post(s)
+  conteiner: containers   # 3 post(s)
+  continua: ci-cd   # 1 post(s)
+  elastic: elasticsearch   # 2 post(s)
+  fail: failover   # 1 post(s)
+  flux: fluxcd   # 1 post(s)
+  gke: gcp   # 2 post(s)
+  go: golang   # 2 post(s)
+  google-cloud: gcp   # 1 post(s)
+  homelab-automation: homelab   # 1 post(s)
+  homelab-setup: homelab   # 1 post(s)
+  infraascode: iac   # 2 post(s)
+  integracao: ci-cd   # 1 post(s)
+  k8s: kubernetes   # 5 post(s)
+  mesh: service-mesh   # 1 post(s)
+  monitoring: observability   # 1 post(s)
+  novatec: livro   # 2 post(s)
+  over: failover   # 1 post(s)
+  salt: saltstack   # 1 post(s)
+  script: bash   # 3 post(s)
+  shell: bash   # 2 post(s)
+  sonatype: nexus   # 1 post(s)
+  zabbix-br: zabbix   # 1 post(s)
+
+remover_duplicam_categoria:   # já existem como categoria; alias -> /category/<categoria>/
+  - devops   # 35
+  - tutorial   # 18
+  - tutoriais-2   # 2
+
+remover_genericas:   # palavra genérica de 1 post; alias -> /tags/
+  - agent   # 1
+  - internet   # 1
+  - json   # 1
+  - links   # 1
+  - server   # 1
+  - router   # 1
+  - proxy   # 1
+  - network   # 1
+  - cluster   # 1
+  - deploy   # 1
+  - certificado   # 1
+  - outage   # 1
+  - registry   # 1
+  - nat   # 1
+  - tools   # 6
+
+revisar_na_fase_4:   # pessoais/eventos: manter, unir ou remover (decisão do autor)
+  - cidade-viva   # 2
+  - codeac   # 2
+  - medusa   # 1
+  - worldcup   # 1
+  - webapp   # 5
+  - livro   # 3
+
+remover_sem_posts:   # 116 tags sem nenhum post publicado; não são geradas (alias -> /tags/)
+  - aecio-pires
+  - apache
+  - apache2
+  - apostila
+  - artigo
+  - availability
+  - bolt
+  - botoes
+  - cacerts
+  - cache
+  - centos
+  - cms
+  - comandos-remotos
+  - consumo
+  - corosync
+  - csv
+  - curso
+  - customizar-o-ubuntu
+  - debian
+  - desempenho
+  - dica
+  - discovery
+  - drbd
+  - ecd2010
+  - ecd2011
+  - espirito-livre
+  - expotec
+  - faxina
+  - fedora
+  - firewall
+  - free
+  - fwknop
+  - gconftool
+  - gerencia-de-redes
+  - getopts
+  - glassfish
+  - gnulinux
+  - ha
+  - high
+  - ifpb
+  - influxdb
+  - instalacao
+  - instalar
+  - install
+  - iptables
+  - java
+  - jhipster
+  - keystore
+  - latam
+  - latinoware
+  - linus-torvalds
+  - linuxfi
+  - lld
+  - log
+  - master
+  - meeting
+  - meetup
+  - memoria
+  - modulo
+  - ncd
+  - nfs
+  - nms
+  - opensuse
+  - owncloud
+  - p2p
+  - pacemaker
+  - pacote
+  - palestra
+  - pandora-fms
+  - phishing
+  - php-pb
+  - postgres
+  - postgresql
+  - projeto
+  - puppet-br
+  - puppetboard
+  - puppetdb
+  - puppetexplorer
+  - puppetserver
+  - r
+  - rancher
+  - redhat
+  - remastersys
+  - revista
+  - scr
+  - security
+  - seguranca
+  - seguranca-da-informacao
+  - sinaptc
+  - sms
+  - software-livre
+  - spa
+  - ssh-server
+  - ssl
+  - sslforfree
+  - tabnabbing
+  - taiga
+  - tcos
+  - telegraf
+  - ti-verde
+  - tomcat
+  - travar-atualizacao
+  - tuleap
+  - tutoriais-com-as-palavras-chave-argo-cd
+  - ubuntu
+  - ubuntu-12-04
+  - unirede
+  - userparameter
+  - vagrant
+  - vigilancia-da-internet
+  - virtualbox
+  - vulnerabilidade
+  - windows-7
+  - zenoss
+  - zenvia
+  - zimbra
+
+resultado:   # tag: posts (máximo)
+  docker: 44
+  kubernetes: 33
+  linux: 26
+  helm: 21
+  git: 19
+  aws: 9
+  golang: 9
+  zabbix: 9
+  gcp: 8
+  iac: 7
+  argocd: 6
+  bash: 6
+  elasticsearch: 6
+  gitops: 5
+  livro: 5
+  webapp: 5
+  containers: 4
+  grafana: 4
+  terraform: 4
+  vault: 4
+  ci-cd: 3
+  cloud: 3
+  failover: 3
+  homelab: 3
+  istio: 3
+  kibana: 3
+  logstash: 3
+  mysql: 3
+  nexus: 3
+  observability: 3
+  prometheus: 3
+  puppet: 3
+  python: 3
+  saltstack: 3
+  cdk: 2
+  cidade-viva: 2
+  codeac: 2
+  fluxcd: 2
+  jenkins: 2
+  rabbitmq: 2
+  service-mesh: 2
+  swarm: 2
+  alertmanager: 1
+  ansible: 1
+  azure: 1
+  cert-manager: 1
+  cka: 1
+  ecs: 1
+  fargate: 1
+  gitlab: 1
+  gogs: 1
+  graylog: 1
+  ia: 1
+  ingress-nginx: 1
+  k0s: 1
+  kms: 1
+  langchain: 1
+  maven: 1
+  medusa: 1
+  mikrotik: 1
+  portainer: 1
+  redmine: 1
+  sonarqube: 1
+  sops: 1
+  victoriametrics: 1
+  wordpress: 1
+  worldcup: 1
