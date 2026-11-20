@@ -1,9 +1,54 @@
 #!/usr/bin/env bash
 # pre-commit versionado (PLAN.md 6.8). Ativar uma vez: make install-hooks
-# Roda check-tags e lint-md só nos .md alterados no commit.
+# 1) Em todo commit: bloqueia segredos/tokens/chaves privadas (gitleaks), arquivos sensíveis
+#    e o e-mail do autor no conteúdo adicionado.
+# 2) Só se houver .md alterado: check-tags e lint-md nesses arquivos.
+# Falso positivo: ajuste .gitleaks.toml (exceção bem delimitada) ou marque a linha com
+# "gitleaks:allow". "git commit --no-verify" só em último caso (a CI roda make check-secrets).
 set -euo pipefail
 RUN=""
 command -v node >/dev/null 2>&1 || RUN="mise exec --"
+GITLEAKS="gitleaks"
+command -v gitleaks >/dev/null 2>&1 || GITLEAKS="mise exec -- gitleaks"
+
+bloquear() {
+  echo "pre-commit: BLOQUEADO — $1" >&2
+  echo "Remova do commit (git restore --staged <arquivo>) e guarde segredos só em GitHub Secrets." >&2
+  exit 1
+}
+
+# --- 1a) Segredos, tokens e chaves privadas nas mudanças staged ---
+if ! $GITLEAKS git --pre-commit --staged --redact --no-banner --log-level warn .; then
+  bloquear "o gitleaks encontrou possível segredo/token/chave (valor ocultado acima)."
+fi
+
+# --- 1b) Arquivos que nunca devem ser versionados ---
+sensiveis="$(git diff --cached --name-only --diff-filter=ACMR \
+  | grep -Ei '(^|/)\.env(\.[^/]*)?$|\.(pem|key|p12|pfx|jks|keystore|kdbx)$|(^|/)id_(rsa|dsa|ecdsa|ed25519)$|(^|/)credentials(\.json)?$|(^|/)\.npmrc$|(^|/)\.netrc$|\.claude/settings\.local\.json$' \
+  | grep -Ev '(^|/)\.env\.example$' || true)"
+if [ -n "$sensiveis" ]; then
+  bloquear "arquivo sensível no commit:
+$sensiveis"
+fi
+
+# --- 1c) E-mail do autor no conteúdo adicionado (CLAUDE.md: nunca publicar o e-mail) ---
+# Lidos da configuração local do Git, para o e-mail não ficar escrito neste arquivo:
+#   user.email e, opcionalmente, outros: git config --add hooks.emailbloqueado outro@exemplo.com
+emails="$( { git config user.email || true; git config --get-all hooks.emailbloqueado || true; } | sort -u)"
+if [ -n "$emails" ]; then
+  adicionadas="$(git diff --cached -U0 --diff-filter=ACMR --no-color -- . ':(exclude)static/wp-content/**' | grep -E '^\+[^+]' || true)"
+  while IFS= read -r email; do
+    [ -n "$email" ] || continue
+    case "$email" in *users.noreply.github.com) continue ;; esac
+    if printf '%s\n' "$adicionadas" | grep -qiF -- "$email"; then
+      bloquear "o e-mail do autor ($email) aparece nas linhas adicionadas. Use o formulário de contato (Jotform)."
+    fi
+  done <<EOF
+$emails
+EOF
+fi
+
+# --- 2) Markdown alterado: tags e lint ---
 arquivos="$(git diff --cached --name-only --diff-filter=ACM -- '*.md' | grep -v '^themes/' || true)"
 [ -n "$arquivos" ] || exit 0
 conteudo="$(printf '%s\n' "$arquivos" | grep '^content/' || true)"

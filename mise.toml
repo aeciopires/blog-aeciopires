@@ -9,6 +9,7 @@ shellcheck = "0.11.0"               # lint dos scripts (portabilidade)
 oxipng = "10.2.1"                   # otimização de PNG
 node = "26.13.1"                    # LTS mais novo; markdownlint-cli2 e scripts .mjs
 "npm:markdownlint-cli2" = "0.24.1"  # lint de Markdown (make lint-md)
+gitleaks = "8.30.1"                 # segredos e chaves no pre-commit e na CI (make check-secrets)
 
 # lychee: backend github: com build musl no Linux. O binário glibc que o registro padrão
 # escolhe exige glibc >= 2.38 e não roda no Ubuntu 22.04 (glibc 2.35), que é plataforma suportada.

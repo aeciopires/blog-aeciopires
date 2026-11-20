@@ -1,0 +1,23 @@
+# Configuração do gitleaks (segredos, tokens e chaves privadas).
+# Usado no pre-commit (.githooks/pre-commit) e na CI (make check-secrets).
+# Regras: as padrão do gitleaks. Exceções só para falsos positivos conferidos; nunca
+# para um segredo real (se vazou, revogue/rotacione e remova do histórico).
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Código de terceiros e arquivos gerados (não versionados por nós)"
+paths = [
+  '''^themes/''',            # submódulo do Blowfish (exemplos de chave na documentação do tema)
+  '''^public/''',            # saída do build (ignorada pelo Git)
+  '''^resources/''',         # cache do Hugo (ignorado pelo Git)
+  '''^static/wp-content/''', # mídias antigas (binários)
+]
+
+[[allowlists]]
+description = "Exemplos com senha fictícia nos tutoriais (SENHA é placeholder, não segredo)"
+regexTarget = "line"
+regexes = [
+  '''-u elastic:SENHA\b''',
+]
