@@ -2,7 +2,7 @@
 title: "Autoscaling orientado a eventos no Kubernetes usando o Keda"
 slug: "autoscaling-de-aplicacoes-orientado-a-eventos-no-kubernetes-usando-o-keda"
 date: 2025-04-28T11:04:14-03:00
-lastmod: 2026-10-11T01:58:54-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["cluster", "devops", "docker", "git", "gitops", "kubernetes", "prometheus", "tutoriais"]
 tags: ["docker", "git", "helm", "kubernetes", "linux"]
@@ -10,16 +10,20 @@ description: "Keda é um Event Driven Autoscaler baseado em Kubernetes. Com o KE
 wp_id: 3395
 ---
 
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** KEDA 2.21.1 (suporta Kubernetes 1.34 a 1.36), testado num cluster kind 1.36 com o metrics-server 0.9.0: o ScaledObject escalou de 2 para 30 réplicas na janela do cron. O erro de permissão da instalação não ocorre mais nesta versão. Desinstalação na ordem recomendada pela documentação oficial.
+{{< /alert >}}
+
 [Keda](https://keda.sh/) é um _Event Driven Autoscaler_ baseado em [Kubernetes](https://kubernetes.io/). Com o KEDA, você pode controlar o dimensionamento de qualquer pod no Kubernetes com base no número de eventos que precisam ser processados.
 
 Os detalhes sobre o funcionamento do Keda estão na doc: [https://keda.sh/docs/concepts/](https://keda.sh/docs/concepts/)
 
-> Neste tutorial será utilizada a versão 2.17 do Keda compatível com o Kubernetes 1.32. Você pode usar versões diferentes de acordo com a tabela de compatibilidade [https://keda.sh/docs/operate/cluster/#kubernetes-compatibility](https://keda.sh/docs/operate/cluster/#kubernetes-compatibility)
+> Neste tutorial será utilizada a versão 2.21 do Keda compatível com o Kubernetes 1.36. Você pode usar versões diferentes de acordo com a tabela de compatibilidade [https://keda.sh/docs/operate/cluster/#kubernetes-compatibility](https://keda.sh/docs/operate/cluster/#kubernetes-compatibility)
 
 ## Pontos de atenção
 
-1. O Keda tem suporte a vários tipos de addons, também chamados de _scalers_. Ele servem para escalar os pods do deployment/statefulset. Neste tutorial serão considerados: o [Cron](https://keda.sh/docs/2.17/scalers/cron/), [CPU](https://keda.sh/docs/2.17/scalers/cpu/) e [Memory](https://keda.sh/docs/2.17/scalers/memory/) por serem os mais simples de testar. Existem outros scalers disponíveis e você pode escolher o que mais se adequa à arquitetura da aplicação e regra de negócio: [https://keda.sh/docs/scalers/](https://keda.sh/docs/scalers/)
-1. O Keda só consegue gerenciar deployments e statefulset que não contenham `Horizontal Pod Autoscalers (HPA)` associado. Logo, é necessário remover o HPA nativo de cada uma das aplicações a serem gerenciadas pelos scalers do Keda. O próprio Keda irá criar um HPA com configurações diferentes para cada aplicação.
+1. O Keda tem suporte a vários tipos de addons, também chamados de _scalers_. Eles servem para escalar os pods do deployment/statefulset. Neste tutorial serão considerados: o [Cron](https://keda.sh/docs/2.21/scalers/cron/), [CPU](https://keda.sh/docs/2.21/scalers/cpu/) e [Memory](https://keda.sh/docs/2.21/scalers/memory/) por serem os mais simples de testar. Existem outros scalers disponíveis e você pode escolher o que mais se adequa à arquitetura da aplicação e regra de negócio: [https://keda.sh/docs/scalers/](https://keda.sh/docs/scalers/)
+1. O Keda só consegue gerenciar deployments e statefulsets que não tenham um `Horizontal Pod Autoscaler (HPA)` associado. Logo, é necessário remover o HPA nativo de cada uma das aplicações a serem gerenciadas pelos scalers do Keda. O próprio Keda irá criar um HPA com configurações diferentes para cada aplicação.
 
 Exemplo de mensagem de erro ao aplicar uma configuração de scaledObject (do Keda) para uma aplicação que tem o HPA nativo do Kubernetes.
 
@@ -27,7 +31,7 @@ Exemplo de mensagem de erro ao aplicar uma configuração de scaledObject (do Ke
 
 ## Requisitos
 
-1. Neste tutorial, usaremos o [Kind](https://kind.sigs.k8s.io/) para simular um cluster Kubernetes rodando localmente. Se você tiver acesso a cluster on-premisse ou gerenciado na cloud pelo EKS, GKE, AKS, DKS ou outro, pode ignorar o uso do kind.
+1. Neste tutorial, usaremos o [Kind](https://kind.sigs.k8s.io/) para simular um cluster Kubernetes rodando localmente. Se você tiver acesso a um cluster on-premises ou gerenciado na cloud pelo EKS, GKE, AKS, DKS ou outro, pode ignorar o uso do kind.
 1. Também será necessário o uso do [Docker](https://www.docker.com/), [`kubectl`](https://kubernetes.io/docs/reference/kubectl/introduction/), [git](https://git-scm.com/) e [`helm`](https://helm.sh/). Esses softwares podem ser instalados seguindo o tutorial disponível em: [https://github.com/aeciopires/adsoft/blob/master/REQUIREMENTS.md](https://github.com/aeciopires/adsoft/blob/master/REQUIREMENTS.md)
 1. Instale o Locust e a aplicação [kube-pires](https://gitlab.com/aeciopires/kube-pires) conforme mostrado no tutorial: [/instalando-o-locust-no-kubernetes-para-testes-de-carga/](/instalando-o-locust-no-kubernetes-para-testes-de-carga/)
 
@@ -50,7 +54,7 @@ helm upgrade --install --set args={--kubelet-insecure-tls} metrics-server metric
 
 ```
 
-## Instalando o KEDA no cluster kind k8s 1.32
+## Instalando o KEDA no cluster kind k8s 1.36
 
 Adicione o repositório Helm:
 
@@ -77,7 +81,7 @@ Para instalar o `keda`, use o seguinte comando:
 
 ```bash
 # ATTENTION!!! See table compatibility with Kubernetes: <https://keda.sh/docs/operate/cluster/#kubernetes-compatibility>
-export KEDA_VERSION=2.17.0
+export KEDA_VERSION=2.21.1
 
 # Install Keda and CRDs
 helm upgrade --install keda \
@@ -87,6 +91,10 @@ helm upgrade --install keda \
 
 ### Corrigindo problemas na instalação
 
+{{< alert icon="circle-info" >}}
+Este problema ocorria no KEDA 2.17.0. No 2.21.1 a ClusterRole já inclui `clustercloudeventsources` e o erro não aparece; a correção abaixo só é necessária em versões antigas.
+{{< /alert >}}
+
 Se olhar o pod do `keda-operator` e encontrar no log a mensagem:
 
 ```text
@@ -94,12 +102,12 @@ Se olhar o pod do `keda-operator` e encontrar no log a mensagem:
 
 ```
 
-Aplique a correção abaixo conforme citados nos links:
+Aplique a correção abaixo, conforme citado nos links:
 
 - [https://github.com/kedacore/keda/issues/6493](https://github.com/kedacore/keda/issues/6493)
 - [https://github.com/kedacore/charts/pull/714/files](https://github.com/kedacore/charts/pull/714/files)
 
-> Atenção!!! Isso é necessário pois o helm chart mais novo (até esse momento) foi lançado em Dez/2024, mas esse problema só foi corrigido em Jan/2025.
+> Atenção!!! Isso era necessário, pois o helm chart mais novo (até aquele momento) foi lançado em dez/2024, mas esse problema só foi corrigido em jan/2025.
 
 Edite a `ClusterRole` do KEDA:
 
@@ -137,11 +145,11 @@ kubectl delete pod POD_NAME -n keda
 
 ## Crie o cronScaleObject para cada aplicações alvo do teste
 
-Como dito antes, neste tutorial será usado os scalers do tipo Cron, CPU e Memory. Mais detalhes sobre a configuração destes scalers podem ser encontrados nas docs:
+Como dito antes, neste tutorial serão usados os scalers do tipo Cron, CPU e Memory. Mais detalhes sobre a configuração destes scalers podem ser encontrados nas docs:
 
-- [https://keda.sh/docs/2.17/scalers/cron/](https://keda.sh/docs/2.17/scalers/cron/)
-- [https://keda.sh/docs/2.17/scalers/cpu/](https://keda.sh/docs/2.17/scalers/cpu/)
-- [https://keda.sh/docs/2.17/scalers/memory/](https://keda.sh/docs/2.17/scalers/memory/)
+- [https://keda.sh/docs/2.21/scalers/cron/](https://keda.sh/docs/2.21/scalers/cron/)
+- [https://keda.sh/docs/2.21/scalers/cpu/](https://keda.sh/docs/2.21/scalers/cpu/)
+- [https://keda.sh/docs/2.21/scalers/memory/](https://keda.sh/docs/2.21/scalers/memory/)
 
 Foi criado o arquivo `kube-pires-scaledobject.yaml` com o seguinte conteúdo (altere o período de agendamento, número de pods e percentual de uso de CPU e memória de acordo com a necessidade). Para auxiliar na sintaxe de agendamento do cron, você pode usar o site: [https://crontab.guru/](https://crontab.guru/)
 
@@ -155,7 +163,7 @@ metadata:
 spec:
   scaleTargetRef:
     name: kube-pires
-  cooldownPeriod: 2
+  cooldownPeriod: 2 # só tem efeito com minReplicaCount: 0 ou idleReplicaCount definido
   minReplicaCount: 2
   maxReplicaCount: 30
   triggers:
@@ -175,7 +183,7 @@ spec:
       value: "50"
 ```
 
-O keda irá avaliar quando cada um desses eventos ocorrer: o periodo de agendamento, o consumo de CPU e memória. Em cada tipo de ocorrência, os pods serão escalados de acordo com a configuração realizada para cada evento:
+O KEDA irá avaliar quando cada um desses eventos ocorrer: o período de agendamento, o consumo de CPU e memória. Em cada tipo de ocorrência, os pods serão escalados de acordo com a configuração realizada para cada evento:
 
 - 8 pods de forma constante durante todo o período de agendamento;
 - De 2 até 30 pods quando o uso de CPU e/ou memória atingir 50% fora do período de agendamento;
@@ -269,10 +277,14 @@ Fora do período de agendamento, o Keda escalou os pods adequadamente de acordo 
 
 ## Desinstalação
 
-Para desinstalar/remover o Helm Chart do KEDA:
+Para desinstalar/remover o Helm Chart do KEDA, remova antes os ScaledObjects (e ScaledJobs), como recomenda a [documentação oficial](https://keda.sh/docs/2.21/deploy/#uninstalling):
 
 ```bash
+kubectl delete -f kube-pires-scaledobject.yaml -n $MY_NAMESPACE
+
 helm uninstall keda -n keda
+
+kubectl delete namespace keda
 
 ```
 
@@ -285,11 +297,11 @@ helm uninstall keda -n keda
 - [https://keda.sh/docs/concepts/scaling-deployments/](https://keda.sh/docs/concepts/scaling-deployments/)
 - [https://keda.sh/docs/concepts/scaling-jobs/](https://keda.sh/docs/concepts/scaling-jobs/)
 - [https://keda.sh/docs/concepts/authentication/](https://keda.sh/docs/concepts/authentication/)
-- [https://keda.sh/docs/2.17/setupscaler/](https://keda.sh/docs/2.17/setupscaler/)
+- [https://keda.sh/docs/2.21/setupscaler/](https://keda.sh/docs/2.21/setupscaler/)
 - [https://artifacthub.io/packages/helm/kedacore/keda](https://artifacthub.io/packages/helm/kedacore/keda)
-- [https://keda.sh/docs/2.17/deploy/](https://keda.sh/docs/2.17/deploy/)
-- [https://keda.sh/docs/2.17/scalers/cron/](https://keda.sh/docs/2.17/scalers/cron/)
-- [https://keda.sh/docs/2.17/scalers/cpu/](https://keda.sh/docs/2.17/scalers/cpu/)
-- [https://keda.sh/docs/2.17/scalers/memory/](https://keda.sh/docs/2.17/scalers/memory/)
-- [https://keda.sh/docs/2.17/troubleshooting/](https://keda.sh/docs/2.17/troubleshooting/)
+- [https://keda.sh/docs/2.21/deploy/](https://keda.sh/docs/2.21/deploy/)
+- [https://keda.sh/docs/2.21/scalers/cron/](https://keda.sh/docs/2.21/scalers/cron/)
+- [https://keda.sh/docs/2.21/scalers/cpu/](https://keda.sh/docs/2.21/scalers/cpu/)
+- [https://keda.sh/docs/2.21/scalers/memory/](https://keda.sh/docs/2.21/scalers/memory/)
+- [https://keda.sh/docs/2.21/troubleshooting/](https://keda.sh/docs/2.21/troubleshooting/)
 - [https://crontab.guru/](https://crontab.guru/)

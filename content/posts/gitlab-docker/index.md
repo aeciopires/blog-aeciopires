@@ -2,19 +2,21 @@
 title: "Instalando o GitLab via Docker"
 slug: "gitlab-docker"
 date: 2017-08-17T15:55:00-03:00
-lastmod: 2026-10-07T08:21:06-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["docker", "git", "tutoriais"]
 tags: ["containers", "docker", "git", "gitlab"]
-description: "Na página https://docs.gitlab.com/install/docker/ tem várias informações a cerca das imagens Docker oficiais do GitLab (ferramenta web para…"
+description: "Na página https://docs.gitlab.com/install/docker/ tem várias informações acerca das imagens Docker oficiais do GitLab (ferramenta web para…"
 wp_id: 1516
 ---
 
-**Atualizado em: 7 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** comando testado com a imagem `gitlab/gitlab-ce:latest` (GitLab CE 19.6.1): inicialização, mensagem "Thank you for using GitLab Docker Image!" no log, tela de login e senha inicial do root no arquivo `initial_root_password`. Nenhuma alteração foi necessária.
+{{< /alert >}}
 
-Na página [https://docs.gitlab.com/install/docker/](https://docs.gitlab.com/install/docker/) tem várias informações a cerca das imagens [Docker](http://docker.com) oficiais do [GitLab](https://gitlab.com) (ferramenta web para versionamento usando o Git).
+Na página [https://docs.gitlab.com/install/docker/](https://docs.gitlab.com/install/docker/) tem várias informações acerca das imagens [Docker](http://docker.com) oficiais do [GitLab](https://gitlab.com) (ferramenta web para versionamento usando o Git).
 
-Neste tutorial, o Gitlab será executado usando um único conteiner para fornecer todo o ambiente necessário para executá-lo [,](https://www.docker.com/) o que deixa a instalação bem simples e rapidamente você tem o serviço funcionando.
+Neste tutorial, o GitLab será executado usando um único conteiner para fornecer todo o ambiente necessário para executá-lo, o que deixa a instalação bem simples e rapidamente você tem o serviço funcionando.
 
 Segundo a documentação oficial, para uma instalação em um único node, 16 GB de memória RAM é a base recomendada e, em ambientes com pouca memória, o GitLab pode rodar com, pelo menos, 8 GB de memória RAM. A lista completa de requisitos de hardware e software está na página: [https://docs.gitlab.com/install/requirements/](https://docs.gitlab.com/install/requirements/).
 
@@ -65,9 +67,9 @@ O serviço pode demorar até 5 minutos para ser iniciado e configurado da primei
 Thank you for using GitLab Docker Image!
 ```
 
-4) Acesse o GitLab na URL **http://IP-Servidor (com HTTP)**. Será solicitado que crie informe o usuário root e a senha inicial criada durante a instalação.
+4) Acesse o GitLab na URL **http://IP-Servidor (com HTTP)**. Será solicitado que você informe o usuário root e a senha inicial criada durante a instalação.
 
-Para obter a senha inicial do root, informe o seguinte comando:
+Para obter a senha inicial do root, execute o seguinte comando:
 
 ```bash
 docker exec -it gitlab grep 'Password:' /etc/gitlab/initial_root_password
@@ -87,7 +89,7 @@ docker stop gitlab
 docker start gitlab
 ```
 
-Mais informações sobre o GitLab e como configurá-lo com suporte a HTTPS, acesse os links abaixo.
+Para mais informações sobre o GitLab e sobre como configurá-lo com suporte a HTTPS, acesse os links abaixo.
 
 [https://docs.gitlab.com/install/docker/installation](https://docs.gitlab.com/install/docker/installation)
 

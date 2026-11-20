@@ -2,18 +2,22 @@
 title: "Criando JSON mais simples em Shell Script com JO e JJ"
 slug: "criando-json-mais-simples-em-shell-script-com-jo"
 date: 2020-12-14T17:35:46-03:00
-lastmod: 2024-11-19T01:41:33-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 tags: ["linux", "bash"]
 description: "Não sei vocês, mas acho muito chato criar JSON em shell script com o comando jq."
 wp_id: 2469
 ---
 
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** exemplos testados com o jo 1.9 (pacote do Ubuntu 24.04). As saídas mostradas foram ajustadas para a indentação que o jo gera hoje.
+{{< /alert >}}
+
 Não sei vocês, mas acho muito chato criar JSON em **shell script** com o comando **jq**.
 
 Eu trabalhei em algo semelhante esses dias, então investi algumas horas pesquisando e achei o comando **jo** ([https://github.com/jpmens/jo](https://github.com/jpmens/jo))
 
-Tem disponível para ser instalado no Ubuntu, ArchLinux e outras distros GNU/Linux.
+Ele está disponível para instalação no Ubuntu, ArchLinux e outras distros GNU/Linux.
 
 Exemplo de uso:
 
@@ -25,13 +29,13 @@ Resultado:
 
 ```json
 {
-    "name": "jo",
-    "n": 17,
-    "parser": false
+   "name": "jo",
+   "n": 17,
+   "parser": false
 }
 ```
 
-Tente fazer a mesma coisa com o comando jq e compare o tamanho e complexidade da linha de comando...
+Tente fazer a mesma coisa com o comando jq e compare o tamanho e a complexidade da linha de comando...
 
 Outro exemplo mais complexo:
 
@@ -50,7 +54,7 @@ Resultado:
          "x": 10,
          "y": 20
       },
-   "number": 17
+      "number": 17
    },
    "sunday": false
 }

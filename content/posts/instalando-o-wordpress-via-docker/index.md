@@ -2,19 +2,21 @@
 title: "Instalando o Wordpress via Docker"
 slug: "instalando-o-wordpress-via-docker"
 date: 2017-09-21T11:22:11-03:00
-lastmod: 2026-10-07T09:55:03-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["docker", "tutoriais"]
 tags: ["docker", "mysql", "wordpress"]
-description: "Nesta página do Docker Hub tem várias informações a cerca das imagens oficiais do Wordpress no Docker."
+description: "Nesta página do Docker Hub tem várias informações acerca das imagens oficiais do Wordpress no Docker."
 wp_id: 1552
 ---
 
-**Atualizado em: 7 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** comandos testados com `mysql:9.7` e `wordpress:7.1` (WordPress 7.1.5): instalação, backup com `mysqldump` e restauração. Nenhuma alteração foi necessária.
+{{< /alert >}}
 
-Nesta página do [Docker Hub](https://hub.docker.com/_/wordpress) tem várias informações a cerca das imagens oficiais do [Wordpress](https://br.wordpress.com) no Docker.
+Nesta página do [Docker Hub](https://hub.docker.com/_/wordpress) tem várias informações acerca das imagens oficiais do [WordPress](https://br.wordpress.com) no Docker.
 
-Segundo este tutorial, o Wordpress é executado usando um conteiner [Docker,](https://www.docker.com/) o que deixa a instalação bem simples e rapidamente você tem o serviço funcionando.
+Segundo este tutorial, o WordPress é executado usando um conteiner [Docker](https://www.docker.com/), o que deixa a instalação bem simples e rapidamente você tem o serviço funcionando.
 
 Se você não sabe o que é Docker, recomendo começar lendo os links desta página. É um longo caminho, mas vale a pena conhecer essa tecnologia.
 
@@ -22,7 +24,7 @@ Se você não sabe o que é Docker, recomendo começar lendo os links desta pág
 
 Também dou curso de Docker: [/curso-docker](/curso-docker)
 
-Abaixo tem o tutorial customizado para iniciar o conteiner Wordpress e MySQL persistindo os dados.
+Abaixo tem o tutorial customizado para iniciar o conteiner WordPress e MySQL persistindo os dados.
 
 1) Crie o diretório de dados do MySQL.
 
@@ -30,7 +32,7 @@ Abaixo tem o tutorial customizado para iniciar o conteiner Wordpress e MySQL per
 sudo mkdir -p /docker/mysql/wordpress/data
 ```
 
-2) Inicie o conteiner docker do MySQL com o banco de dados para o Wordpress.
+2) Inicie o conteiner docker do MySQL com o banco de dados para o WordPress.
 
 ```bash
 docker run -d --name mysql-wordpress \
@@ -43,7 +45,7 @@ docker run -d --name mysql-wordpress \
  mysql:9.7
 ```
 
-3) Inicie o conteiner docker do Wordpress acessando o banco de dados criado no MySQL.
+3) Inicie o conteiner docker do WordPress acessando o banco de dados criado no MySQL.
 
 ```bash
 docker run -d --name wordpress \
@@ -62,7 +64,7 @@ docker logs wordpress;
 docker logs mysql-wordpress
 ```
 
-5) Acesse o Wordpress na URL **http://IP-Servidor (com HTTP).**
+5) Acesse o WordPress na URL **http://IP-Servidor (com HTTP).**
 
 6) Se quiser parar o conteiner, é só executar o comando abaixo.
 
@@ -78,7 +80,7 @@ docker start mysql-wordpress;
 docker start wordpress
 ```
 
-Mais informações sobre o Wordpress e como configurá-lo, acesse os links abaixo.
+Para mais informações sobre o WordPress e sobre como configurá-lo, acesse os links abaixo.
 
 [https://developer.wordpress.org](https://developer.wordpress.org)
 

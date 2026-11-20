@@ -2,17 +2,19 @@
 title: "Instalando o RabbitMQ via Docker"
 slug: "instalando-o-rabbitmq-via-docker"
 date: 2019-04-18T10:47:14-03:00
-lastmod: 2026-10-11T02:52:09-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["devops", "docker", "tutoriais"]
 tags: ["docker", "rabbitmq"]
-description: "O RabbitMQ é serviço de gerenciamento de filas para recebimento e entrega de mensagens entre aplicações, mesmo que tenham sido desenvolvidas em…"
+description: "O RabbitMQ é um serviço de gerenciamento de filas para recebimento e entrega de mensagens entre aplicações, mesmo que tenham sido desenvolvidas em…"
 wp_id: 2035
 ---
 
-**Atualizado em: 10 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** comandos testados com a imagem `rabbitmq:4-management` (RabbitMQ 4.4.1 e `rabbitmqadmin` 2.35.0): listagens, criação de exchange, fila e binding, usuários e permissões, exportação e importação de definições, e leitura de mensagens. Nenhuma alteração foi necessária.
+{{< /alert >}}
 
-O [RabbitMQ](https://www.rabbitmq.com/) é serviço de gerenciamento de filas para recebimento e entrega de mensagens entre aplicações, mesmo que tenham sido desenvolvidas em diferentes linguagens de programação. Ele é gratuito e possui o código fonte aberto e disponível em: [https://github.com/rabbitmq](https://github.com/rabbitmq).
+O [RabbitMQ](https://www.rabbitmq.com/) é um serviço de gerenciamento de filas para recebimento e entrega de mensagens entre aplicações, mesmo que tenham sido desenvolvidas em diferentes linguagens de programação. Ele é gratuito e possui o código-fonte aberto e disponível em: [https://github.com/rabbitmq](https://github.com/rabbitmq).
 
 Utiliza o protocolo [AMQP](https://en.wikipedia.org/wiki/Advanced_Message_Queuing_Protocol) para realizar a troca de mensagens e faz uso, por padrão, das portas:
 
@@ -88,11 +90,11 @@ Mais informações sobre o RabbitMQ e como configurá-lo podem ser encontradas n
 [https://www.rabbitmq.com/documentation.html](https://www.rabbitmq.com/documentation.html)  
 [/primeiros-passos-com-rabbitmq/](/primeiros-passos-com-rabbitmq/)
 
-Caso não consiga acessar o RabbitMQ via interface Web, pode gerenciá-lo pela linha de comando.
+Caso não consiga acessar o RabbitMQ via interface Web, você pode gerenciá-lo pela linha de comando.
 
 > Atenção!!! A imagem `rabbitmq:4-management` passou a trazer a versão 2 do `rabbitmqadmin` (na revisão de outubro de 2026, a imagem trazia o RabbitMQ 4.3.6 e o `rabbitmqadmin` 2.35.0). Essa nova versão tem uma sintaxe diferente da versão 1, que era usada na versão original deste post. Os comandos abaixo foram atualizados e testados com a versão 2. A documentação está disponível em: [https://www.rabbitmq.com/docs/management-cli](https://www.rabbitmq.com/docs/management-cli)
 
-Acessando o prompt de comandos do conteiner rabbitmq
+Acessando o prompt de comandos do conteiner do RabbitMQ:
 
 ```bash
 docker exec -it rabbitmq /bin/bash
@@ -119,7 +121,7 @@ Listando as filas existentes no RabbitMQ:
 rabbitmqadmin list queues
 ```
 
-Listando os bindins existentes no RabbitMQ:
+Listando os bindings existentes no RabbitMQ:
 
 ```text
 rabbitmqadmin list bindings
@@ -137,25 +139,25 @@ Listando os usuários existentes no RabbitMQ:
 rabbitmqadmin list users
 ```
 
-Adicionando um exchange com o nome ' **app1**' e o tipo ' **direct**' no vhost ' **/**':
+Adicionando um exchange com o nome '**app1**' e o tipo '**direct**' no vhost '**/**':
 
 ```text
 rabbitmqadmin declare exchange --name app1 --type direct --durable true --vhost /
 ```
 
-Adicionando uma fila com o nome ' **logs\_app1**', durável no vhost ' **/**'
+Adicionando uma fila com o nome '**logs\_app1**', durável no vhost '**/**'
 
 ```text
 rabbitmqadmin declare queue --name logs_app1 --durable true --vhost /
 ```
 
-Adicionando um bind entre o exchange ' **app1**' e a queue ' **logs\_app1**' com a routing\_key ' **app1-logs\_app1**':
+Adicionando um bind entre o exchange '**app1**' e a queue '**logs\_app1**' com a routing\_key '**app1-logs\_app1**':
 
 ```text
 rabbitmqadmin declare binding --source app1 --destination logs_app1 --destination-type queue --routing-key app1-logs_app1
 ```
 
-Adicionando um usuário ao rabbitmq com o nome ' **user\_app1**' com permissão de ' **administrator**':
+Adicionando um usuário ao RabbitMQ com o nome '**user\_app1**' com permissão de '**administrator**':
 
 ```text
 rabbitmqctl add_user user_app1 SENHA
@@ -195,4 +197,4 @@ rabbitmqadmin --username guest --password NOVA-SENHA get messages --queue logs_a
 ```
 
 **Observação:**  
-A partir do momento que a senha do usuário **guest** foi alterada, se faz necessário adicionar os parâmetros **-H localhost -u guest -p NOVA-SENHA** em qualquer comando do **rabbitmqadmin**.
+A partir do momento que a senha do usuário **guest** foi alterada, se faz necessário adicionar os parâmetros **--username guest --password NOVA-SENHA** em qualquer comando do **rabbitmqadmin** (sintaxe da versão 2, usada nos exemplos acima).

@@ -2,23 +2,25 @@
 title: "Configurando o Grafana para funcionar sobre HTTPS"
 slug: "configurando-o-grafana-para-funcionar-sobre-https"
 date: 2016-05-26T18:13:34-03:00
-lastmod: 2026-10-08T13:58:06-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["grafana", "tutoriais", "zabbix-2"]
 tags: ["grafana", "zabbix"]
-description: "Neste tutorial será mostrado como configurar o Grafana para funcionar sobre HTTPS, usando um certificado auto-assinado."
+description: "Neste tutorial será mostrado como configurar o Grafana para funcionar sobre HTTPS, usando um certificado autoassinado."
 wp_id: 999
 ---
 
 {{< figure src="/wp-content/uploads/2016/05/Captura-de-tela-de-2016-05-26-171923-1024x500.png" alt="Captura de tela de 2016-05-26 17:19:23" caption="Captura de tela de 2016-05-26 17:19:23" >}}
 
-**Atualizado em: 7 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** testado com o Grafana 13.3.1 instalado pelo repositório APT oficial no Ubuntu 24.04. Seguindo o post original, o serviço não subia porque o usuário `grafana` não conseguia ler a chave; foi incluído o ajuste de dono e permissões da documentação oficial. Também ficou claro que a alteração do `grafana.ini` é só na seção `[server]`.
+{{< /alert >}}
 
-Neste tutorial  será mostrado como configurar o Grafana para funcionar sobre HTTPS, usando um certificado auto-assinado.
+Neste tutorial será mostrado como configurar o Grafana para funcionar sobre HTTPS, usando um certificado autoassinado.
 
-## Criando um certificado auto-assinado
+## Criando um certificado autoassinado
 
-Instale o pacote opensssl.
+Instale o pacote openssl.
 
 No Debian/Ubuntu:
 
@@ -45,7 +47,7 @@ Agora crie uma requisição de assinatura de certificado. Execute o comando aba
 sudo openssl req -new -sha256 -key server.key -out server.csr
 ```
 
-Durante a execução do comando acima será solicitado a senha da chave privada e os dados do certificado e que serão exibidos no navegador do usuário. Veja o exemplo abaixo.
+Durante a execução do comando acima, serão solicitados os dados do certificado, que serão exibidos no navegador do usuário. Veja o exemplo abaixo.
 
 Country Name (2 letter code) [GB]:**BR**  
 State or Province Name (full name) [Berkshire]:**Estado**  
@@ -68,13 +70,20 @@ Agora assine o certificado.
 sudo openssl x509 -req -days 3650 -sha256 -in server.csr -signkey server.key -out server.crt
 ```
 
-Usando, o comando acima, você estará assinando o certificado com validade de 10 anos (aproximadamente 3650 dias). Se quiser mudar este tempo, altere a quantidade de dias no parâmetro **-days**.
+Usando o comando acima, você estará assinando o certificado com validade de 10 anos (aproximadamente 3650 dias). Se quiser mudar este tempo, altere a quantidade de dias no parâmetro **-days**.
+
+O Grafana instalado por pacote roda com o usuário `grafana`, que precisa conseguir ler o certificado e a chave. Sem isso, o serviço não sobe e registra `could not load SSL certificate: open /etc/certs/server.key: permission denied`. Ajuste o dono e as permissões, como indica a [documentação oficial](https://grafana.com/docs/grafana/latest/setup-grafana/set-up-https/):
+
+```bash
+sudo chown grafana:grafana /etc/certs/server.crt /etc/certs/server.key
+sudo chmod 400 /etc/certs/server.key /etc/certs/server.crt
+```
 
 ## Configurando o Grafana para funcionar sobre HTTPS
 
 Quando o Grafana é instalado via pacote .deb, o arquivo de configuração fica em: **/etc/grafana/grafana.ini.**
 
-Edite o arquivo **/etc/grafana/grafana.ini** e altere os parâmetro abaixo para ficar da seguinte maneira **.**
+Edite o arquivo **/etc/grafana/grafana.ini** e, na seção **[server]**, altere os parâmetros abaixo para ficar da seguinte maneira (os mesmos nomes aparecem em outras seções do arquivo, que não devem ser alteradas).
 
 Antes:
 
@@ -95,7 +104,7 @@ cert\_key = /etc/certs/server.key
 
 Agora é só reiniciar o Grafana.
 
-No Debian 8/Ubuntu 16.04:
+Nas distribuições com systemd (Debian, Ubuntu e outras):
 
 ```bash
 sudo systemctl restart grafana-server
@@ -103,9 +112,9 @@ sudo systemctl restart grafana-server
 
 O Grafana estará acessível na URL: **https://ip-servidor:3000**
 
-Aceite o certificado no navegador, pois o mesmo vai reclamar que o site está usando um certificado auto-assinado.
+Aceite o certificado no navegador, pois ele vai avisar que o site está usando um certificado autoassinado.
 
-Os passos acima pode ser adaptados para a sua realidade, caso possua um certificado válido.  
+Os passos acima podem ser adaptados para a sua realidade, caso possua um certificado válido.  
 
 Se quiser configurar o Grafana para disponibilizar dashboards para cada cliente, siga os passos deste tutorial: [http://andredeo.blogspot.com.br/2016/12/zabbix-e-grafana-disponibilizando-um.html](http://andredeo.blogspot.com.br/2016/12/zabbix-e-grafana-disponibilizando-um.html)
 

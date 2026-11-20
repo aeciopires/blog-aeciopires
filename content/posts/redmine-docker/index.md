@@ -2,7 +2,7 @@
 title: "Instalando o Redmine via Docker"
 slug: "redmine-docker"
 date: 2017-08-16T11:11:54-03:00
-lastmod: 2026-10-07T11:53:16-03:00
+lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["docker", "tutoriais"]
 tags: ["containers", "docker", "mysql", "redmine"]
@@ -12,11 +12,13 @@ wp_id: 1490
 
 {{< figure src="/wp-content/uploads/2017/08/redmine_docker.png" alt="redmine_docker" >}}
 
-**Atualizado em: 7 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 20/11/2026:** comandos testados com `mysql:8` (8.4.13) e `redmine:7` (7.0.3): instalação, acesso à interface, backup com `mysqldump` e restauração. Nenhuma alteração foi necessária.
+{{< /alert >}}
 
 Neste [repositório do GitHub](https://github.com/docker-library/redmine) tem um tutorial para executar o [Redmine](http://www.redmine.org/) no Docker.
 
-Segundo o tutorial, o Redmine é executado usando um conteiner [Docker,](https://www.docker.com/) o que deixa a instalação bem simples e rapidamente você tem o serviço funcionando.
+Segundo o tutorial, o Redmine é executado usando um conteiner [Docker](https://www.docker.com/), o que deixa a instalação bem simples e rapidamente você tem o serviço funcionando.
 
 Se você não sabe o que é Docker, recomendo começar lendo os links desta página. É um longo caminho, mas vale a pena conhecer essa tecnologia.
 
@@ -100,7 +102,7 @@ docker start mysql-redmine;
 docker start redmine
 ```
 
-Mais informações sobre o Redmine e como configurá-lo, acesse os links abaixo.
+Para mais informações sobre o Redmine e sobre como configurá-lo, acesse os links abaixo.
 
 [http://www.redmine.org/](http://www.redmine.org/)
 
@@ -120,7 +122,7 @@ Lembrando que os dados do banco são persistidos no diretório **/docker/redmine
 
 Se precisar restaurar o dump, use os comandos abaixo.
 
-Remova o banco antigo e criando-o novamente.
+Remova o banco antigo e crie-o novamente.
 
 ```text
 docker exec -i -t mysql-redmine /bin/bash
