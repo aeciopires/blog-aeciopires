@@ -21,3 +21,10 @@ regexTarget = "line"
 regexes = [
   '''-u elastic:SENHA\b''',
 ]
+
+[[allowlists]]
+description = "Token do Cloudflare Web Analytics: identificador público, vai no HTML de toda página (docs/cloudflare.md, seção 7)"
+condition = "AND"
+paths = ['''^config/_default/params\.toml$''']
+regexTarget = "line"
+regexes = ['''^\s*token\s*=\s*"[0-9a-f]{32}"\s*$''']

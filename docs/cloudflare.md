@@ -56,13 +56,84 @@ O deploy limpa o cache (`deploy.yml`), então é seguro guardar HTML na borda.
 |---|---|---|---|
 | W1 | Liberar ACME | `starts_with(http.request.uri.path, "/.well-known/acme-challenge/")` | **Skip** (demais regras + rate limit) |
 | W2 | Só leitura | `not http.request.method in {"GET" "HEAD" "OPTIONS"}` | Block |
-| W3 | Scanners e arquivos sensíveis | `http.request.uri.path contains ".php" or http.request.uri.path contains "/wp-admin" or http.request.uri.path contains "/wp-includes" or http.request.uri.path contains "/xmlrpc" or http.request.uri.path contains "/.env" or http.request.uri.path contains "/.git" or http.request.uri.path contains "/cgi-bin"` | Block |
+| W3 | Scanners e arquivos sensíveis | expressão no bloco abaixo | Block |
 | W4 | User-agent vazio | `http.user_agent eq ""` | Block |
 | W5 | Emergência | ex.: país/ASN de ataque em curso | Managed Challenge (**desativada**) |
 
-W3 **não** bloqueia `/wp-content/`: `/wp-content/uploads/` serve as imagens antigas.
+Expressão da W3 (colar no *Edit expression*):
 
-**Rate limiting:** `http.host eq "blog.aeciopires.com"` → 100 requisições / 10 s por IP → Block 10 s.
+```text
+(
+    (
+      (
+        http.request.uri.path eq "/wp-admin"
+        or starts_with(http.request.uri.path, "/wp-admin/")
+      )
+      and http.request.uri.path ne "/wp-admin/admin-ajax.php"
+    )
+    or http.request.uri.path contains "/wp-includes"
+    or http.request.uri.path contains "/wp-login.php"
+    or http.request.uri.path contains "/xmlrpc.php"
+    or http.request.uri.path contains "/xmlrpc"
+    or http.request.uri.path contains "/cgi-bin"
+    or http.request.uri.path contains "/wp-json/wp/v2/users"
+    or http.request.uri.path contains "/wp-json/wp/v2/pages"
+    or http.request.uri.path contains "wp-config.php"
+    or http.request.uri.path contains "/wp-comments-post.php"
+    or http.request.uri.path contains "/wp-json/oembed/1.0/embed"
+    or http.request.uri.path contains "/feed"
+    or http.request.uri.path contains "/tag/ssh-server/feed/"
+    or http.request.uri.path contains "wp-links-opml.php"
+    or http.request.uri.path contains "readme.html"
+    or http.request.uri.path contains "license.txt"
+    or http.request.uri.path contains "debug.log"
+    or http.request.uri.path contains "wp-activate.php"
+    or http.request.uri.path contains "upgrade.php"
+    or http.request.uri.path contains ".env"
+    or http.request.uri.path contains "wp-signup.php"
+    or http.request.uri.path contains "install.php"
+    or http.request.uri.path contains "wp-config.php.bak"
+    or http.request.uri.path contains "wp-config.old"
+    or http.request.uri.path contains "/.git"
+    or http.request.uri.path contains "/.svn"
+    or http.request.uri.path contains "/.hg"
+    or http.request.uri.path contains ".gitignore"
+    or http.request.uri.path contains ".gitattributes"
+    or http.request.uri.path contains ".htaccess"
+    or http.request.uri.path contains "wp-config-sample.php"
+    or http.request.uri.path contains "composer.json"
+    or http.request.uri.path contains "composer.lock"
+    or http.request.uri.path contains "phpunit.xml"
+    or http.request.uri.path contains "phpunit.xml.dist"
+    or http.request.uri.path contains "phpinfo.php"
+    or http.request.uri.path contains "error_log"
+    or http.request.uri.path contains "server-status"
+    or http.request.uri.path contains "server-info"
+    or http.request.uri.path contains "wp-trackback.php"
+    or http.request.uri.path contains "web.config"
+    or http.request.uri.path contains "nginx.conf"
+    or http.request.uri.path contains "docker-compose.yml"
+    or http.request.uri.path contains "Dockerfile"
+    or http.request.uri.path contains ".sqlite"
+    or http.request.uri.path contains ".sqlite3"
+    or http.request.uri.path contains ".dump"
+    or http.request.uri.path contains "adminer.php"
+    or http.request.uri.path contains "phpmyadmin"
+    or http.request.uri.path contains "status.php"
+    or http.request.uri.path contains "/backup.zip"
+    or http.request.uri.path contains "/site.zip"
+    or http.request.uri.query contains "wp-config.php"
+    or http.request.uri.query contains "/etc/passwd"
+    or http.request.uri.query contains "boot.ini"
+    or http.request.uri.path contains ".php"
+  )
+```
+
+W3 **não** bloqueia `/wp-content/`: `/wp-content/uploads/` serve as imagens antigas.
+O `contains "/feed"` não quebra os feeds antigos: os *Single Redirects* (R1/R2) rodam antes do WAF e respondem 301 primeiro.
+Conferido contra todas as URLs do build e de `static/wp-content/` (nenhuma casa com a W3).
+
+**Rate limiting:** `http.host eq "blog.aeciopires.com" or http.host eq "aeciopires.com"` → 100 requisições / 10 s por IP → Block 10 s.
 
 **Single Redirects:**
 

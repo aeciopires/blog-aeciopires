@@ -11,8 +11,8 @@ Acompanha o [PLAN.md](PLAN.md) (registro histórico, não reescrito). Atualizado
 | 2 — Tema | Feito (local) | T9 aplicado e revisado por capturas (escuro/claro, computador/celular). Aviso MIT preservado no CSS minificado. **Logos:** 21 de 27 oficiais; 6 em texto por diretriz de marca (Docker, AWS, Google Cloud, Gemini, ChatGPT) e macOS sem logo |
 | 3 — Conversão | Feito (local) | `scripts/migracao/migrar.sh` (reproduzível): 81 posts, 5 páginas fixas (sobre, cursos, curso-docker, curso-kubernetes-k8s, contato; revisadas à mão em 20/11/2026), 5 páginas rascunho como redirecionamento, 161 comentários arquivados (sanitizados), 251 mídias, 67 tags com aliases das antigas, 19 categorias. `compare-urls`: 216/216 URLs preservadas; lychee: 0 links internos quebrados; lint: 0 problemas; build sem avisos |
 | 4 — Revisão | **Concluída em 20/11/2026** (autor validou todo o conteúdo: posts, páginas e comentários) | Lista em [revisao-fase-4.md](revisao-fase-4.md). Auditoria WordPress × Hugo (`scripts/migracao/comparar_wordpress.py`) sem pendências. Tags resolvidas: **57 tags** (inclui a nova `fe`); 6 removidas por decisão do autor e 5 que ficaram sem posts após o enxugamento (`alertmanager`, `azure`, `cert-manager`, `fargate`, `ingress-nginx`), todas com `/tag/<nome>/` → `/tags/`. `make validate` OK; PDF externo quebrado com o shortcode `removido` |
-| 5 — Staging | **Em andamento** (desde 20/11/2026) | PR #1 mesclado na `main` (commit `aa2ed57`); deploy `44740864708` OK em <https://aeciopires.github.io/blog-aeciopires/>; check `validate` exigido no ruleset da `main`. Testes de staging pendentes (autor) |
-| 6 — Virada de DNS | Não iniciada | Passo a passo em `docs/cloudflare.md` |
+| 5 — Staging | **Em andamento** (desde 20/11/2026) | PR #1 (`aa2ed57`) e PR #2 (`b85b2dd`: hook de segredos, imagens no próprio site, busca) mesclados; deploys `44740864708` e `44746971510` OK em <https://aeciopires.github.io/blog-aeciopires/>; check `validate` exigido no ruleset da `main`; branches temporárias removidas. Testes de staging pendentes (autor) |
+| 6 — Virada de DNS | **Em andamento** | Seções 1 a 4 de `docs/cloudflare.md` feitas pelo autor (conferido em 20/11/2026: `server: cloudflare`, `cf-cache-status: HIT`, `/wp-login.php` → 403, `/feed/` → 301 para `/index.xml`); W3 ampliada com a lista de caminhos sondados por scanners. Token do Web Analytics em `params.toml` (seção 7). **Pendente:** seção 5 (headers e CSP), secrets/variables do purge, seção 9 |
 
 ## Desvios em relação ao plano (e motivo)
 
@@ -81,14 +81,33 @@ Situação em 20/11/2026. Nada foi commitado: todo o trabalho está na branch `f
 
 ### Fase 5 — Staging (em andamento)
 
-1. Testar em `https://aeciopires.github.io/blog-aeciopires/`: celular, Lighthouse, RSS, busca, claro/escuro, Jotform (contato e cursos) e um comentário de teste no giscus (apagar depois).
-   **Limitação do staging:** imagens e links internos escritos no corpo dos posts usam caminho absoluto (`/wp-content/...`, `/slug/`) e dão 404 no staging, que fica em subpasta (`/blog-aeciopires/`). Tema, CSS, JS, menus, cards e redirecionamentos usam o prefixo e funcionam. No domínio final (raiz) tudo funciona; o conteúdo dos posts foi validado localmente (`make serve-prod`) e o `make validate-links` cobre esses caminhos.
-1. Preparar as regras do Cloudflare (CSP, redirecionamentos R1/R2, cache) conforme `docs/cloudflare.md`.
+Roteiro (autor), em <https://aeciopires.github.io/blog-aeciopires/>:
+
+- [ ] Celular (Android/iOS) e computador: home, um post longo, Categorias, Tags, Cursos, Sobre.
+- [ ] Modos claro/escuro (botão e preferência do sistema).
+- [ ] Busca: `kubernetes helm`, `instalacao zabbix`, `kubernets` (`Ctrl K` no computador).
+- [ ] RSS: `/index.xml` num leitor de feeds.
+- [ ] Lighthouse (Chrome DevTools → Lighthouse, mobile): anotar Performance, Accessibility, Best Practices e SEO.
+- [ ] Formulário de Contato (Jotform): enviar uma mensagem de teste e conferir o recebimento.
+- [ ] Botões "Quero fazer o curso" (Docker e Kubernetes) abrem o formulário certo.
+- [ ] giscus: comentar num post como teste, conferir em Discussions → Comentários e apagar.
+- [ ] Redirecionamentos: `/arquivos/`, `/testemunho-de-uma-norte-coreana/`, `/category/zabbix-2/`.
+
+**Limitação do staging:** imagens e links internos escritos no corpo dos posts usam caminho absoluto (`/wp-content/...`, `/slug/`) e dão 404 no staging (subpasta `/blog-aeciopires/`). No domínio final (raiz) funcionam; conferir o conteúdo localmente com `make serve-prod`. O `make validate-links` cobre esses caminhos.
+
+**Pendências da Fase 0 (antes da Fase 6):** anotar o registro DNS atual de `blog` ([cloudflare.md](../../docs/cloudflare.md), seção 1, passo 1), exportar relatórios do Jetpack Stats/Google Analytics, 2FA no GitHub e no Cloudflare.
 
 ### Fase 6 — Virada de DNS
 
-1. Secret `CLOUDFLARE_API_TOKEN`, variables `CLOUDFLARE_ZONE_ID`, token do Web Analytics em `params.toml`; virar o DNS (`docs/cloudflare.md`); custom domain no Pages.
-1. Depois da virada: variables `DOMINIO_ATIVO=true` e `MIGRACAO_CONCLUIDA=true`; observar 30 dias (404, Search Console) e cancelar a hospedagem do WordPress, mantendo o backup.
+Passo a passo com caixas de seleção em [docs/cloudflare.md](../../docs/cloudflare.md):
+
+1. ~~Seção 1 (ordem importa): domínio verificado no GitHub, `CNAME`, *Custom domain*, *Enforce HTTPS*, SSL, proxy.~~ Feito.
+1. ~~Seções 2 a 4: zona, Cache Rules, WAF/rate limiting/redirects.~~ Feito.
+1. Seção 5: headers de segurança (CSP primeiro como *Report-Only*, 1–2 semanas). **Pendente.**
+1. ~~Seção 7: Web Analytics e token público em `params.toml` (via PR).~~ Feito (o beacon entra no próximo deploy).
+1. Secrets/variables: [MAINTENANCE.md, seção 9 → Variables e secrets](../../docs/MAINTENANCE.md) (como criar o token e achar o Zone ID).
+1. Seção 9: testes após a virada; reenviar `sitemap.xml` no Search Console.
+1. Depois: `DOMINIO_ATIVO=true`, `MIGRACAO_CONCLUIDA=true`; observar 30 dias (404, Search Console) e cancelar a hospedagem do WordPress, mantendo o backup.
 
 ### Adiado
 
