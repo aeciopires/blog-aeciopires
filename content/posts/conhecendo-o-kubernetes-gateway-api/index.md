@@ -69,9 +69,9 @@ Mais detalhes dos CRDs podem ser obtidos em:
 
 ### **Como funciona o Gateway API?**
 
-A figura abaixo foi [extraída deste post](https://www.cncf.io/blog/2025/05/02/understanding-kubernetes-gateway-api-a-modern-approach-to-traffic-management/) e descreve o fluxo da _request_ em cada um de seus componentes e de como ele funciona:
+A figura citada abaixo foi [extraída deste post](https://www.cncf.io/blog/2025/05/02/understanding-kubernetes-gateway-api-a-modern-approach-to-traffic-management/) e descreve o fluxo da _request_ em cada um de seus componentes e de como ele funciona:
 
-{{< figure src="https://www.cncf.io/wp-content/uploads/2025/05/AD_4nXdmJx9LoMTwpEcsmuf49DRi5H5RjaoCq6nQgJ7lL8hQcFp2Fzbb5pu6hoL08i6KlI9N_qvmw-2nEtQfCoQzzB5G7bTGVQVyAPYhg2VCXWeeKYvox1HOAh3lvehGK1sbkfNc22694w.png" alt="Fluxograma da API do Gateway" caption="Fluxograma da API do Gateway" >}}
+Fluxograma da API do Gateway: [ver a imagem na fonte](https://www.cncf.io/wp-content/uploads/2025/05/AD_4nXdmJx9LoMTwpEcsmuf49DRi5H5RjaoCq6nQgJ7lL8hQcFp2Fzbb5pu6hoL08i6KlI9N_qvmw-2nEtQfCoQzzB5G7bTGVQVyAPYhg2VCXWeeKYvox1HOAh3lvehGK1sbkfNc22694w.png) (blog da CNCF).
 
 O **GatewayController** é o controlador que implementa a lógica para os objetos **_GatewayClass,_** **_Gateway e Route_**. Ele monitora as alterações nesses objetos e, em seguida, atualiza a configuração de rede para lidar com o tráfego de entrada conforme definido. Isso permite que o cluster Kubernetes reaja às mudanças nas configurações de roteamento e gerencie o tráfego com eficiência. O **_Route_** conecta o tráfego a um backend específico e assim a _request_ pode chegar na aplicação de destino.
 

@@ -11,7 +11,7 @@ Acompanha o [PLAN.md](PLAN.md) (registro histórico, não reescrito). Atualizado
 | 2 — Tema | Feito (local) | T9 aplicado e revisado por capturas (escuro/claro, computador/celular). Aviso MIT preservado no CSS minificado. **Logos:** 21 de 27 oficiais; 6 em texto por diretriz de marca (Docker, AWS, Google Cloud, Gemini, ChatGPT) e macOS sem logo |
 | 3 — Conversão | Feito (local) | `scripts/migracao/migrar.sh` (reproduzível): 81 posts, 5 páginas fixas (sobre, cursos, curso-docker, curso-kubernetes-k8s, contato; revisadas à mão em 20/11/2026), 5 páginas rascunho como redirecionamento, 161 comentários arquivados (sanitizados), 251 mídias, 67 tags com aliases das antigas, 19 categorias. `compare-urls`: 216/216 URLs preservadas; lychee: 0 links internos quebrados; lint: 0 problemas; build sem avisos |
 | 4 — Revisão | **Concluída em 20/11/2026** (autor validou todo o conteúdo: posts, páginas e comentários) | Lista em [revisao-fase-4.md](revisao-fase-4.md). Auditoria WordPress × Hugo (`scripts/migracao/comparar_wordpress.py`) sem pendências. Tags resolvidas: **57 tags** (inclui a nova `fe`); 6 removidas por decisão do autor e 5 que ficaram sem posts após o enxugamento (`alertmanager`, `azure`, `cert-manager`, `fargate`, `ingress-nginx`), todas com `/tag/<nome>/` → `/tags/`. `make validate` OK; PDF externo quebrado com o shortcode `removido` |
-| 5 — Staging | Não iniciada | — |
+| 5 — Staging | **Em andamento** (desde 20/11/2026) | PR #1 mesclado na `main` (commit `aa2ed57`); deploy `44740864708` OK em <https://aeciopires.github.io/blog-aeciopires/>; check `validate` exigido no ruleset da `main`. Testes de staging pendentes (autor) |
 | 6 — Virada de DNS | Não iniciada | Passo a passo em `docs/cloudflare.md` |
 
 ## Desvios em relação ao plano (e motivo)
@@ -49,7 +49,11 @@ Acompanha o [PLAN.md](PLAN.md) (registro histórico, não reescrito). Atualizado
 | Comentários arquivados | Quebra de linha simples vira `<br>` (texto continua escapado) e data no formato do tema (pt-BR) | 64 comentários com comandos colados numa linha só; datas saíam em inglês ("Aug") |
 | Auditoria de 20/11/2026 (`scripts/migracao/comparar_wordpress.py`) | Corrigidos: 4 links de rastreamento do Mailchimp e 1 `fbclid` (destino trocado pela URL real), URL já quebrada no WordPress (Elasticsearch/DigitalOcean), 4 URLs com caractere invisível U+2028 (Go), emoji dentro de URL (Helm Chart 8), links de `kubectl`/`helm` perdidos dentro de código (Locust, KEDA), data original da página Contato | 88 itens publicados conferidos; 161 comentários aprovados presentes, com autor, data e respostas; 59 pingbacks descartados; sem e-mail/IP de comentaristas |
 | Blocos de código com rolagem horizontal (tema) | Quebra visual das linhas longas (`white-space: pre-wrap`), sem barra de rolagem; o texto copiado continua idêntico (botão do tema usa `textContent`) | Pedido do autor (20/11/2026); conferido no computador e no celular |
+| Post `testemunho-de-uma-norte-coreana` | Removido em 20/11/2026 (`make rm-post`), com `/testemunho-de-uma-norte-coreana/` → `/testemunhos-sobre-a-vida-na-coreia-do-norte/` (alias) | Decisão do autor; o post não tinha comentários arquivados. Site com 80 posts |
+| Busca do tema (Fuse.js, frase exata na ordem digitada) | `assets/js/busca.js` envolve `window.Fuse`: termos em qualquer ordem (todos obrigatórios, ranking por relevância), sem acentos e com tolerância a 1 erro de digitação (`threshold` 0.15) | Pedido do autor (20/11/2026). Medido no índice real e no navegador: "helm kubernetes" 0 → 19, "zabbix docker" 0 → 8, "instalacao zabbix" 0 → 4, "kubernets" 0 → 32; "istio" e "prometheus" sem ruído novo. Sem cópia do `search.js` do tema |
 | Publicação só por push | Também por cron todo 1º de janeiro | Os anos da home são calculados no build |
+| Pre-commit só com check-tags e lint-md (6.8) | Também gitleaks 8.30.1 (segredos, tokens e chaves), bloqueio de arquivos sensíveis e do e-mail do autor em todo commit; `make check-secrets` no `validate` e no `pr-check` | Pedido do autor (20/11/2026). Testado com token, chave privada, `.env` e e-mail falsos (bloqueados) e arquivo limpo (aceito) |
+| Imagens de terceiros carregadas direto da origem (herança do WordPress) | Site contido: logos de Jenkins e Kubernetes trocados pelos arquivos oficiais (CC BY-SA 3.0 com atribuição; diretrizes da Linux Foundation) e copiados para o post; 5 capturas do MyToolkit (repositório do autor, GPL-3.0) copiadas; banner do livro de Jenkins copiado (autoria do autor); ilustração da HashiCorp e diagrama da CNCF viraram link para a fonte. Créditos em `/creditos/` | Pedido do autor (20/11/2026): nenhuma imagem externa por visita. Recursos externos restantes só sob demanda: giscus, Jotform (Contato), YouTube (`youtubeLite`) e, após a Fase 6, o Cloudflare Web Analytics |
 | `security.http.urls` "sem curingas" | `^https://api\.github\.com/repos/` e método só `GET` | Único acesso remoto do tema usado pelo site (shortcode `github`) |
 
 ## Observações para revisão
@@ -70,19 +74,15 @@ Situação em 20/11/2026. Nada foi commitado: todo o trabalho está na branch `f
 
 - ~~Revisão de conteúdo~~ ([revisao-fase-4.md](revisao-fase-4.md)): links removidos, blocos de código, comentários arquivados, posts mais lidos, `description` e páginas fixas validados pelo autor.
 
-### Antes do primeiro PR
+### Primeiro PR — concluído em 20/11/2026
 
-1. ~~`make install-hooks`~~ feito em 20/11/2026.
-1. Fase 0 (autor), se ainda não feito: anotar o registro DNS atual de `blog`, exportar os relatórios de analytics do WordPress, 2FA no GitHub e no Cloudflare.
+- ~~`make install-hooks`~~; ~~commit e PR #1~~ (`validate` verde na CI); ~~merge na `main`~~; ~~deploy no GitHub Pages~~ (build 39 s + deploy 8 s; páginas, redirecionamentos, RSS, sitemap e busca respondem 200); ~~check `validate` no ruleset da `main`~~ (conferido via API).
+- Pendente da Fase 0 (autor), antes da Fase 6: anotar o registro DNS atual de `blog`, exportar os relatórios de analytics do WordPress, 2FA no GitHub e no Cloudflare.
 
-### Primeiro PR
+### Fase 5 — Staging (em andamento)
 
-1. Commit da branch `feat/migracao-hugo` e PR para `main` (`pr-check.yml` roda o `validate`): aberto em 20/11/2026.
-1. Depois do primeiro PR: incluir o check `validate` no ruleset da `main`.
-
-### Fase 5 — Staging
-
-1. Merge publica em `https://aeciopires.github.io/blog-aeciopires/`. Testar celular, Lighthouse, RSS, busca, claro/escuro, Jotform (contato e cursos) e um comentário de teste no giscus (apagar depois).
+1. Testar em `https://aeciopires.github.io/blog-aeciopires/`: celular, Lighthouse, RSS, busca, claro/escuro, Jotform (contato e cursos) e um comentário de teste no giscus (apagar depois).
+   **Limitação do staging:** imagens e links internos escritos no corpo dos posts usam caminho absoluto (`/wp-content/...`, `/slug/`) e dão 404 no staging, que fica em subpasta (`/blog-aeciopires/`). Tema, CSS, JS, menus, cards e redirecionamentos usam o prefixo e funcionam. No domínio final (raiz) tudo funciona; o conteúdo dos posts foi validado localmente (`make serve-prod`) e o `make validate-links` cobre esses caminhos.
 1. Preparar as regras do Cloudflare (CSP, redirecionamentos R1/R2, cache) conforme `docs/cloudflare.md`.
 
 ### Fase 6 — Virada de DNS

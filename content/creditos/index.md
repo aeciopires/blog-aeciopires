@@ -48,3 +48,11 @@ As marcas e os logos exibidos no banner "Stacks que uso no dia a dia" pertencem 
 - Claude e o logo do Claude são marcas da Anthropic; Cursor e o logo do Cursor são marcas da Anysphere.
 - Docker, AWS, Google Cloud, Gemini e ChatGPT aparecem só como nome, conforme as diretrizes de marca de cada empresa.
 - macOS é marca da Apple Inc.; aparece só como nome, sem logo.
+
+### Imagens em posts
+
+- Logo do Jenkins (post "Primeiros passos com Jenkins"): [projeto Jenkins](https://www.jenkins.io/), licença [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/), arquivo oficial sem alterações.
+- Logo do Kubernetes (post "Primeiros passos com Docker"): arquivo oficial do [CNCF artwork](https://github.com/cncf/artwork), conforme as [diretrizes de marca da Linux Foundation](https://www.linuxfoundation.org/trademark-usage/).
+- Capturas de tela do MyToolkit: do repositório do autor, [aeciopires/mytoolkit](https://github.com/aeciopires/mytoolkit) (GPL-3.0).
+- Banner do livro "Integração Contínua com Jenkins": material de divulgação do livro, de autoria de Aécio Pires.
+- Imagens de terceiros sem licença de reprodução (ilustração do blog da HashiCorp, diagrama do blog da CNCF) aparecem só como link para a fonte.

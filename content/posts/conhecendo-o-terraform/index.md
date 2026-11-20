@@ -10,7 +10,7 @@ description: "O Terraform é uma ferramenta para construir, alterar e configurar
 wp_id: 1726
 ---
 
-{{< figure src="https://www.datocms-assets.com/2885/1506457071-blog-terraform-list.svg" alt="1506457071 blog terraform list" >}}
+Ilustração do blog da HashiCorp: [ver a imagem na fonte](https://www.datocms-assets.com/2885/1506457071-blog-terraform-list.svg).
 
 **Atualizado em**:**03 de outubro de 2026**
 
