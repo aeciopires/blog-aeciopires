@@ -6,7 +6,7 @@ lastmod: 2018-09-17T10:27:47-03:00
 draft: false
 categories: ["zabbix-2"]
 tags: ["zabbix"]
-description: "![AaZabbix](/wp-content/uploads/2015/01/AaZabbix.png) Desde 2011 eu, Adail Spínola e André Déo estávamos escrevendo um livro sobre Zabbix. Graças a…"
+description: "Desde 2011 eu, Adail Spínola e André Déo estávamos escrevendo um livro sobre Zabbix. Graças a…"
 wp_id: 600
 ---
 

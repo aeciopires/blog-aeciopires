@@ -10,7 +10,8 @@ description: "Estou começando a dar os primeiros passos com o Docker, Kubernete
 wp_id: 1010
 ---
 
-![thumbnail2253](/wp-content/uploads/2016/05/thumbnail2253.png)![Kubernetes Logo](https://logos-download.com/wp-content/uploads/2018/09/Kubernetes_Logo.png)
+{{< figure src="/wp-content/uploads/2016/05/thumbnail2253.png" alt="Logo do Docker" figureClass="logo-post" nozoom=true >}}
+{{< figure src="kubernetes-logo.svg" alt="Logo do Kubernetes" figureClass="logo-post" nozoom=true >}}
 
 Olá!
 

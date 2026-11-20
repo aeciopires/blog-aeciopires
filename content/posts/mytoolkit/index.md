@@ -39,12 +39,12 @@ Algumas das ferramentas e screenshots:
 🔃 YAML↔️JSON  
 ☸️ Kubernetes YAML Validator
 
-{{< figure src="https://raw.githubusercontent.com/aeciopires/mytoolkit/main/images/nav-drawer-search.png" alt="nav drawer search" >}}
+{{< figure src="nav-drawer-search.png" alt="nav drawer search" >}}
 
-{{< figure src="https://raw.githubusercontent.com/aeciopires/mytoolkit/main/images/password-generator-dark.png" alt="password generator dark" >}}
+{{< figure src="password-generator-dark.png" alt="password generator dark" >}}
 
-{{< figure src="https://raw.githubusercontent.com/aeciopires/mytoolkit/main/images/hash-generator-light.png" alt="hash generator light" >}}
+{{< figure src="hash-generator-light.png" alt="hash generator light" >}}
 
-{{< figure src="https://raw.githubusercontent.com/aeciopires/mytoolkit/main/images/homepage-dark.png" alt="homepage-dark" >}}
+{{< figure src="homepage-dark.png" alt="homepage-dark" >}}
 
-{{< figure src="https://raw.githubusercontent.com/aeciopires/mytoolkit/main/images/homepage-light.png" alt="homepage light" >}}
+{{< figure src="homepage-light.png" alt="homepage light" >}}

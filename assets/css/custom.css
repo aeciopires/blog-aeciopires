@@ -496,3 +496,19 @@ html:not(.dark) .chroma .line {
 .chroma:not(:is(table *)) > code {
   min-width: 0;
 }
+
+/* ===== Logos pequenos dentro de posts =====
+   Uso: {{< figure src="logo.svg" alt="Logo do X" figureClass="logo-post" nozoom=true >}}
+   Vários seguidos ficam lado a lado, com a mesma altura. */
+figure.logo-post {
+  display: inline-block;
+  margin: 0 1.5rem 1rem 0;
+  vertical-align: middle;
+}
+
+figure.logo-post img {
+  /* altura fixa: SVG sem width/height próprios teria largura 0 com só max-height */
+  height: 5rem;
+  width: auto;
+  max-width: 100%;
+}

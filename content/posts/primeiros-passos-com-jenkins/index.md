@@ -10,7 +10,11 @@ description: "Temas:"
 wp_id: 1635
 ---
 
-![jenkins](https://leaptest.com/wp-content/uploads/2017/01/jenkins.png)Olá!Estou começando a dar os primeiros passos com o **[Jenkins](https://www.jenkins.io/)** e quero compartilhar os links que já estudei até aqui e que servem de bússola para quem quer começar a usá-lo também. Esta página será atualizada à medida que eu encontrar mais documentos relevantes.**Blogs:**
+{{< figure src="jenkins-logo.svg" alt="Logo do Jenkins" caption="Logo do [projeto Jenkins](https://www.jenkins.io/), licença [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)." >}}
+
+Olá! Estou começando a dar os primeiros passos com o **[Jenkins](https://www.jenkins.io/)** e quero compartilhar os links que já estudei até aqui e que servem de bússola para quem quer começar a usá-lo também. Esta página será atualizada à medida que eu encontrar mais documentos relevantes.
+
+**Blogs:**
 
 - [https://jenkins.io/doc/book/getting-started/](https://jenkins.io/doc/book/getting-started/)
 - [https://jenkins.io/user-handbook.pdf](https://jenkins.io/user-handbook.pdf)

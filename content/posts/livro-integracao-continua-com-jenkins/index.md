@@ -18,4 +18,4 @@ O livro também possui um site dedidado e acessível em: [https://jenkins.aeciop
 
 Desejo uma boa leitura e torço para que o livro lhe ajude no dia a dia.
 
-{{< figure src="https://gallery.mailchimp.com/2c76ef9e01507ed00c9710944/images/2dea64e0-6a95-4099-847c-134a1d2240c3.png" alt="2dea64e0 6a95 4099 847c 134a1d2240c3" >}}
+{{< figure src="banner-livro-jenkins.png" alt="Banner do livro: Utilize Jenkins para automatizar o deploy de aplicações web" >}}
