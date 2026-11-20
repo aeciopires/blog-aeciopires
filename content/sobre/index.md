@@ -31,7 +31,7 @@ showTableOfContents: false
   - Livro [**Plataforma de Intercâmbio de Conteúdos Digitais**](https://www.scribd.com/doc/123206365/Plataforma-de-Intercambio-de-Conteudos-Digitais) (2014);
 - Colaboro com projetos _open source_ no [**GitHub**](https://github.com/aeciopires).
 
-Veja meu currículo no [**LinkedIn**](https://www.linkedin.com/in/aeciopires). Para falar comigo, use a página de [contato](/contato/).
+Veja meu currículo no [**LinkedIn**](https://www.linkedin.com/in/aeciopires) e todos os meus links no [**Linktree**](https://linktr.ee/aeciopires). Para falar comigo, use a página de [contato](/contato/).
 
 ## English
 
@@ -48,4 +48,4 @@ Veja meu currículo no [**LinkedIn**](https://www.linkedin.com/in/aeciopires). P
   - Book in pt-BR [**Plataforma de Intercâmbio de Conteúdos Digitais**](https://www.scribd.com/doc/123206365/Plataforma-de-Intercambio-de-Conteudos-Digitais) (2014);
 - I contribute to open source projects on [**GitHub**](https://github.com/aeciopires).
 
-See my resume on [**LinkedIn**](https://www.linkedin.com/in/aeciopires). To get in touch, use the [contact page](/contato/).
+See my resume on [**LinkedIn**](https://www.linkedin.com/in/aeciopires) and all my links on [**Linktree**](https://linktr.ee/aeciopires). To get in touch, use the [contact page](/contato/).

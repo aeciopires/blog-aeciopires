@@ -1,6 +1,7 @@
 # Partiu do languages.en.toml do Blowfish v3.10.0.
 # Fonte única dos perfis do autor (PLAN.md 3.4): partials e shortcodes próprios leem
-# site.Params.author.links. Só GitHub e LinkedIn. Sem YouTube, sem X/Twitter e SEM e-mail.
+# site.Params.author.links. Só GitHub, LinkedIn e Linktree. Sem YouTube, sem X/Twitter e SEM e-mail.
+# Linktree usa o ícone genérico "link" do tema (o Blowfish não tem o logo, e logos só oficiais).
 
 disabled = false
 locale = "pt-BR"
@@ -25,4 +26,5 @@ title = "Blog do Aécio Pires"
   links = [
     { github = "https://github.com/aeciopires" },
     { linkedin = "https://www.linkedin.com/in/aeciopires" },
+    { link = "https://linktr.ee/aeciopires" },
   ]

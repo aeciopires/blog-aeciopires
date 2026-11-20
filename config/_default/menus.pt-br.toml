@@ -47,6 +47,13 @@
   title = "LinkedIn"
   weight = 80
 
+[[main]]
+  identifier = "linktree"
+  pre = "link"
+  url = "https://linktr.ee/aeciopires"
+  title = "Linktree"
+  weight = 90
+
 # -- Rodapé --
 
 [[footer]]
