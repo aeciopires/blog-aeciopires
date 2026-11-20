@@ -279,7 +279,7 @@ O GitHub renova o certificado da origem (~90 dias). Com o proxy ligado, a valida
 - [x] SSL Labs nota A (20/11/2026).
 - [x] securityheaders.com nota A (CSP efetiva, 20/11/2026).
 - [x] Deploy de teste aparece em ~2 min (purge automático ok, deploy `44766555983`).
-- [ ] Web Analytics registrando; `origin-cert.yml` verde.
+- [x] Web Analytics registrando; `origin-cert.yml` verde (20/11/2026; certificado da origem até 18/02/2027).
 
 ## 10. Google Search Console
 
