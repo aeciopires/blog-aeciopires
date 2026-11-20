@@ -1,0 +1,28 @@
+{{- /*
+  Chamada da home do T9 (PLAN.md 3.2.2 e 3.5): eyebrow, título grande, texto e botões.
+  Uso: {{< blog-chamada desde="2007" >}}. Os botões dos cursos só aparecem se as páginas existirem.
+  O GitHub vem de site.Params.author.links (fonte única).
+*/ -}}
+{{- $desde := .Get "desde" | default "2007" | int -}}
+{{- $github := "" -}}
+{{- range site.Params.author.links }}{{ with .github }}{{ $github = . }}{{ end }}{{ end -}}
+{{- $primario := "!rounded-md bg-primary-600 px-4 py-2 font-semibold !text-neutral !no-underline hover:!bg-primary-500 dark:bg-primary-600 dark:hover:!bg-primary-500" -}}
+{{- $contorno := "!rounded-md border border-neutral-400 px-4 py-2 font-semibold !text-neutral-900 !no-underline hover:border-primary-500 dark:border-neutral-500 dark:!text-neutral" -}}
+<div class="home-chamada not-prose">
+  <p class="eyebrow">DevOps · SRE · Cloud</p>
+  <h2>Compartilhando conhecimento há {{ sub now.Year $desde }} anos.</h2>
+  <p class="lead">Tutoriais práticos de Kubernetes, AWS, observabilidade e automação, escritos por {{ site.Params.author.name }}.</p>
+  <div class="home-botoes">
+    {{- with site.GetPage "/curso-docker" }}
+      <a class="{{ $primario }}" href="{{ .RelPermalink }}">Curso Docker</a>
+    {{- end }}
+    {{- with site.GetPage "/curso-kubernetes-k8s" }}
+      <a class="{{ $primario }}" href="{{ .RelPermalink }}">Curso Kubernetes</a>
+    {{- end }}
+    {{- with $github }}
+      <a class="{{ $contorno }} inline-flex items-center gap-2" href="{{ . }}" rel="me noopener noreferrer" target="_blank">
+        <span class="inline-block h-4 w-4" aria-hidden="true">{{ partial "icon.html" "github" }}</span>GitHub
+      </a>
+    {{- end }}
+  </div>
+</div>

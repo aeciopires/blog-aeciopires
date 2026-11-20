@@ -1,0 +1,9 @@
+# Comentários do blog antigo (WordPress), somente leitura. Só nome, data e texto (PLAN.md 6.5).
+- id: 56277
+  nome: "Sérgio Francisco"
+  data: "2023-06-14T17:38:36-03:00"
+  texto: "Muito legal esse post, Aécio! Excelente para quem está iniciando e quer ter uma noção sobre a ferramenta. 😀\n\nEu já trabalho com Terraform há alguns anos e também escrevi um post sobre como essa ferramenta funciona, para o que serve, como é o fluxo de trabalho, etc.\n\nO link aqui para quem quiser ler é esse: https://edukti.com/terraform\n\nAbraço!"
+- id: 56291
+  nome: "Aécio Pires"
+  data: "2023-07-08T00:02:07-03:00"
+  texto: "Oi, Sérgio!\nObrigado por escrever o seu post e compartilhar aqui. Está bem didático, mais atualizado e complementa o que escrevi aqui. Continuo usando o terraform na versão 1.4.x (ainda não tive tempo para lidar com as mudanças da versão 1.5.x), mas é muito bom usar essa ferramenta no dia a dia.\n\nTambém uso o Terraform junto com o Terragrunt... a produtividade é muito alta ao usar essas duas ferramentas juntas.\n\nhttps://terragrunt.gruntwork.io/\nhttps://terragrunt.gruntwork.io/docs/"

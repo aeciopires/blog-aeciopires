@@ -1,0 +1,95 @@
+# Build + validação + publicação no GitHub Pages + purge do cache do Cloudflare (PLAN.md 8.1).
+# Segue o guia oficial https://gohugo.io/host-and-deploy/host-on-github-pages/
+# Actions fixadas por SHA (versão no comentário); o Dependabot as atualiza.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  # Republica todo 1º de janeiro (00:05 em Recife = 03:05 UTC) para atualizar os
+  # textos calculados pelo ano, como "Compartilhando conhecimento há N anos".
+  # O GitHub atrasa crons em horários de pico e os desativa após 60 dias sem atividade no repo.
+  schedule:
+    - cron: "5 3 1 1 *"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      HUGO_CACHEDIR: ${{ github.workspace }}/.hugo_cache
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0          # .Lastmod via git (enableGitInfo)
+          submodules: true        # tema Blowfish (themes/blowfish)
+          persist-credentials: false
+
+      - uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5.2.10
+        with:
+          install: true
+          cache: true
+
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ env.HUGO_CACHEDIR }}
+          key: hugo-${{ hashFiles('mise.toml') }}-${{ github.run_id }}
+          restore-keys: hugo-${{ hashFiles('mise.toml') }}-
+
+      - id: pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Validar tags e categorias
+        run: make check-tags
+
+      - name: Validar links internos e imagens
+        # build com o baseURL padrão (caminhos a partir de /) só para o lychee
+        run: make build validate-links
+
+      - name: Build para publicação
+        env:
+          HUGO_ENVIRONMENT: production
+          BASE_URL: ${{ steps.pages.outputs.base_url }}
+        run: |
+          rm -rf public
+          hugo --gc --minify --baseURL "${BASE_URL}/"
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: ./public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CF_ZONE: ${{ vars.CLOUDFLARE_ZONE_ID }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+      - name: Limpar cache do Cloudflare
+        # só depois da virada de DNS (secret e variable configurados)
+        if: env.CF_TOKEN != '' && env.CF_ZONE != ''
+        run: |
+          sleep 30   # aguarda a CDN do GitHub Pages propagar
+          curl -fsS -X POST "https://api.cloudflare.com/client/v4/zones/${CF_ZONE}/purge_cache" \
+            -H "Authorization: Bearer ${CF_TOKEN}" \
+            -H "Content-Type: application/json" \
+            --data '{"hosts":["blog.aeciopires.com"]}' >/dev/null
+          echo "Cache do Cloudflare limpo para blog.aeciopires.com"

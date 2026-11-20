@@ -1,0 +1,24 @@
+# Versões das ferramentas do projeto (fonte única: máquina local, Docker e CI).
+# Política (docs/MAINTENANCE.md, seção 7): a estável mais nova possível, limitada só
+# por compatibilidade. Versões exatas, nunca "latest". Atualização manual e testada.
+
+[tools]
+hugo-extended = "0.169.0"           # máximo suportado pelo Blowfish v3.10.0 (faixa 0.166.0–0.169.0)
+actionlint = "1.7.12"               # lint dos workflows
+shellcheck = "0.11.0"               # lint dos scripts (portabilidade)
+oxipng = "10.2.1"                   # otimização de PNG
+node = "26.13.1"                    # LTS mais novo; markdownlint-cli2 e scripts .mjs
+"npm:markdownlint-cli2" = "0.24.1"  # lint de Markdown (make lint-md)
+
+# lychee: backend github: com build musl no Linux. O binário glibc que o registro padrão
+# escolhe exige glibc >= 2.38 e não roda no Ubuntu 22.04 (glibc 2.35), que é plataforma suportada.
+[tools."github:lycheeverse/lychee"]
+version = "0.24.2"                  # verificação de links (make validate-links)
+version_prefix = "lychee-v"
+[tools."github:lycheeverse/lychee".platforms]
+linux-x64 = { asset_pattern = "lychee-x86_64-unknown-linux-musl.tar.gz" }
+macos-x64 = { asset_pattern = "lychee-x86_64-apple-darwin.tar.gz" }
+macos-arm64 = { asset_pattern = "lychee-aarch64-apple-darwin.tar.gz" }
+
+[env]
+HUGO_ENVIRONMENT = "development"

@@ -1,0 +1,95 @@
+# Registro de tags e categorias: fonte única (PLAN.md 6.8).
+# Editar pelos alvos do Makefile (new-tag, merge-tag, fix-tags); make check-tags valida tudo.
+# Formato: subconjunto simples de YAML (ver scripts/tags.mjs). Descrições sem "#".
+# As tags são preenchidas na Fase 3 (node scripts/tags.mjs init --write) a partir dos posts convertidos.
+
+tags:                       # tags permitidas (slug: descrição curta)
+  ansible: Ansible
+  argocd: Argo CD e GitOps
+  aws: Amazon Web Services
+  bash: Bash e shell script
+  cdk: AWS CDK
+  ci-cd: Integração e entrega contínuas
+  cka: Certificação CKA
+  cloud: Computação em nuvem
+  containers: Containers
+  docker: Docker
+  ecs: Amazon ECS
+  elasticsearch: Elasticsearch
+  failover: Failover e alta disponibilidade
+  fe: Fé e vida cristã
+  fluxcd: Flux CD
+  gcp: Google Cloud
+  git: Git
+  gitlab: GitLab
+  gitops: GitOps
+  gogs: Gogs
+  golang: Linguagem Go
+  grafana: Grafana
+  graylog: Graylog
+  helm: Helm e Helm Charts
+  homelab: Homelab e laboratórios de estudo
+  ia: Inteligência artificial
+  iac: Infraestrutura como código
+  istio: Istio
+  jenkins: Jenkins
+  k0s: k0s
+  kibana: Kibana
+  kms: Gerenciamento de chaves (KMS)
+  kubernetes: Kubernetes e ecossistema
+  langchain: LangChain
+  linux: GNU/Linux
+  logstash: Logstash
+  maven: Apache Maven
+  mikrotik: MikroTik
+  mysql: MySQL
+  nexus: Sonatype Nexus
+  observability: Observabilidade e monitoramento
+  portainer: Portainer
+  prometheus: Prometheus
+  puppet: Puppet
+  python: Python
+  rabbitmq: RabbitMQ
+  redmine: Redmine
+  saltstack: SaltStack
+  service-mesh: Service mesh
+  sonarqube: SonarQube
+  sops: SOPS (segredos criptografados)
+  swarm: Docker Swarm
+  terraform: Terraform
+  vault: HashiCorp Vault
+  victoriametrics: VictoriaMetrics
+  wordpress: WordPress
+  zabbix: Zabbix
+
+sinonimos:                  # variação -> tag oficial (make fix-tags corrige)
+  argo-cd: argocd
+  container: containers
+  conteiner: containers
+  continua: ci-cd
+  elastic: elasticsearch
+  fail: failover
+  flux: fluxcd
+  gke: gcp
+  go: golang
+  google-cloud: gcp
+  homelab-automation: homelab
+  homelab-setup: homelab
+  infraascode: iac
+  integracao: ci-cd
+  k8s: kubernetes
+  mesh: service-mesh
+  monitoring: observability
+  over: failover
+  salt: saltstack
+  script: bash
+  shell: bash
+  sonatype: nexus
+  zabbix-br: zabbix
+
+categorias: [tutoriais, devops, docker, kubernetes, git, cluster, gitops, zabbix-2, go, prometheus, vault, grafana, jenkins, puppet, ansible, ia, mikrotik, saltstack, terraform]
+
+regras:
+  max_tags_por_post: 5
+  min_tags_por_post: 1
+  proibidas: [devops, tutorial, tutoriais-2]   # já são categorias

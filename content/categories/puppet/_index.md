@@ -1,0 +1,5 @@
+---
+slug: "puppet"
+title: "Puppet"
+---
+

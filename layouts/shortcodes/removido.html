@@ -1,0 +1,9 @@
+{{- /*
+  Mídia ou arquivo que não existe mais na fonte original (link morto). Mostra só o nome, sem link,
+  com um tooltip explicando a remoção (title + aria-label; focável pelo teclado).
+  Uso: {{< removido nome="arquivo.pdf" [tipo="arquivo|imagem"] >}}
+*/ -}}
+{{- $nome := .Get "nome" | default "arquivo" -}}
+{{- $tipo := .Get "tipo" | default "arquivo" -}}
+{{- $dica := printf "%s removido: \"%s\" não está mais disponível no site de origem." (cond (eq $tipo "imagem") "Imagem" "Arquivo") $nome -}}
+<span class="midia-removida" title="{{ $dica }}" aria-label="{{ $dica }}" tabindex="0">{{ $nome }}</span>

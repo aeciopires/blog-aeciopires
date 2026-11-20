@@ -1,0 +1,4 @@
+{{- /*
+  Mininuvem de tags da home (PLAN.md 3.2.2). Uso: {{< nuvem-tags limite="20" >}}
+*/ -}}
+{{- partial "tag-cloud.html" (dict "limite" (.Get "limite" | default "20" | int) "botoes" true) -}}

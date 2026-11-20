@@ -1,0 +1,9 @@
+# Comentários do blog antigo (WordPress), somente leitura. Só nome, data e texto (PLAN.md 6.5).
+- id: 31223
+  nome: "Carlos Alberto Caldas da Silva"
+  data: "2016-06-15T19:10:49-03:00"
+  texto: "Boa Tarde,\n\nRecentemente adquiri a excelente publicação desenvolvida pelo senhor em conjunto com o Adail Spínola Horst  e André Luis Boni Déo. Pesquisei o livro mas não encontrei nenhuma forma de atender a uma necessidade básica do órgão público no qual trabalho: Um template ou um plugin do Zabbix que permita emitir relatórios de indisponibilidade para que possamos emitir um relatório com os dias e horários de indisponibilidade bem como o total em minutos de indisponibilidade para realizarmos o desconto na fatura das operadoras de link de dados. Algo próximo do mencionado no link abaixo:\n\nhttp://fmpfm.edu.br/intercienciaesociedade/colecao/online/v2_n2/8_gerenciamento_dos_indicadores.pdf\n\nPergunto: existe alguma solução livre (plugin, template etc) que permita extrair essa informação pelo Zabbix? Necessito de algo livre pois, em virtude da crise orçamentária, não dispomos de recursos financeiros para realizar qualquer tipo de contratação. Atualmente fazemos a extração do CSV dos eventos e trabalhamos o arquivo mediante uma macro do Excel."
+- id: 31224
+  nome: "Aécio Pires"
+  data: "2016-06-16T15:53:53-03:00"
+  texto: "Boa tarde, Carlos!\n\nMuito obrigado pelo elogio. Que bom que o livro lhe é bastante útil. :-)\n\nInfelizmente eu não sei responder a sua pergunta porque ainda não tive esta necessidade. Eu sugiro você perguntar na comunidade Zabbix-BR através dos canais abaixo.\n\nZabbix-BR no Yahoo Groups: http://br.groups.yahoo.com/group/zabbix-brasil/\n\nHistórico de assuntos e soluções abordadas: https://br.groups.yahoo.com/neo/groups/zabbix-brasil/conversations/trending\n\nZabbix-BR no Facebook: https://www.facebook.com/groups/zabbixbrasil\n\nAbraço e fica com Deus."

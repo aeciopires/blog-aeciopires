@@ -1,0 +1,61 @@
+# Comentários do blog antigo (WordPress), somente leitura. Só nome, data e texto (PLAN.md 6.5).
+- id: 131
+  nome: "Cristiano"
+  data: "2010-06-04T14:34:22-03:00"
+  texto: "Olá Aécio..Gostei muito do seu incentivo na utilização do TCOS e realmente ele eh umferramenta muito melhor q o ltsp. porém estou tentando montar um servidor debian 5.0.4 e não consigo intalar o tcos, ele retorna um dizer falando q os pacotes estão quebrados. Uso a source lenny main... gostaria de alguma dicas. Valeu"
+- id: 423
+  nome: "John"
+  data: "2010-11-18T16:28:09-03:00"
+  texto: "Olá!\nTenho acompanhado alguns artigos sobre TCOS e me interessei muito já que parece resolver algumas pendências do famoso LSTP. Porem não estou conseguindo instalar o TCOS no Debian Lenny.\nO problema é que não está criando arquivos no init.d entre outros para inicialização do serviço. Pode me ajudar?\n\nParabens pelo grande trabalho que tem feito, um abraço!"
+- id: 430
+  nome: "Aécio Pires"
+  data: "2010-11-19T22:36:04-03:00"
+  texto: "Olá, Cristiano e Jonh!\n\nObrigado pelos elogios. Fico alegre ao saber que vocês gostaram do projeto e estão tentando utilizá-lo.\n\nGostaria muito de poder ajudá-los, mas já faz um ano que venho me dedicando ao trabalho e a outros projetos de software livre e por estes motivos parei de usar e contribuir com o Projeto TCOS. Nesse meio tempo muita coisa mudou.\n\nMas recomendo que vocês procurem ajuda na comunidade TCOS Brasil (http://groups.google.com/group/tcos_brasil), da qual faz parte o desenvolvedor Mario Izquierdo. Ele é espanhol, mas lê os post escritos em portugûes e responde em espanhol ou inglês.\n\nAté mais e continuem usando TCOS."
+- id: 10422
+  nome: "Rogério Tomassoni"
+  data: "2012-06-11T17:18:48-03:00"
+  texto: "Poderia me ajudar com algumas duvidas do Zabbix"
+- id: 17953
+  nome: "joel"
+  data: "2013-04-26T17:21:21-03:00"
+  texto: "Olá tudo bem,\n\n \n\nInstalei o Zabbix, rodando normalmente, porém apresenta a mensagem:\n\n \n\nZabbix server is not runnig: the information displayed may not be current\n\n \n\nVocê pode me ajudar pra remover esta mensagem?\n\n \n\nObrigado."
+- id: 22224
+  nome: "Carlos Testa"
+  data: "2014-04-01T12:06:10-03:00"
+  texto: "Aécio, bom dia.\n\nRecebi uma missão para desvendar este mundo de coletores de indicadores de SO´s e estou necessitando de algumas informações e gostaria de saber se voce poderia me auxiliar nisto.\n\nTenho encontrado muita informação mas todas são para pessoas que já estão dentro deste mundo e o que está me faltando é justamente são os pré-requisitos.\n\nSe voce puder entrar em contato através de e-mail ou gtalk, agradeço pois creio que a conversa seria mais produtiva.\n\nGrato"
+- id: 31114
+  nome: "Renato"
+  data: "2014-10-24T11:22:42-03:00"
+  texto: "E ai Aecio, muito bom seus materiais cara, porém ainda não achei um material que mostrasse qual arquivo alterar para moficiar as cores dos menus do front end do zabbix. Quero substituir o azul, por um vermelho.\n\nAguardo."
+- id: 31116
+  parent: 31114
+  nome: "Aécio Pires"
+  data: "2014-10-27T10:23:40-03:00"
+  texto: "Bom dia, Renato!\n\nQue bom que os materiais lhe foram últeis. Fico contente com isso.\n\nEu também não sei qual arquivo você deve editar para alterar as cores dos menus. Peça ajuda na comunidade  Zabbix-BR que alguém deve saber a resposta.\n\nhttp://br.groups.yahoo.com/group/zabbix-brasil/\n\nAbraço."
+- id: 31159
+  nome: "Ricardo"
+  data: "2015-06-26T15:10:14-03:00"
+  texto: "Olá Aécio,\n\nestou tentando configurar o envio de alertas do Zabbix pelo serviço Followzup, substituindo os alertas por SMS (que são pagos), mas não sei qual módulo seria o mais adequado. Valeu pelo apoio."
+- id: 31160
+  parent: 31159
+  nome: "Aécio Pires"
+  data: "2015-06-26T15:18:40-03:00"
+  texto: "Boa tarde, Ricardo!\n\nÉ a primeira vez que ouço sobre o Followzup. Não sei como ajudá-lo.\nTenta pedir ajuda na comunidade Zabbix-BR  (http://br.groups.yahoo.com/group/zabbix-brasil/). Pode ser que alguém possa lhe ajudar.\n\nAbraço."
+- id: 31197
+  nome: "Eduardo"
+  data: "2016-01-18T22:11:48-03:00"
+  texto: "Aécio, boa noite.\n\nPrimeiro, gostaria de parabenizar por todo conteúdo!\n\nEstou precisando montar um mapa com desenho de um switch, onde as portas devem ficar verde quando up e vermelha quando down.\n\nVocê tem alguma ideia de como posso fazer isso?\n\nObrigado!"
+- id: 31198
+  parent: 31197
+  nome: "Aécio Pires"
+  data: "2016-01-18T23:37:36-03:00"
+  texto: "Boa noite, Eduardo!\n\nObrigado! Que bom que você gostou e espero que o conteúdo seja útil no seu dia a dia.\n\nUma ideia para você montar este mapa é desenhar um switch e importar esta imagem no Zabbix na página Administração > Geral > opção Imagem.\n\nSe cada porta do switch tiver um IP diferente associada a cada uma, você pode fazer uns \"quadradinhos\" vermelhos e verdes para representar quando há algum problema na porta ou não. Neste caso cada porta seria cadastrado como se fosse um host diferente e teria suas próprias triggers e itens a serem coletados.\n\nÉ só uma ideia, eu não sei se é viável pois ainda não precisei fazer isso.\n\nSugiro pedir ajuda também na comunidade Zabbix-BR.\n\nZabbix-BR no Yahoo Groups: http://br.groups.yahoo.com/group/zabbix-brasil/\nHistórico de assuntos e soluções abordadas: https://br.groups.yahoo.com/neo/groups/zabbix-brasil/conversations/trending\nZabbix-BR no Facebook: https://www.facebook.com/groups/zabbixbrasil\n\nAbraço e fica com Deus."
+- id: 31289
+  nome: "wagner"
+  data: "2017-04-03T13:53:49-03:00"
+  texto: "boa tarde Aécio,\n\n \n\nfiz toda instalação do zabbix 3.0 e está funcionando perfeitamente, porém quando vou fazer o discovery das máquinas na rede ele não acha nada, poderia me ajudar?"
+- id: 31290
+  parent: 31289
+  nome: "Aécio Pires"
+  data: "2017-04-03T14:03:45-03:00"
+  texto: "Boa tarde, Wagner!\n\nSugiro você pedir ajuda na comunidade Zabbix-BR.\n\nZabbix-BR no Yahoo Groups:  http://br.groups.yahoo.com/group/zabbix-brasil/\nHistórico no Yahoo Groups: https://br.groups.yahoo.com/neo/groups/zabbix-brasil/conversations/trending\nZabbix-BR no Facebook: https://www.facebook.com/groups/zabbixbrasil\n\nLá você deve postar o problema com mais detalhes, por exemplo: um screenshot da configuração do discovery, o que você tentou fazer e se possível o arquivo de log do Zabbix Server (zabbix_server.log). Mas antes de mandar este log, edita o arquivo de configuração do Zabbix Server (zabbix_server.conf) e muda o parâmetro DebugLevel=4.\n\nCom essas informações eu ou outras pessoas poderão ajudá-lo melhor.\n\nAbraço e fica com Deus. :-)"

@@ -1,0 +1,14 @@
+# Comentários do blog antigo (WordPress), somente leitura. Só nome, data e texto (PLAN.md 6.5).
+- id: 31130
+  nome: "Aécio Pires"
+  data: "2015-01-28T14:18:42-03:00"
+  texto: "Hoje começou a divulgação do livro nas redes sociais. Já sabemos o preço e a quantidade de páginas. Nos próximos dias, o sistema de pré-venda estará disponível no site da Novatec.\n\nPara saber mais detalhes acessem: http://www.novatec.com.br/livros/zabbix/"
+- id: 31143
+  nome: "Rodrigo Miranda"
+  data: "2015-02-11T13:31:22-03:00"
+  texto: "esse livro é recomendado para novatos que querem aprender desde a instalação???"
+- id: 31144
+  parent: 31143
+  nome: "Aécio Pires"
+  data: "2015-02-11T13:33:19-03:00"
+  texto: "Oi, Rodrigo!\n\nÉ sim. O livro é fortemente recomendado desde usuário iniciante a avançado."

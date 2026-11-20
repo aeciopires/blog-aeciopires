@@ -1,0 +1,13 @@
+{{- /*
+  Por página (não cacheado). Na home: redirecionamentos de /?p=ID e /?s=termo (PLAN.md 7.2).
+  O mapa wp_id -> URL vem do front matter `wp_id` dos posts e páginas migrados.
+*/ -}}
+{{- if .IsHome }}
+  {{- $mapa := dict -}}
+  {{- range site.Pages }}
+    {{- $p := . -}}
+    {{- with .Params.wp_id }}{{ $mapa = merge $mapa (dict (string .) $p.RelPermalink) }}{{ end -}}
+  {{- end }}
+  {{- $js := resources.Get "js/legacy-redirect.js" | resources.Minify | resources.Fingerprint (site.Params.fingerprintAlgorithm | default "sha512") }}
+  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" data-map="{{ $mapa | jsonify }}"></script>
+{{- end }}

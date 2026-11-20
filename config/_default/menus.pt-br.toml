@@ -1,0 +1,70 @@
+# Partiu do menus.en.toml do Blowfish v3.10.0.
+# Menu principal (cabeçalho) e rodapé (PLAN.md 3.4).
+
+[[main]]
+  name = "Posts"
+  pageRef = "posts"
+  weight = 10
+
+[[main]]
+  name = "Categorias"
+  pageRef = "categories"
+  weight = 20
+
+[[main]]
+  name = "Tags"
+  pageRef = "tags"
+  weight = 30
+
+[[main]]
+  name = "Cursos"
+  pageRef = "cursos"
+  weight = 40
+
+[[main]]
+  name = "Sobre"
+  pageRef = "sobre"
+  weight = 50
+
+[[main]]
+  name = "Contato"
+  pageRef = "contato"
+  weight = 60
+
+# Ícones dos perfis no cabeçalho. Única exceção à "fonte única" de languages.pt-br.toml,
+# porque menus do Hugo não leem params: ao mudar um perfil, alterar os DOIS arquivos.
+[[main]]
+  identifier = "github"
+  pre = "github"
+  url = "https://github.com/aeciopires"
+  title = "GitHub"
+  weight = 70
+
+[[main]]
+  identifier = "linkedin"
+  pre = "linkedin"
+  url = "https://www.linkedin.com/in/aeciopires"
+  title = "LinkedIn"
+  weight = 80
+
+# -- Rodapé --
+
+[[footer]]
+  name = "Sobre"
+  pageRef = "sobre"
+  weight = 10
+
+[[footer]]
+  name = "Contato"
+  pageRef = "contato"
+  weight = 20
+
+[[footer]]
+  name = "Privacidade"
+  pageRef = "privacidade"
+  weight = 30
+
+[[footer]]
+  name = "Créditos e licenças"
+  pageRef = "creditos"
+  weight = 40

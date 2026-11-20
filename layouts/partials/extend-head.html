@@ -1,0 +1,10 @@
+{{- /*
+  Cacheado pelo tema (partialCached com .Site). Só o que vale para todas as páginas.
+  Cloudflare Web Analytics (PLAN.md 11.7): só no build de produção (nunca no hugo server,
+  nem no make serve-prod) e com token definido.
+  CSP: static.cloudflareinsights.com (script-src) e cloudflareinsights.com (connect-src).
+*/ -}}
+{{- if and hugo.IsProduction (not hugo.IsServer) site.Params.cloudflareAnalytics.token }}
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+    data-cf-beacon='{"token": "{{ site.Params.cloudflareAnalytics.token }}"}'></script>
+{{- end }}

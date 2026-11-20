@@ -1,0 +1,9 @@
+# Comentários do blog antigo (WordPress), somente leitura. Só nome, data e texto (PLAN.md 6.5).
+- id: 31243
+  nome: "Thiago"
+  data: "2016-08-05T13:27:25-03:00"
+  texto: "Muito bacana seu tutorial.\n\nComo eu faço balanceamento meu distance é igual a 1.\nhttps://www.dropbox.com/s/y6sbn2jawo0ben6/conf-limpa.txt?dl=0\nVou tentar implementar seu failover com as distance tambem igual 1, assim acredito que ainda terei meu balanceamento desativando somente o link off."
+- id: 47429
+  nome: "Thiago"
+  data: "2018-08-25T18:35:01-03:00"
+  texto: "Muito bom um dos melhores que ja testei"

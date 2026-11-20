@@ -1,0 +1,15 @@
+/* Tema do giscus para o T9, modo escuro (PLAN.md 6.6). Lido pelo iframe de giscus.app. */
+@import url("https://giscus.app/themes/dark.css");
+
+main {
+  --color-canvas-default: #0d1233;
+  --color-canvas-overlay: #141a45;
+  --color-canvas-inset: #0a0e29;
+  --color-canvas-subtle: #141a45;
+  --color-border-default: #2a3370;
+  --color-border-muted: #20285f;
+  --color-accent-fg: #4a9ef0;
+  --color-accent-emphasis: #2f6fd0;
+  --color-fg-default: #e6e9f8;
+  --color-fg-muted: #a9b1d6;
+}

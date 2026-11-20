@@ -1,0 +1,353 @@
+# Comentários do blog antigo (WordPress), somente leitura. Só nome, data e texto (PLAN.md 6.5).
+- id: 47534
+  nome: "Caio Monteiro"
+  data: "2018-09-04T16:58:38-03:00"
+  texto: "Olha tentei fazer vezes fazendo dessa forma não conseguir, acabei fazendo de um outro tutorial que achei, a parte de instalar os Docker tudo ok, mas na hora de acessar web o Zabbix não aparece de jeito nenhum."
+- id: 47547
+  nome: "Aécio Pires"
+  data: "2018-09-05T17:25:33-03:00"
+  texto: "Boa tarde, Caio!\n\nObrigado por reportar o problema.\nHouveram mudanças na passagem de alguns parâmetros e os conteireres do zabbix-server e zabbix-web não estavam conseguindo acessar o banco de dados.\nEu li a documentação, testei as mudanças e atualizei o tutorial.\n\nPode tentar novamente.\n\nAbraço e fique com Deus. :-)"
+- id: 47611
+  nome: "Leandro Moreira"
+  data: "2018-09-10T21:13:04-03:00"
+  texto: "Aecio, boa noite!\n\nQual e a finalizade de um container com zabbix agent?\n\nAtt."
+- id: 47621
+  parent: 47611
+  nome: "Aécio Pires"
+  data: "2018-09-11T09:29:41-03:00"
+  texto: "Bom dia, Leandro!\n\nO conteiner do Zabbix-Agent iniciado no mesmo host que o Zabbix-Server permite monitorar a si mesmo. :-).\n\nOutro caso de uso é que ao invés de você instalar o Zabbix-Agent manualmente em cada servidor GNU/Linux a ser monitorado, você instala o zabbix-agent via Docker e configura para se conectar ao host que executa o conteiner do Zabbix-Server ou Zabbix-Proxy.\n\nA mesma ideia serve para iniciar o conteiner do Zabbix-Proxy no host GNU/Linux que for destinado a este objetivo.\n\nNo caso do tutorial, eu estou ensinando a instalar todos os conteineres no mesmo host para fins didáticos, mas isso pode ser separado de acordo com a necessidade.\n\nAbraço e fica com Deus."
+- id: 47788
+  nome: "THALES EDUARDO JERONIMO LOPES"
+  data: "2018-09-27T01:25:34-03:00"
+  texto: "Boa noite Aécio. Como vai?\nEstou com um problema.\nQuando subo um container do zabbix agent os dados do container são monitorados. Tem como eu monitorar os dados do host que hospeda o container usando o container do zabbix agent?"
+- id: 47798
+  nome: "Aécio Pires"
+  data: "2018-09-27T12:44:34-03:00"
+  texto: "Bom dia, Thalles!\n\nEntendi o seu problema.\n\nNo host a ser gerenciado, eu inicio o conteiner do Zabbix Agent conforme mostrado no passo 7 do tutorial e na interface web do Zabbix Server eu cadastro o host informando o IP ou nome DNS do computador que executa o conteiner e coloco no campo Nome do Host, o mesmo nome passado como parâmetro na inicialização do conteiner em \"ZBX_HOSTNAME\".\n\nDessa forma eu consigo ver os dados do host que executa o conteiner e não do conteiner em si.\n\nSegue algumas imagens de  exemplo:\n\nhttp://blog.aeciopires.com/wp-content/uploads/2018/09/d.png\n\nAbraço e fica com Deus."
+- id: 47802
+  nome: "Thales Lopes"
+  data: "2018-09-27T21:42:15-03:00"
+  texto: "Boa noite Aécio.\n\nPrimeiramente, obrigado pela resposta.\n\nEu fiz exatamente como mencionado, inclusive antes de chegar em seu blog e também repeti o seu tutorial mas continuo com o problema.\n\nO container está compartilhando os recursos da máquina, então o load, por exemplo, é o mesmo valor no host e no container. Mas alguns itens, mostram que o que está sendo monitorado é o container, como por exemplo o hostname(está tendo o valor do hostname do container), e os monitoramentos de espaço em disco. O discover que uso descobriu somente os discos de dentro do container.\n\nO comando que estou usando é esse:  docker run --rm --name zabbix-agent -e ZBX_HOSTNAME=\"Maquina-Thales\" -e ZBX_SERVER_HOST=\"172.17.42.1\" -p 10050:10050 -d zabbix/zabbix-agent:centos-3.4.10\n\nO ip do server é esse pois estou usando um proxy em docker.\n\nVocê enxerga algum erro meu?\n\nObrigado."
+- id: 47811
+  parent: 47802
+  nome: "Aécio Pires"
+  data: "2018-09-28T12:00:14-03:00"
+  texto: "Bom dia, Thales!\n\nObrigado pelo envio de detalhes... Usei basicamente o mesmo comando que você mudando o valor de alguns parâmetros para estar em conformidade com o meu ambiente de teste.\n\nRealmente olhando com mais atenção percebi que aqui o hostname e uso do disco também estava sendo coletado do conteiner e não do host que hospeda o conteiner. Eu passei desapercebido ao olhar apenas para itens como a hora, uso da memória e CPU...\n\nNeste caso, a solução (seguindo a mesma lógica do passo 7) é a seguinte.\n\nVERSAO_MAIOR_ZABBIX=3.4\n\ndocker run -d --name zabbix-agent \\\n  --net=host \\\n  --hostname \"$(hostname)\" \\\n  --privileged \\\n  -v /:/rootfs \\\n  -v /var/run:/var/run \\\n  --restart always  \\\n  -p 10050:10050  \\\n  -e ZBX_HOSTNAME=\"$(hostname)\"  \\\n  -e ZBX_SERVER_HOST=\"ip-ou-nome-dns-zabbix-server\" \\\nzabbix/zabbix-agent:ubuntu-$VERSAO_MAIOR_ZABBIX-latest\n\nObserve a diferença nos parâmetros do comando que você usou com este novo.\n\nLembrando que no caso do monitoramento do disco, o / do host que hospeda o conteiner aparecerá com /rootfs e o /home como /rootfs/home, pois ao subir o conteiner o / está sendo mapeado como um volume Docker em /rootfs.\n\nEu ajustei isso no passo 7 do tutorial.\n\nFonte: https://zabbix.org/wiki/Dockerized_Zabbix"
+- id: 48045
+  nome: "Ricardo Ferrigno"
+  data: "2018-10-17T11:40:35-03:00"
+  texto: "Quero instalar o Zabbix Proxy no Docker para Windows, é possível?"
+- id: 48046
+  nome: "Ricardo Ferrigno"
+  data: "2018-10-17T11:47:44-03:00"
+  texto: "Aécio bom dia. Queremos ter um Zabbix Proxy num ambiente que só tenho máquinas com Windows. Conseguimos instalar um Docker para Windows que rode o zabbix Proxy?"
+- id: 48049
+  parent: 48046
+  nome: "Aécio Pires"
+  data: "2018-10-17T15:26:43-03:00"
+  texto: "Boa tarde, Ricardo!\n\nDe acordo com a documentação do Zabbix, só é possível instalar no Windows o Zabbix Agent. O Zabbix Proxy e Zabbix Server só funcionam em sistemas GNU/Linux ou Unix (Mac OS, FreeBSD, etc) (https://www.zabbix.com/documentation/current/manual/installation/requirements).\n\nNa documentação das imagens Docker do Zabbix Proxy não há suporte a Windows. (https://hub.docker.com/r/zabbix/zabbix-proxy-sqlite3).\n\nEm 2017, foi disponibilizada uma atualização no Windows e no Docker para permitir executar conteineres Linux no Windows, antes não era possível justamente porque um conteiner Docker é um processo que conversa com o kernel do sistema operacional que hospeda os conteineres... numa máquina virtual isso não acontece.\n\nMas este tipo de execução não é nativo e requer algumas configurações... eu ainda não testei, então não posso dizer se vai ou não funcionar. Mas se quiser testar e saber mais sobre o assunto, comece pelos links abaixo.\n\nhttps://blog.docker.com/2017/09/preview-linux-containers-on-windows/\nhttps://forums.docker.com/t/enable-linux-containers-on-windows/45508/13\nhttps://www.lambda3.com.br/2017/10/contineres-linux-no-windows-nativamente-sem-mquina-virtual/\nhttps://tutorials.ubuntu.com/tutorial/tutorial-windows-ubuntu-hyperv-containers#0\nhttps://www.hanselman.com/blog/DockerAndLinuxContainersOnWindowsWithOrWithoutHyperVVirtualMachines.aspx\n\nAbraço e fica com Deus."
+- id: 48078
+  nome: "Diego Rodrigues"
+  data: "2018-10-20T03:38:51-03:00"
+  texto: "Ricardo Ferrigno, o Zabbix Proxy não roda diretamente no windows, mas você pode tentar utilizar o docher-machine e gerenciar um container no hyper-V.\n\nhttps://docs.docker.com/machine/drivers/hyper-v/#environment-variables-and-default-values"
+- id: 48507
+  nome: "Helton Lima Brito"
+  data: "2018-11-30T16:46:22-03:00"
+  texto: "boa tarde Aecio Pires como que agente faz pra configurar o serviço de alerta via telegram no zabbix conteinerizado ?"
+- id: 48555
+  parent: 48507
+  nome: "Aécio Pires"
+  data: "2018-12-09T19:27:24-03:00"
+  texto: "Boa noite, Helton!\n\nEu não sei. Essa funcionalidade é nativa do Zabbix Agent? Se não for, acho que você terá que customizar uma imagem docker do Zabbix Agent para fazer isso ou então isso é configurado em outro local. Enfim, quando descobrir a solução, compartilha aqui.\n\nAbraço e fica com Deus."
+- id: 48529
+  nome: "Celio"
+  data: "2018-12-04T15:41:05-03:00"
+  texto: "Boa tarde Aécio. Não consigo validar o passo 7. Ao analisar os logs do agent vi que ele está passando o nome do host local e não do server.\nMuito bom o tutorial."
+- id: 48556
+  parent: 48529
+  nome: "Aécio Pires"
+  data: "2018-12-09T19:33:12-03:00"
+  texto: "Boa noite, Célio!\n\nEsse é o comportamento esperado.\nTanto o Zabbix Server como o Zabbix Agent estão executando em conteineres diferentes no mesmo host.\nAo executar o Zabbix Agent ele vai coletar dados do host e não do conteiner Docker que executa o Zabbix Server.\n\nÉ uma mudança de paradigma.\n\nAbraço e fica com Deus."
+- id: 48800
+  nome: "Fábio Basil"
+  data: "2019-01-24T14:26:36-03:00"
+  texto: "Boa tarde, Aécio!\n\nEstou eu, em 2019, instalando por esse tutorial.\nPor meio do pull baixei as imagens atualizadas e tudo está rodando redondo.\nMas infelizmente não consigo pôr o zabbix-agent para conectar ao servidor.\n\nVerifiquei que a network utilizada no zabbix-agent era a \"host\" e não \"briged\" como por padrão os contêineres criados usam.\nPus na mesma network, todos se pingam, mas infelizmente ainda dá erro de conexão do zabbix-agent com o zabbix-server. Verifiquei DNS, IP, PORTs e o que mais poderia não estar errado, infelizmente estou a 2 dias nessa e não consegui nenhuma solução pela internet.\n\nSabe informar o que pode estar causando tal comportamento?\n\nErro: active check configuration update from [zabbix-server:10051] started to fail (cannot resolve [zabbix-server])"
+- id: 48821
+  parent: 48800
+  nome: "Aécio Pires"
+  data: "2019-01-27T10:46:02-03:00"
+  texto: "Olá, Fábio!\n\nSe você observar os demais comentários deste post, verá que o agente está na network 'host' para permitir coletar dados da máquina que hospeda o conteiner do agente. Se ele ficasse na network 'bridge' ele coletaria dados apenas do conteiner do agente e não do host que o hospeda. Entendeu a diferença?\n\nRepeti os passos do tutorial. A mensagem de erro da checagem ativa aconteceu comigo. As causas/soluções foram:\n\n1- O host que hospeda o conteiner do zabbix-agent não estava cadastrado na interface web para ser monitorado. Aqui vale o cuidado de informar o IP da interface de rede do host e não do conteiner. Exemplo: 192.168.0.31\n\n2- O Zabbix Server tentava comunicação com agente informando o IP do conteiner do zabbix-server, mas ao criar o conteiner do zabbix-agent tinha sido informado o IP que hospeda o conteiner do zabbix-server. A solução pode ser remover o conteiner do Zabbix Agent e criá-lo novamente informando no parâmetro 'ZBX_SERVER_HOST' todos os IPs possíveis que podem ser usados pelo conteiner do Zabbix Server. Exemplo: -e ZBX_SERVER_HOST=\"172.17.0.3,172.17.0.1,192.168.0.31\"\n\nDessa forma, o comando que cria o conteiner do Zabbix Agent seria:\n\nVERSAO_MAIOR_ZABBIX=4.0\n\ndocker run -d --name zabbix-agent  --net=host  --hostname \"$(hostname)\"  --privileged  -v /:/rootfs  -v /var/run:/var/run  --restart always  -p 10050:10050  -e ZBX_HOSTNAME=\"$(hostname)\"  -e ZBX_SERVER_HOST=\"172.17.0.3,172.17.0.1,192.168.0.31\"  zabbix/zabbix-agent:ubuntu-$VERSAO_MAIOR_ZABBIX-latest\n\nPara descobrir qual o IP que foi atribuído ao conteiner do Zabbix Server, use o comando:\n\ndocker inspect zabbix-server | grep \"IPAddress\"\n\nAbraço e fica com Deus"
+- id: 49073
+  nome: "Hugo Costa"
+  data: "2019-02-24T15:28:27-03:00"
+  texto: "Oi, antes de tudo parabéns pelo manual..\n\nNão estou conseguindo fazer o zabbix-agent monitorar o server, no logs do container, mostra sempre conexão recusada...\n\n No parâmetro ZBX_SERVER_HOST, etou colocando o ip que é mostrado no comando abaixo:\ndocker inspect zabbix-server | grep \"IPAddress\""
+- id: 49340
+  nome: "Madson Braz"
+  data: "2019-03-20T15:53:18-03:00"
+  texto: "Primeiramente, parabenizar pelo material, muito bom.\n\nNão conheço nada de Docker, estou tendo o primeiro contato com ele a través desse material. Tive um problema recente com o mysql(mariadb) e acabei perdendo todos os dados de um sistema interno aqui da empresa. Não era nada importante, mas aconteceu. Com isso vi no docker a solução para que um sistema não interfira no funcionamento do outro e que em caso de pane eu consiga rapidamente portar a aplicação para outra maquina até resolver o problema na maquina de origem.\n\nTenho uma maquina com ubuntu rodando mariadb, apache e php. Comecei a instalação usando o seu material, em alguns momentos deu conflito de porta no mysql(3306) e no apache(80), isso deveria acontecer? Onde pede o IP do host, devo colocar o IP da maquina linux ou especificar um IP para o docker dentro do range de IPs da minha rede.\n\nDe antemão peço desculpas pelo nível das perguntas."
+- id: 49358
+  parent: 49340
+  nome: "Aécio Pires"
+  data: "2019-03-22T10:47:55-03:00"
+  texto: "Bom dia, Madson!\n\nFico alegre em saber que o material e conhecimento compartilhado está sendo útil no seu dia a dia.\n\nOnde tem o IP do Host é para colocar o IP do servidor físico ou da máquina virtual que executa os conteineres Docker.\n\nQuanto ao conflito de portas pode acontecere sim. Para resolver você muda a porta do host na opção -p PORTA-HOST:PORTA-CONTEINER.\n\nExemplo:\n\nPara o primeiro conteiner do MySQL: seria -p 3306:3306.\n\nPara o segundo conteiner do MySQL (a ser executado no mesmo servidor ou máquina virtual que o primeiro conteiner MySQL) seria: -p 3307:3306.\n\nConseguiu entender?\n\nNa página tem muitas informações sobre como aprender Docker:\n\nhttp://blog.aeciopires.com/primeiros-passos-com-docker/\n\nBons estudos\n\nAbraço e fica com Deus."
+- id: 49535
+  nome: "ROBERTO"
+  data: "2019-04-02T20:22:23-03:00"
+  texto: "Onde consigo encontrar as mudanças que fazem com que os conteireres do zabbix-server e zabbix-web passem a acessar o banco de dados?"
+- id: 49558
+  nome: "Israel Costa"
+  data: "2019-04-04T13:38:11-03:00"
+  texto: "Boa tarde Aécio, tudo bom?\n\nSeu tutorial é orientador. Muito bom a iniciativa!\nParabéns!\n\nUso na empresa que estou o Rancher para fazer a orquestração dos dockers.\nQuero subir o zabbix para fazer o monitoramento.\n\nMas estou enfrentando o problema da não conexão do agente com o server-zabbix.\nEstou fazendo na minha máquina o teste e ta dando a mensagem:\nno active checks on server [192.168.168.68:10051]: host [albatroz-pc] not found\n\nO comando do em docker é:\n\ndocker run -d --name zabbix-agent --net=host --hostname \"$(hostname)\" --privileged -v /:/rootfs -v /var/run:/var/run --restart always -p 10050:10050 -e ZBX_HOSTNAME=\"$(hostname)\" -e ZBX_SERVER_HOST=\"192.168.168.68\" zabbix/zabbix-agent:ubuntu-$VERSAO_MAIOR_ZABBIX-latest\n\nAonde estou errando? pode me ajudar por favor?\n\nAgradecido desde já"
+- id: 49559
+  nome: "Aécio Pires"
+  data: "2019-04-04T14:31:17-03:00"
+  texto: "Boa tarde, Israel!\n\nMuito obrigado pelo retorno e que bom saber que o tutorial está sendo útil no seu dia a dia.\n\nPela mensagem do log, significa que o Zabbix Server não esta coletando itens via agente zabbix no modo ativo, mas a configuração que você fez é suficiente para monitorar usando o agente no modo passivo que é o padrão.\n\nEntenda a diferença entre modo passivo e ativo no link abaixo\n\nhttps://www.zabbix.com/documentation/4.2/manual/appendix/items/activepassive\n\nAbraço e fica com Deus"
+- id: 49560
+  nome: "Aécio Pires"
+  data: "2019-04-04T14:34:53-03:00"
+  texto: "Boa tarde, Roberto!\n\nLeia com  calma e atenção os comandos e parâmetros mostrados no tutorial que você conseguirá entender o que precisa ser feito para o conteiner do Zabbix Web e Zabbix Server acessar o banco de dados.\n\nAbraço e fica com Deus"
+- id: 50060
+  nome: "Renato"
+  data: "2019-05-13T17:04:31-03:00"
+  texto: "Excelente, adicionei seus scripts num compose, segue: https://github.com/renasti/docker-zabbix"
+- id: 50066
+  parent: 50060
+  nome: "Aécio Pires"
+  data: "2019-05-14T11:52:06-03:00"
+  texto: "Bom dia, Renato!\n\nMe sinto honrado em saber que o conteúdo do post lhe ajudou de alguma forma.\n\nMuito obrigado por desenvolver e compartilhar este arquivo.\n\nEu consegui entender o que você implementou e já fiz um fork.\n\nAbraço e fica com Deus."
+- id: 50187
+  nome: "Clauber Teles"
+  data: "2019-06-09T06:30:26-03:00"
+  texto: "Oi Aécio, bom dia.\n\nPrimeiramente, obrigado pelo tutorial tão explicativo e detalhado, consegui executar todos os passos com sucesso, com exceção do passo 7. Você poderia me ajudar?\n\nO Agente zabbix não está UP segundo o servidor Zabbix, é exibida a seguinte mensagem \"Zabbix agent on Zabbix server is unreachable for 5 minutes\". Eu vi seu comentário em resposta ao \"Fabio\", sobre adicionar mais outros IPs na variável \" -e ZBX_SERVER_HOST\" mas não deu certo também...\n\nMe ajuda a entender mais isso, por que o agente zabbix tem que monitorar a máquina hospedeira? Não é pra monitorar o próprio servidor zabbix que está em um container?\n\nEu não entendi o motivo de usar o tipo de interface de rede \"host\" mas aí você especifica nas variáveis o hostname da máquina física, e no IP do Server Host, você coloca o IP do container do Servidor Zabbix.\n\nFiquei bem confuso nisso, você poderia ajudar a solucionar este problema?"
+- id: 50213
+  parent: 50187
+  nome: "Aécio Pires"
+  data: "2019-06-15T08:48:54-03:00"
+  texto: "Bom dia, Clauber!\n\nObrigado pelo feedback e é bom saber que o conteúdo está lhe ajudando de alguma forma.\n\nO conteiner do Agente Zabbix não vai conseguir monitorar o Zabbix Server que está dentro de outro conteiner da mesma forma que é feita numa máquina virtual.\n\nO conteiner do Agente Zabbix monitora o Docker Host, que também executa o conteiner do Zabbix Server.\n\nNo fim das contas o funcionamento da comunicação entre o Zabbix Server e o Agente Zabbix fica semelhante ao de uma máquina virtual, mas com uma mudança de paradigma aqui. Fica mais complexo entender mesmo...\n\nO conteiner do Agente Zabbix está usando a interface host que é para acessar os conteineres e também resolver o nome DNS usando as configurações de DNS definidas no Docker host no arquivo /etc/resolv.conf e/ou manualmente no arquivo /etc/hosts. Onde lá eu posso criar nomes estáticos e apontar para IPs dos conteineres do Zabbix Server, Zabbix Web... para facilitar a configuração, caso esses conteineres mudem de IP após um restart do Docker Host ou dos próprios conteineres. É por isso que também defini o IP do conteiner do Zabbix Server na variável de ambiente... (porque no tutorial eu não estou criando o nome no arquivo /etc/hosts... mas se criar, eu passo o nome e não o IP do conteiner). Isso também é necessário porque quando o Zabbix Server vai conversar com o Agente Zabbix, ele chega através do IP do conteiner e não do IP do Docker Host, entende? Mas aí na interface web do Zabbix, eu coloco o IP do Docker Host ou um nome que aponte para esse IP no cadastro do host Zabbix Server para evitar alterar esse cadastro toda vez que o IP do conteiner do Zabbix Server mudar.\n\nEu sei que ficou confuso entender... talvez eu não tenha encontrado a didática certa para mostrar... Se conseguir entender e tiver uma forma mais simples de explicar, me avisa que alterarei o conteúdo do post.\n\nAbraço e fica com Deus!"
+- id: 50223
+  nome: "Madson Braz"
+  data: "2019-06-17T12:24:38-03:00"
+  texto: "Aécio, obrigado pela atenção e disponibilidade em nos ajudar com nossas dúvidas.\n\nEstou instalando um script php que faz o registro de chamado no Glpi quando uma ação um incidente é disparado no Zabbix.\nEsse script é colocado na pasta /usr/lib/zabbix/externalscripts e o fiz no container zabbix-server, seria esse container o correto? ou seria o zabbix-web?\nCaso afirmativo, como faço para testar, pois no zabbix-server não tem PHP, consigo chamar o script a partir do zabbix-web(que tem php instalado) apontando para o diretorio no zabbix-server?"
+- id: 50371
+  parent: 50223
+  nome: "Aécio Pires"
+  data: "2019-07-10T00:51:01-03:00"
+  texto: "Boa noite, Madson!\n\nEu entendi o seu problema, mas isso é algo que ainda não precisei fazer. Você conseguiu resolver? Pode compartilhar a solução?\n\nAbraço e fica com Deus"
+- id: 50256
+  nome: "Clauber Teles"
+  data: "2019-06-22T19:28:44-03:00"
+  texto: "Aécio, obrigado pelo esclarecimento. De fato, agora eu entendi o que você falou.\n\nNas instalações padrões do Zabbix (sem ser em container) o zabbix-agent é o próprio zabbix-server (fazendo uma analogia dentro do ambiente Docker), por isso lá dentro do host Zabbix Server na interface web o IP está 127.0.0.1, ou seja, o zabbix-agent é ele mesmo.\n\nSó que trazendo pro ambiente Docker eles são coisas diferentes (estão em containers diferentes) então essas configurações precisam ser mudadas... daí eu me questionei \"Por que não só iniciar o container do zabbix-agent com a network \"bridge\" e na interface web do servidor zabbix apontar pro IP do container do zabbix-agent dentro do host Zabbix Server?\"\n\nMas aí você respondeu: \"Não queremos monitorar apenas o container zabbix-agent mas sim todos os containers\". Dessa forma, precisamos iniciar o container do zabbix-agent com a network \"host\" pra que a própria máquina física (hospedeira) seja o zabbix-agent, então apontamos na variável de ambiente \"ZBX_SERVER_HOST\" todos os IPs possíveis do container zabbix-server pra comunicação entre ambos, e na hora de configurar na interface web o host Zabbix Server, basta trocar o 127.0.0.1 já que o zabbix-agent não é mais o próprio servidor zabbix, mas agora é a máquina hospedeira, trocando então para o endereço da máquina física, no seu exemplo, o IP 192.168.0.31.\n\nUfa, realmente é beeeeem complicado entender isso. Eu li e reli várias e várias vezes já tava super confuso mas consegui captar a ideia no final das contas, eu acho... pelo menos aqui eu consegui eliminar a mensagem de alerta. Obrigado pelos esclarecimentos. Foram de grande ajuda, seu blog é sensacional, eu que sou novo nessa área de DevOps consegui compreender perfeitamente. Abraço :)"
+- id: 50370
+  nome: "Aécio Pires"
+  data: "2019-07-10T00:47:17-03:00"
+  texto: "Boa noite, Clauber!\n\nVocê entendeu a ideia perfeitamente e explicou melhor que eu. Isso ajudará outras pessoas com a mesma dúvida.\n\nObrigado pelo retorno!\n\nAbraço e fica com Deus"
+- id: 50512
+  nome: "mendes"
+  data: "2019-08-07T19:24:03-03:00"
+  texto: "muito interessante seus conteúdos gostei muito deles. Parabéns :)"
+- id: 50522
+  parent: 50512
+  nome: "Aécio Pires"
+  data: "2019-08-11T02:46:01-03:00"
+  texto: "Obrigado Mendes! Fico contente em saber que posso ajudá-lo.\n\nAbraço e fica com Deus"
+- id: 50669
+  nome: "Guilherme Xavier"
+  data: "2019-09-09T17:14:42-03:00"
+  texto: "Boa tarde Aécio, parabéns pelo ótimo tutorial. Estamos iniciando a criação de um ambiente de monitoramento usando zabbix e gostaria de saber se é uma boa prática criar um ambiente de testes do Zabbix usando docker? Meu objetivo principal não seria comparar performance mas sim pode testar configurações em um outro ambiente."
+- id: 50682
+  parent: 50669
+  nome: "Aécio Pires"
+  data: "2019-09-12T11:27:17-03:00"
+  texto: "Bom dia, Guilherme!\n\nMuito obrigado pelo feedback. Concerteza é uma ótima prática. Eu faço isso! :-) Inclusive a Zabbix SIA recomenda usar Zabbix em conteiner Docker no ambiente de produção conforme explicado na minha palestra: https://www.slideshare.net/aeciopires/zabbix-grafana-e-os-conteineres-docker\n\nAbraço e fica com Deus."
+- id: 50851
+  nome: "Luiz Otávio"
+  data: "2019-10-29T22:39:02-03:00"
+  texto: "Boa noite Aécio, primeiramente muito obrigado, seu conteúdo foi muito esclarecedor. Estou trabalhando com a versão 4.4 do zabbix, mas estou rodando os containers em um swarm, sendo assim meu container server, front e db estão sendo executado em hosts diferentementes. Até aí não tenho problemas todas os containers estão se comunicando normalmente pelo stack contudo não consigo monitorar o host onde o container do server está sendo executado, consegue me dar uma luz de como posso tratar isso?"
+- id: 50861
+  parent: 50851
+  nome: "Aécio Pires"
+  data: "2019-11-01T08:47:47-03:00"
+  texto: "Bom dia, Luiz!\n\nMuito obrigado pelo feedback. Que bom saber que lhe foi útil.\n\nNeste mesmo tutorial de instalação do Zabbix com Docker, eu estou dando um exemplo de como monitorar o host que hospeda os conteineres através da execução do Zabbix Agent também em Docker. Lembre-se de informar o endereço IP do host no parâmetro de inicialização. Você pode passar mais de um IP no parâmetro, separando-os por vírgula.\n\nUm coisa que percebi olhando os logs do Zabbix Agent é que precisei informar também o IP do conteiner do Zabbix server... o problema é que o IP do conteiner do Zabbix Server muda quando o conteiner for descartado.\n\nMas a princípio a solução é essa. Se tiver outra, compartilha comigo.\n\nAbraço."
+- id: 51277
+  nome: "Mateus"
+  data: "2020-01-24T17:13:12-03:00"
+  texto: "Boa Tarde Aécio,\nUma dúvida, você tem algum post sobre depois de subir o zabbix server de como configurar o host para monitorar meus conteiners do Docker, estou com problemas de encontrar material para me auxiliar nessa tarefa!"
+- id: 51346
+  parent: 51277
+  nome: "Aécio Pires"
+  data: "2020-02-02T00:56:38-03:00"
+  texto: "Boa noite, Mateus!\n\nEu não tenho um tutorial sobre isso, mas ano passado eu apresentei uma palestra sobre esse tema:\nhttps://www.slideshare.net/aeciopires/zabbix-grafana-e-os-conteineres-docker\n\nE disponibilizei o template e os comandos neste repositório do GitHub: https://www.slideshare.net/aeciopires/zabbix-grafana-e-os-conteineres-docker\n\nEspero que isso te ajude."
+- id: 51406
+  nome: "Madson Braz"
+  data: "2020-02-13T12:40:13-03:00"
+  texto: "Bom dia Aécio,\n\nReferente a questão da integração do zabbix com o glpi, eu desisti de fazer por script depois que conheci a ferramenta que a Verdanadesk disponibiliza, o Vconnector. Ele é gratuito e ainda tem integração com o telegram.\nhttps://portal.verdanadesk.com/vconnector\n========================================================\n\nVolto aqui para buscar uma outra ajuda, dessa vez quanto a atualização do Zabbix. Atualmente uso a versão 4.2.1 e gostaria de atualizar para a versão 4.4.\nBastaria para os containers, exceto o mysql, excluir as imagens e refazer os passos, exceto o do mysql?\n\nBastaria eu parar todos os containers, excfeto"
+- id: 51424
+  parent: 51406
+  nome: "Aécio Pires"
+  data: "2020-02-16T20:20:51-03:00"
+  texto: "Boa noite, Madson!\n\nSim, para atualizar o Zabbix rodando em conteiners, o procedimento é baixar as novas imagens Docker do Zabbix, remover os conteineres atuais (parar e remover) e iniciar os novos conteineres referenciando as novas imagens Docker do Zabbix. O conteiner do MySQL não precisa ser parado.\n\nRecomendo testar os procedimentos de atualização num ambiente de teste/homologação, testar tudo para ver se não haverá problemas, documentar o que será feito e só depois fazer em produção. :-)\n\nAbraço e fica com Deus."
+- id: 51797
+  nome: "Tales Pontes"
+  data: "2020-04-16T10:00:38-03:00"
+  texto: "Bom dia, Aécio!\nVc indicaria usar toda a solução Zabbix em docker para monitoração de um grande ambiente?"
+- id: 51827
+  parent: 51797
+  nome: "Aécio Pires"
+  data: "2020-04-21T16:26:05-03:00"
+  texto: "Bom dia, Tales!\n\nIndependente do tamanho do ambiente, eu indico usar Zabbix em Docker. E a própria Zabbix SIA indica o uso em produção. Veja os links abaixo:\n\n* https://twitter.com/zabbix/status/1132947004668207106\n* https://blog.zabbix.com/zabbix-docker-containers/7150/\n* https://www.youtube.com/watch?v=ScKlF0ICVYA\n* https://www.slideshare.net/aeciopires/zabbix-grafana-e-os-conteineres-docker\n* https://github.com/zabbix/zabbix-docker\n* https://share.zabbix.com/virtualization/docker\n* https://hub.docker.com/u/zabbix/\n* https://www.zabbix.com/documentation/current/manual/installation/containers\n\nEu sei que é mais complexo, mas eu tenho experiência em manter ambientes com o Zabbix com instalado via Docker, pacote compilado a partir do código fonte, a partir de pacotes .deb/.rpm e até usando Puppet, Ansible e SaltStack e vi vantagens usando conteineres Docker porque simplifica o processo de instalação, atualização, rollback, testes e throubleshooting.\n\nAbraço e fica com Deus."
+- id: 51986
+  nome: "Tiago Bandeira"
+  data: "2020-05-18T12:55:55-03:00"
+  texto: "Olá Aécio, ótima publicação!\nSempre te acompanho e sigo seus passos em relação ao zabbix e grafana. Até o zabbix 4.4 tudo estava funcionando normalmente, nessa versão 5.0 não consigo abrir a web do zabbix, notei que não está conectado com o mysql apresentando essa mensagem \"mysqladmin: [Warning] Using a password on the command line interface can be insecure.**** MySQL server is not available. Waiting 5 seconds...\n\nCopiei e colei tudo que vc postou e não funciona, o que vc acha que estou fazendo de errado, pois copie e coloei do jeito que está por aí, alterando só o ip do servidor."
+- id: 51987
+  nome: "Aécio Pires"
+  data: "2020-05-18T19:35:56-03:00"
+  texto: "Olá, Tiago!\n\nMuito obrigado! Que bom que o conteúdo é útil e lhe ajuda.\n\nInfelizmente ainda não tive este erro, mas realmente indica que há algum problema ao subir o conteiner do banco de dados. Não sei se notou a diferença, mas ao subir o banco do MySQL 8, é necessário informar uns parâmetros adicionais referentes ao character-server e collection-server, que no tutorial do Zabbix 4.4 e versões anteriores do MySQL não eram necessários. Tenta executar novamente num ambiente zerado... refiz os passos aqui e funcionou comigo.\n\nComo alternativa, veja o tutorial de instalação no manual https://www.zabbix.com/documentation/current/manual/installation/containers\n\nou este usando pacotes no CentOS 8: http://zabbixbrasil.org/files/Tutorial_Zabbix_5.0_CentOS_8_Portugues_via_pacote_v4.pdf\n\nAbraço."
+- id: 52255
+  nome: "Wilian"
+  data: "2020-07-17T06:44:43-03:00"
+  texto: "Poderia fazer um tutorial assim também mas utilizando o postgresql + nginx?\nExcelente seu tutorial, obrigado!"
+- id: 52296
+  parent: 52255
+  nome: "Aécio Pires"
+  data: "2020-07-25T09:06:08-03:00"
+  texto: "Oi, Wilian!\n\nObrigado pelo Feedback. Fiz este tutorial apenas com o objetivo de demonstrar como é a instalação do Zabbix com Docker, mas os cenários de instalação são bem variados e não tenho a pretensão de documentar todos. Pesquisa um pouco e tenta fazer. Dando certo compartilha os resultados aqui nos comentários que atualizarei o tutorial e te darei os créditos! :-) Será útil para ajudar outras pessoas.\n\nAbraço e fica com Deus."
+- id: 53637
+  nome: "Bruno Lino"
+  data: "2021-01-09T19:45:30-03:00"
+  texto: "Depois de instalado o zabbix não está monitorando o server.\n\nGet value from agent failed: cannot connect to [[127.0.0.1]:10050]: [111] Connection refused\n\ncomo posso resolver ?"
+- id: 53661
+  nome: "Aécio Pires"
+  data: "2021-01-12T08:36:59-03:00"
+  texto: "Bom dia, Bruno!\n\nProvavelmente, este erro está ocorrendo porque você está utilizando o endereço 127.0.0.1 para que o contêiner do zabbix-agent acesse o contêiner do zabbix-server (onde ambos estão sendo executados no mesmo servidor físico/virtual).\n\nSe este for o seu caso, troque o 127.0.0.1 pelo IP 172.17.0.1 (IP da interface docker0 criado automaticamente pelo Docker no servidor que executa os contêineres ou troque por outro IP que aparece na interface de rede do servidor físico/virtual). Dessa forma um contêiner tentará se comunicar com outro usando a interface de rede do servidor físico/virtual.\n\nDo ponto de vista do contêiner, se você usar 127.0.0.1, ele tentará acessar usando a interface localhost do próprio contêiner e não do servidor físico/virtual que executa os contêineres. Isso geralmente causa confusão quando estamos trabalhando com contêineres.\n\nAbraço."
+- id: 53667
+  parent: 53661
+  nome: "Bruno Lino"
+  data: "2021-01-12T19:23:36-03:00"
+  texto: "Fiz isso e agora está com outro erro.\n\nReceived empty response from Zabbix Agent at [172.17.0.1]. Assuming that agent dropped connection because of access permissions"
+- id: 54302
+  nome: "Edgar da Silva Pietrobom"
+  data: "2021-03-23T16:33:40-03:00"
+  texto: "Aécio, não estou conseguindo monitorar o zabbix via agent, baseado nas informações que adicionei abaixo, consegue me dizer o que pode ser ?\n\ndocker run -d --name zabbix-agent \\\n --net=host \\\n --hostname \"$(hostname)\" \\\n --privileged \\\n -v /:/rootfs \\\n -v /var/run:/var/run \\\n --restart always \\\n -p 10050:10050 \\\n -e ZBX_HOSTNAME=\"$(hostname)\" \\\n -e ZBX_SERVER_HOST=\"192.168.31.78\" \\\n zabbix/zabbix-agent:centos-$VERSAO_ZABBIX-latest\n\n[root@zabbix_frontend_srv01 ~]# docker ps\nCONTAINER ID   IMAGE                                              COMMAND                  CREATED             STATUS         PORTS                            NAMES\n71dd8a0c690b   zabbix/zabbix-agent:centos-5.0-latest              \"/sbin/tini -- /usr/…\"   6 minutes ago       Up 2 minutes                                    zabbix-agent\n5bf997930c3c   zabbix/zabbix-web-apache-mysql:centos-5.0-latest   \"docker-entrypoint.sh\"   About an hour ago   Up 2 minutes   8443/tcp, 0.0.0.0:80->8080/tcp   zabbix-web\n14062eaf6e85   zabbix/zabbix-server-mysql:centos-5.0-latest       \"/sbin/tini -- /usr/…\"   2 hours ago         Up 2 minutes   0.0.0.0:10051->10051/tcp         zabbix-server\n\nStarting Zabbix Agent [zabbix_frontend_srv01]. Zabbix 5.0.9 (revision 4d07aaa).\nPress Ctrl+C to exit.\n\n     7:20210323:182908.938 Starting Zabbix Agent [zabbix_frontend_srv01]. Zabbix 5.0.9 (revision 4d07aaa).\n     7:20210323:182908.954 **** Enabled features ****\n     7:20210323:182908.954 IPv6 support:          YES\n     7:20210323:182908.954 TLS support:           YES\n     7:20210323:182908.954 **************************\n     7:20210323:182908.955 using configuration file: /etc/zabbix/zabbix_agentd.conf\n     7:20210323:182908.957 agent #0 started [main process]\n    74:20210323:182908.959 agent #1 started [collector]\n    75:20210323:182908.961 agent #2 started [listener #1]\n    76:20210323:182908.973 agent #3 started [listener #2]\n    77:20210323:182908.977 agent #4 started [listener #3]\n    78:20210323:182908.984 agent #5 started [active checks #1]\n    78:20210323:182909.553 active check configuration update from [192.168.31.78:10051] started to fail (cannot connect to [[192.168.31.78]:10051]: [111] Connection refused)\n    78:20210323:183009.625 active check configuration update from [192.168.31.78:10051] is working again\n    78:20210323:183009.625 no active checks on server [192.168.31.78:10051]: host [zabbix_frontend_srv01] not found"
+- id: 54305
+  parent: 54302
+  nome: "Aécio Pires"
+  data: "2021-03-24T04:17:22-03:00"
+  texto: "Oi, Edgar!\n\nVocê cadastrou na interface web do zabbix o host zabbix_frontend_srv01 com o IP 192.168.31.78?\n\nOutro detalhe é que talvez o contêiner esteja enviando a requisição ao Zabbix usando outro IP de interface de rede, por exemplo o IP do contêiner.\nVocẽ consegue pegar o IP do conteiner do zabbix-agent com o seguinte comando:\n\ndocker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' CONTAINER_NAME-OR-ID_CONTAINER\n\nEm todo caso, se o problema for esse, o IP do contêiner é dinâmico, muda toda vez que você recriá-lo e por isso não adianta cadastrar um host com este IP na interface web do Zabbix.\n\nUma alternativa é instalar no host do server o agente da forma tradicional mesmo ou pedir ajudar na comunidade Zabbix-BR em um dos canais citados na página: http://zabbixbrasil.org/?page_id=2151\n\nAbraço."
+- id: 56212
+  nome: "Jonas"
+  data: "2021-12-27T05:10:52-03:00"
+  texto: "Aecio, ótimo conteúdo!\n\nMas gostaria de tirar algumas dúvidas\n\nVocê tem zabbix instalado dentro de containers docker?\n\nQuando precisa fazer alguma alteração no arquivo de configuração, como faz?\n\npoderia me esclarecer?\n\nobrigado pela atenção"
+- id: 56213
+  parent: 56212
+  nome: "Aécio Pires"
+  data: "2021-12-28T01:08:42-03:00"
+  texto: "Olá, Jonas!\n\nMuito obrigado!\n\nTodos (ou a maioria) dos parâmetros de configuração do Zabbix podem ser definidos através de variáveis de ambiente e informados ao container utilizando a opção -e.\nExemplo: -e MYSQL_HOST=172.17.0.1\n\nNa página das imagens Docker do Zabbix tem uma documentação explicando quais as variáveis de ambiente disponíveis e pelo nome você consegue fazer uma correção com cada parâmetro de fica dentro do zabbix_server.conf ou zabbix_agentd.conf\n\nExemplo: olha a documentação deste componente:\nhttps://hub.docker.com/r/zabbix/zabbix-server-mysql\n\nTodas as imagens Docker dos componentes do Zabbix estão disponíveis em:\nhttps://hub.docker.com/u/zabbix\n\nNestas mesmas documentações também são informados alguns diretórios dentro dos containers nos quais você pode utilizar no mapeamento de um volume Docker para o host que executa o container com a opção -v.\nExemplo:\n-v /docker/mysql/zabbix/data:/var/lib/mysql\n\nOnde:\n/docker/mysql/zabbix/data => é o diretório do host (que executa o container) onde os dados serão persitidos mesmo quando o container for removido. Você deve criar esse diretório caso não exista. O local também pode ser mudado de acordo com a sua necessidade.\n/var/lib/mysql => é o diretório dentro do container no qual a aplicação salva os dados. Você não tem controle sobre esse diretório. É lendo a documentação da imagem Docker ou vendo o código fonte do Dockerfile usado na compilação da imagem Docker que você descobre em qual diretório a aplicação salva os dados dentro do container.\n\nAssim você pode usar essa técnica para compartilhar scripts, binários e arquivos de configuração com a aplicação Zabbix que executa dentro do container.\n\nPara saber mais sobre volume Docker, veja:\n\nhttps://docs.docker.com/storage/volumes/\nhttps://www.alura.com.br/artigos/criando-volumes-com-docker\nhttps://www.youtube.com/watch?v=StQYXkFgeeA\nhttps://stack.desenvolvedor.expert/appendix/docker/armazenamento.html\nhttps://www.digitalocean.com/community/tutorials/how-to-share-data-between-the-docker-container-and-the-host\nhttps://escoladaprogramacao.com.br/diferencas-entre-volume-e-bind-mount-no-docker/\nhttps://imasters.com.br/devsecops/montando-volumes-no-docker\nhttps://www.vivaolinux.com.br/artigo/Montando-Volumes-no-Docker"
+- id: 56215
+  nome: "Jonas"
+  data: "2021-12-29T06:27:36-03:00"
+  texto: "Obrigado Aecio, ficou muito claro.\n\nPosso levantar outro container e referenciar ele aquele volume de antes que não perco nenhuma informação que já existia é isso?\n\nObrigado pela grande ajuda!\n\nAbraço!"
+- id: 56217
+  parent: 56215
+  nome: "Aécio Pires"
+  data: "2021-12-31T10:52:10-03:00"
+  texto: "Exato, Jonas!\n\nAbraço e bom 2022 para você e sua família."
+- id: 56216
+  nome: "Raul Chiarella"
+  data: "2021-12-29T12:40:58-03:00"
+  texto: "Olá. Boa tarde!\n\nApós seguir o tutorial quando eu entro no Web do Zabbix aparece a mensagem \"Unable to determine current Zabbix database version: the table \"dbversion\" was not found.\"\n\nAlguém pode me ajudar?"
+- id: 56218
+  parent: 56216
+  nome: "Aécio Pires"
+  data: "2021-12-31T10:57:03-03:00"
+  texto: "Olá, Raul!\n\nEu acho que houve algum problema na criação do banco de dados via MySQL, ou foi passado algum parâmetro errado na hora de subir os containers do Zabbix.\n\nEu sugiro refazer os passos do tutorial com calma.\n\nOutra coisa a ser observada são os parâmetros a seguir na hora de criar o banco no MySQL 8:\n\n--character-set-server=utf8\n--collation-server=utf8_bin\n\nAbraço e bom 2022 para vocẽ e sua família."
+- id: 56220
+  nome: "Guilherme"
+  data: "2022-01-26T17:59:16-03:00"
+  texto: "Boa tarde,\nGostaria de saber como que muda o nome Zabbix docker, tentei pelo setup.php mas meio que corrompe o banco de dados."
+- id: 56221
+  parent: 56220
+  nome: "Aécio Pires"
+  data: "2022-03-05T10:56:47-03:00"
+  texto: "Boa tarde, Guilherme!\n\nInfelizmente eu não sei responder a esta pergunta.\n\nSugiro perguntar a outras pessoas na comunidade Zabbix-BR: http://www.zabbixbrasil.org/encontre-ajuda/\n\nAbraço."
+- id: 56223
+  nome: "Lucas"
+  data: "2022-03-28T09:45:30-03:00"
+  texto: "Bom dia Aécio, tudo bem?\n\nEsta idéia de disponibilizar o Zabbix via docker é muito interessante, logo, fui testar esta solução aqui no VirtualBox, com Ubuntu Server 20.04, porém, embora o Zabbix tenha subido com sucesso, não consegui, de nenhuma forma, fazer o agente funcionar. Tentei com vários endereços diferentes no ZBX_SERVER_HOST. seja o IP da VM, do container, tentei instalar o agente direto na VM (sem ser via docker, configurando os campos Server, ServerActive e Hostname de acordo) mas sempre aparece o mesmo erro: [111] Connection refused. Tentei inclusive desabilitar o firewall o SELinux mas o erro permanece.\n\nHá algo mais que eu poderia fazer?"
+- id: 56224
+  nome: "Aécio Pires"
+  data: "2022-04-03T11:32:35-03:00"
+  texto: "Bom dia, Lucas!\n\nEu atualizei novamente o conteúdo do tutorial e testei o passo a passo.\nSugiro instalar do zero seguindo o novo passo a passo.\n\nCom relação ao zabbix-agent, o problema acontece porque os container do zabbix-agent e zabbix-server interagem entre si utilizando o IP privado de cada container, que é gerado dinamicamente quando cada conteiner é criado. Eu olhei as configurações do zabbix-server e zabbix-agent e não identifiquei facilmente uma solução de contorno.\n\nEu sugiro buscar ajuda nos fóruns oficiais das comunidades Zabbix-BR e Zabbix Internacional.\n\nhttp://www.zabbixbrasil.org/encontre-ajuda/\n\nhttps://www.zabbix.com/forum/\n\nAbraço."
+- id: 56226
+  nome: "gabriel andre morais do carmo"
+  data: "2022-04-21T23:39:02-03:00"
+  texto: "Boa noite amigo, to com uma duvida, o que devo colocar no server de um host linux que quero monitora? esse agent foi instalado via rpm no host\nele fica fora da vm do docker com os container."
+- id: 56229
+  parent: 56226
+  nome: "Aécio Pires"
+  data: "2022-05-29T22:24:26-03:00"
+  texto: "Oi, Gabriel!\n\nVocê colocaria o IP do servidor que executa o Zabbix Server no arquivo de configuração do zabbix-agent.\nMais detalhes em: https://www.zabbix.com/documentation/current/en/manual/appendix/config/zabbix_agentd\n\nAbraço."
+- id: 56227
+  nome: "Cleber Prates"
+  data: "2022-05-03T18:07:21-03:00"
+  texto: "Primero, obrigado pelo tutorial, ajudou muito.\nadicionem essa linha\n-e ZBX_PASSIVESERVERS=\"172.20.240.0/24\" \\\nnos comandos para subir o container zabbix-agent. Vai ficar assim:\n\n docker run -d --name zabbix-agent \\\n --net=host \\\n --hostname \"$(hostname)\" \\\n --privileged \\\n -v /:/rootfs \\\n -v /var/run:/var/run \\\n --restart always \\\n -p 10050:10050 \\\n -e ZBX_HOSTNAME=\"$(hostname)\" \\\n -e ZBX_SERVER_HOST=\"172.17.0.1\" \\\n -e ZBX_PASSIVESERVERS=\"172.20.240.0/24\" \\\n zabbix/zabbix-agent:${ZABBIX_VERSION}"
+- id: 56231
+  parent: 56227
+  nome: "Aécio Pires"
+  data: "2022-05-29T22:33:01-03:00"
+  texto: "Olá, Cleber!\n\nApenas para entender... essa rede 172.20.240.0/24 é referente a que? Pergunto isso porque nos computadores de outras pessoas pode não ter essa rede. Gostaria de entender o motivo para ver se tem algum comando que possa obter esse endereço de rede automaticamente de acordo com a configuração de cada computador.\n\nAbraço."
+- id: 56232
+  nome: "Cleber Prates"
+  data: "2022-05-30T10:11:11-03:00"
+  texto: "No tutorial no item 4 é criado essa rede\nZABBIX_IP_RANGE=\"172.20.240.0/20\"\nessa linha se faz necessário para a devida comunicação.\n-e ZBX_PASSIVESERVERS=”172.20.240.0/24″ \\"
+- id: 56233
+  nome: "Aécio Pires"
+  data: "2022-06-03T12:04:30-03:00"
+  texto: "Obrigado pela explicação Cleber!\n\nNem tinha me atentado que eu tinha adicionado isso no ponto 4.\nEu adicionei o parâmetro, mas apontando para o valor da variável para ficar mais dinâmico de alterar quando necessário.\n\nAbraço."
+- id: 56234
+  nome: "Bruno Ribeiro"
+  data: "2022-07-20T16:46:22-03:00"
+  texto: "Olá!\n\nÓtimo tutorial, só gostaria de adicionar uma informação, na linha para executar o container do zabbix-agent comigo só deu certo quando removi o parâmetro --net=host, quando executava com este parâmetro o container não pegava IP, ao remover pegou o IP 172.17.0.2 e a monitoração ocorreu normalmente.\n\nMuito obrigado."
+- id: 56235
+  parent: 56234
+  nome: "Aécio Pires"
+  data: "2022-07-25T02:20:32-03:00"
+  texto: "Olá, Bruno!\n\nMuito obrigado pelo feeback e contribuição. Vou ajustar o tutorial."
+- id: 56237
+  nome: "Pedro Gimenis"
+  data: "2022-08-03T18:07:07-03:00"
+  texto: "Boa tarde amigo, muito bom o tutorial, muito bem detalhado, ve se consegue me ajudar, estou enfrentando esse erro\nDatabase error\nThe Zabbix database version does not match current requirements. Your database version: 6010048. Required version: 6020000. Please contact your system administrator."
+- id: 56243
+  parent: 56237
+  nome: "Aécio Pires"
+  data: "2022-08-29T00:56:55-03:00"
+  texto: "Olá, Pedro!\n\nEsse erro acontece porque o seu banco dados está compatível com a versão 6.1 do Zabbix, mas você está tentando iniciar conteineres com a versão 6.2.\nO necessário nesse caso é tentar atualizar o banco de dados (importante fazer um backup antes).\n\nEu não sei como ajudar nisso, pois depende muito das configurações do ambiente...mas sugiro pedir ajudar na comunidade Zabbix-BR https://www.zabbixbrasil.org/encontre-ajuda/\n\nHá também alguns outros tutoriais que tratam especificamente da atualização do banco de dados, mas nesses casos eles não estão usando Docker para iniciar o Zabbix.\n\n* https://www.zabbix.com/forum/zabbix-troubleshooting-and-problems/446124-unable-to-start-after-upgrade-the-zabbix-db-version-does-not-match-requirements\n* https://relatosti.com.br/2021/08/resolvendo-erro-the-server-does-not-match-zabbix-database-current-database-version-mandatory-optional/\n* https://bestmonitoringtools.com/upgrade-zabbix-to-the-latest-version/\n* https://www.youtube.com/watch?v=dvmLynvsxOI\n* https://programmerah.com/error-the-version-of-zabbix-database-does-not-match-the-current-requirements-36584/\n* https://everaldoscabral.blogspot.com/2020/08/sobre-o-zabbix-server-does-not-match.html\n* https://stackoverflow.com/questions/57249895/how-to-fix-database-error-the-frontend-does-not-match-zabbix-database\n* https://www.zabbix.com/documentation/current/en/manual/installation/upgrade/packages/debian_ubuntu\n* https://www.zabbix.com/forum/zabbix-help/450062-database-error-zabbix-database-version-does-not-match-current-requirements"
+- id: 56238
+  nome: "Raul Chiarella"
+  data: "2022-08-11T18:29:19-03:00"
+  texto: "Uma duvida, notei que você ao final dos volumes coloca \"rw, ro\"... Vc poderia me responder o que isso faz?\nSe possível, e se não for muito trabalhoso para o Sr. me enviar uma documentação explicando esses parâmetros...\n\nEu procurei no google e não consegui encontrar nada.\nEx.\n\n -v /docker/zabbix/snmptraps:/var/lib/zabbix/snmptraps:rw \\\n -v /docker/zabbix/mibs:/usr/share/snmp/mibs:ro \\\n\nEsses dois caras vc colocou esses valores no final - Pra que serve?\nObrigado!"
+- id: 56242
+  parent: 56238
+  nome: "Aécio Pires"
+  data: "2022-08-29T00:45:55-03:00"
+  texto: "Olá, Raul!\n\nO 'ro' significa (read only), o volume será montado apenas com a permissão de leitura, ou seja, não haverá nenhuma permissão para alterar ou criar arquivos no volume a ser montado no conteiner.\nO 'rw' significa (read write), o volume será montado com permissão de escrita, ou seja, é permitido criar ou alterar arquivos no volume a ser montado no conteiner.\n\nA escolha das opções dependem da necessidade do uso de cada volume.\n\nPara saber mais informações sobre essas e outras opções sobre o volume Docker, veja o seguinte link: https://docs.docker.com/storage/volumes/"
+- id: 56246
+  nome: "Cleber Prates"
+  data: "2022-09-04T00:14:45-03:00"
+  texto: "Aécio, é possível  acrescentar essa linha na\n -e ZBX_CACHESIZE=2G \\\nno item 7?\nCom essa linha levamos o cachesize para 2 giga, asim não temos problemas com a msg: \"please increase CacheSize configuration parameter\". Com isso, só fica faltando eu focar na parte de atualizar o banco do zabbix."
+- id: 56251
+  nome: "Lucas"
+  data: "2022-11-17T16:24:52-03:00"
+  texto: "Alguém conseguiu utilizar o https no zabbix?\nminha aplicação teste com docker não funciona o https, retorno do erro ERR_CONNECTION_CLOSED\n\ndocker run -d --name zabbix-web \\\n --restart always \\\n -p 80:8080 -p 443:8443 \\\n -v /docker/zabbix/ssl/ssl.crt:/etc/ssl/nginx/ssl.crt \\\n -v /docker/zabbix/ssl/ssl.key:/etc/ssl/nginx/ssl.key \\\n -v /docker/zabbix/ssl/dhparam.pem:/etc/ssl/nginx/dhparam.pem \\\n -e ZBX_SERVER_HOST=\"172.17.0.1\" \\\n -e DB_SERVER_HOST=\"MEU IP DO BANCO\" \\\n -e DB_SERVER_PORT=\"3306\" \\\n -e MYSQL_ROOT_PASSWORD=\"SENHA\" \\\n -e MYSQL_DATABASE=\"zabbix\" \\\n -e MYSQL_USER=\"root\" \\\n -e MYSQL_PASSWORD=\"SENHA\" \\\n -e PHP_TZ=\"America/Sao_Paulo\" \\\n zabbix/zabbix-web-nginx-mysql:ubuntu-6.2-latest\n\nAlguma ajuda?"
+- id: 56252
+  nome: "Cleicião Diego"
+  data: "2022-11-23T17:33:24-03:00"
+  texto: "Lucas eu também tive problemas com o HTTPS, mas eu fiz o seguinte criei o cerificado primeiro e depois subi o contaiener web e  funcionou."
+- id: 56293
+  nome: "Eduardo Augutos"
+  data: "2023-07-23T08:30:29-03:00"
+  texto: "Lucas conseguir resolver o problema do Https? Diego não funcionou!\npodman run -d --name zabbix-web-nginx-mysql -t \\\n--restart always \\\n-v /podman/zabbix/ssl:/etc/ssl/nginx:ro \\\n-v /podman/zabbix/ssl/ssl.crt:/etc/ssl/nginx/ssl.crt \\\n-v /podman/zabbix/ssl/ssl.key:/etc/ssl/nginx/ssl.key \\\n-v /podman/zabbix/ssl/dhparam.pem:/etc/ssl/nginx/dhparam.pem \\\n-e ZBX_SERVER_HOST=\"zabbix-server-mysql\" \\\n-e DB_SERVER_HOST=\"mysql-server\" \\\n-e DB_SERVER_PORT=\"3306\" \\\n-e MYSQL_ROOT_PASSWORD=\"root_pwd\" \\\n-e MYSQL_DATABASE=\"zabbix\" \\\n-e MYSQL_USER=\"zabbix\" \\\n-e MYSQL_PASSWORD=\"zabbix_pwd\" \\\n-e PHP_TZ=\"America/Sao_Paulo\" \\\n--pod=zabbix \\\n--volumes-from zabbix-snmptraps \\\nzabbix/zabbix-web-nginx-mysql:${ZABBIX_VERSION}"
+- id: 56294
+  nome: "Eduardo Bastos"
+  data: "2023-07-24T16:24:40-03:00"
+  texto: "-v /docker/zabbix/snmptraps:/var/lib/zabbix/snmptraps:rw \\\n -v /docker/zabbix/mibs:/usr/share/snmp/mibs:ro \\\n\nSobre os arquivos que devem estar contidos neste volumes, por favor, pode indicar onde devo obter estes arquivos?"

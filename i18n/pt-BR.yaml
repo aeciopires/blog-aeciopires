@@ -1,0 +1,3 @@
+# Sobrescreve só as chaves do i18n/pt-BR.yaml do Blowfish que o projeto muda (PLAN.md 3.8).
+footer:
+  powered_by: "Feito com {{ .Hugo }} e {{ .Theme }}"

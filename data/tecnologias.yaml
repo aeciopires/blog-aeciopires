@@ -1,0 +1,42 @@
+# Banner "Stacks que uso no dia a dia" (PLAN.md 3.7.1).
+# Cada item: nome (legenda e alt), logo (arquivo OFICIAL em assets/img/logos/, sem alterações;
+# registrar origem e licença em assets/img/logos/SOURCES.md) e url (site oficial).
+# Sem logo (ou arquivo ausente): a placa mostra só o nome em texto. Nunca um logo modificado.
+grupos:
+  - nome: Kubernetes e containers
+    itens:
+      - { nome: Kubernetes, logo: kubernetes.svg, url: "https://kubernetes.io" }
+      - { nome: Docker, url: "https://www.docker.com" }   # sem logo: diretriz de marca exige autorização (assets/img/logos/SOURCES.md)
+      - { nome: Helm, logo: helm.svg, url: "https://helm.sh" }
+      - { nome: Kustomize, logo: kustomize.png, url: "https://kustomize.io" }
+      - { nome: Argo, logo: argo.svg, url: "https://argoproj.github.io" }
+      - { nome: Istio, logo: istio.svg, url: "https://istio.io" }
+  - nome: Cloud e IaC
+    itens:
+      - { nome: AWS, url: "https://aws.amazon.com" }   # sem logo: diretriz de marca exige autorização (assets/img/logos/SOURCES.md)
+      - { nome: Google Cloud, url: "https://cloud.google.com" }   # sem logo: diretriz de marca exige autorização (assets/img/logos/SOURCES.md)
+      - { nome: Terraform, logo: terraform.svg, url: "https://developer.hashicorp.com/terraform" }
+      - { nome: Terragrunt, logo: terragrunt.svg, url: "https://terragrunt.gruntwork.io" }
+      - { nome: Vault, logo: vault.svg, url: "https://developer.hashicorp.com/vault" }
+  - nome: Observabilidade
+    itens:
+      - { nome: Prometheus, logo: prometheus.svg, url: "https://prometheus.io" }
+      - { nome: Grafana, logo: grafana.svg, url: "https://grafana.com" }
+      - { nome: VictoriaMetrics, logo: victoriametrics.svg, url: "https://victoriametrics.com" }
+      - { nome: Zabbix, logo: zabbix.svg, url: "https://www.zabbix.com" }
+      - { nome: Datadog, logo: datadog.png, url: "https://www.datadoghq.com" }
+  - nome: IA no dia a dia
+    itens:
+      - { nome: Claude, logo: claude.svg, url: "https://claude.ai" }
+      - { nome: ChatGPT, url: "https://chatgpt.com" }   # sem logo: diretriz de marca exige autorização (assets/img/logos/SOURCES.md)
+      - { nome: Gemini, url: "https://gemini.google.com" }   # sem logo: diretriz de marca exige autorização (assets/img/logos/SOURCES.md)
+      - { nome: GitHub Copilot, logo: github-copilot.svg, url: "https://github.com/features/copilot" }
+      - { nome: Cursor, logo: cursor.svg, url: "https://cursor.com" }
+  - nome: Sistemas, linguagens e ferramentas
+    itens:
+      - { nome: Linux, logo: linux.svg, url: "https://www.kernel.org" }
+      - { nome: macOS, url: "https://www.apple.com/macos/" }   # sem logo: a Apple não autoriza o uso da maçã
+      - { nome: Bash, logo: bash.png, url: "https://www.gnu.org/software/bash/" }
+      - { nome: Git, logo: git.svg, url: "https://git-scm.com" }
+      - { nome: Python, logo: python.svg, url: "https://www.python.org" }
+      - { nome: Go, logo: go.svg, url: "https://go.dev" }

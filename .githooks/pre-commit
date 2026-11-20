@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# pre-commit versionado (PLAN.md 6.8). Ativar uma vez: make install-hooks
+# Roda check-tags e lint-md só nos .md alterados no commit.
+set -euo pipefail
+RUN=""
+command -v node >/dev/null 2>&1 || RUN="mise exec --"
+arquivos="$(git diff --cached --name-only --diff-filter=ACM -- '*.md' | grep -v '^themes/' || true)"
+[ -n "$arquivos" ] || exit 0
+conteudo="$(printf '%s\n' "$arquivos" | grep '^content/' || true)"
+if [ -n "$conteudo" ]; then
+  # shellcheck disable=SC2086
+  $RUN node scripts/tags.mjs check $conteudo
+fi
+# shellcheck disable=SC2086
+$RUN markdownlint-cli2 $arquivos

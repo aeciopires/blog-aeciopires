@@ -1,0 +1,2 @@
+# URLs do WordPress que NÃO são geradas pelo Hugo de propósito (uma por linha, com motivo acima).
+# Ex.: feeds tratados pelas regras R1/R2 do Cloudflare (PLAN.md 11.4).

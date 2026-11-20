@@ -1,0 +1,14 @@
+# make serve-docker (PLAN.md 9.6). A versão do Hugo vem do mise.toml (o Makefile exporta HUGO_VERSION),
+# então quem usa só Docker não precisa do mise. Imagem oficial multi-arquitetura (amd64/arm64).
+services:
+  hugo:
+    image: ghcr.io/gohugoio/hugo:v${HUGO_VERSION:?use make serve-docker}
+    command: server -D --bind 0.0.0.0 --port 1313 --poll 700ms
+    ports:
+      - "127.0.0.1:1313:1313"   # exposto só na máquina local
+    volumes:
+      - ./:/project
+      - hugo_cache:/cache       # cache de recursos do Hugo
+    working_dir: /project
+volumes:
+  hugo_cache:

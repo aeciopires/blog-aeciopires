@@ -1,0 +1,93 @@
+# -- Configuração do site --
+# Partiu do config/_default/hugo.toml do Blowfish v3.10.0 (só o necessário foi alterado).
+# Referências: https://blowfish.page/docs/getting-started/ · https://gohugo.io/configuration/
+# Decisões: PLANS/blog-migration/PLAN.md (seções 3.3, 3.6.3 e 7.1).
+
+theme = "blowfish"
+baseURL = "https://blog.aeciopires.com/"   # a CI sobrescreve com --baseURL (staging/produção)
+defaultContentLanguage = "pt-br"
+title = "Blog do Aécio Pires"
+
+# Datas do front matter já trazem o fuso (-03:00); este é o padrão para datas sem fuso.
+timeZone = "America/Recife"
+
+enableRobotsTXT = true
+enableGitInfo = true          # .Lastmod pelo git (CI usa fetch-depth: 0)
+summaryLength = 30
+pluralizeListTitles = false   # evita "Categoriess" e afins em pt-BR
+capitalizeListTitles = false  # tags em minúsculas, como no registro (helm, kubernetes)
+
+buildDrafts = false
+buildFuture = false
+
+enableEmoji = true
+
+# Links internos quebrados ({{< ref >}}/{{< relref >}}) falham o build.
+refLinksErrorLevel = "ERROR"
+
+[pagination]
+  pagerSize = 10              # /posts/page/2/ … igual ao WordPress (10 por página)
+
+[imaging]
+  anchor = 'Center'
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+  series = "series"
+
+# URLs herdadas do WordPress: NÃO alterar (PLAN.md 7.2).
+[permalinks]
+  [permalinks.page]
+    posts = "/:slug/"                 # /%postname%/
+  [permalinks.term]
+    categories = "/category/:slug/"
+    tags = "/tag/:slug/"
+
+[sitemap]
+  changefreq = 'weekly'
+  filename = 'sitemap.xml'
+  priority = 0.5
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]      # JSON = índice da busca do Blowfish
+
+# Segurança: mantém os padrões do Hugo, explicitados para não serem ampliados por engano.
+[security]
+  enableInlineShortcodes = false
+  [security.exec]
+    allow = ['^(dart-)?sass(-embedded)?$', '^go$', '^git$', '^node$', '^postcss$', '^tailwindcss$']
+    osEnv = ['(?i)^((HTTPS?|NO)_PROXY|PATH(EXT)?|APPDATA|TE?MP|TERM|GO\w+|(XDG_CONFIG_)?HOME|USERPROFILE|SSH_AUTH_SOCK|DISPLAY|LANG|SYSTEMDRIVE|PROGRAMDATA)$']
+  [security.funcs]
+    getenv = ['^HUGO_', '^CI$']
+  [security.http]
+    methods = ['(?i)GET']
+    # Sem curingas: só o shortcode {{< github >}} busca dados remotos no build.
+    # Imagens são sempre locais (assets/ ou page bundle), nunca URLs.
+    urls = ['^https://api\.github\.com/repos/']
+
+[related]
+  threshold = 0
+  toLower = false
+
+    [[related.indices]]
+        name = "tags"
+        weight = 100
+
+    [[related.indices]]
+        name = "categories"
+        weight = 100
+
+    [[related.indices]]
+        name = "series"
+        weight = 50
+
+    [[related.indices]]
+        name = "date"
+        weight = 10
+
+    [[related.indices]]
+      applyFilter = false
+      name = 'fragmentrefs'
+      type = 'fragments'
+      weight = 10

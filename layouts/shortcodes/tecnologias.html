@@ -1,0 +1,44 @@
+{{- /*
+  Banner de tecnologias (PLAN.md 3.7.1). Uso: {{< tecnologias >}}
+  Lê data/tecnologias.yaml. Logos oficiais, sem recolorir, em placas brancas (iguais nos dois modos).
+  A marca do GitHub do cabeçalho usa a cor do texto (preta no claro, branca no escuro).
+  O perfil do GitHub vem de site.Params.author.links (fonte única).
+*/ -}}
+{{- $github := "" -}}
+{{- range site.Params.author.links }}{{ with .github }}{{ $github = . }}{{ end }}{{ end -}}
+<section class="tecnologias glass not-prose" aria-labelledby="tecnologias-titulo">
+  <div class="tecnologias__topo">
+    {{- with $github }}
+      <a class="tecnologias__perfil" href="{{ . }}" rel="me noopener noreferrer" target="_blank">
+        <span class="tecnologias__github" aria-hidden="true">{{ partial "icon.html" "github" }}</span>
+        @{{ path.Base . }}
+      </a>
+    {{- end }}
+    <div class="tecnologias__titulos">
+      <h2 id="tecnologias-titulo">Stacks que uso no dia a dia</h2>
+      <p>Tecnologias com as quais tenho experiência prática</p>
+    </div>
+  </div>
+  {{- range hugo.Data.tecnologias.grupos }}
+    <div class="tecnologias__grupo">
+      <p class="tecnologias__rotulo">{{ .nome }}</p>
+      <ul class="tecnologias__placas" aria-label="{{ .nome }}">
+        {{- range .itens }}
+          {{- $logo := "" -}}
+          {{- with .logo }}{{ $logo = resources.Get (printf "img/logos/%s" .) }}{{ end }}
+          <li>
+            <a class="tecnologias__placa" href="{{ .url }}" rel="noopener noreferrer" target="_blank" title="{{ .nome }}">
+              {{- if $logo }}
+                <img src="{{ $logo.RelPermalink }}" alt="{{ .nome }}" width="72" height="36" loading="lazy" decoding="async">
+              {{- else }}
+                <span class="tecnologias__texto">{{ .nome }}</span>
+              {{- end }}
+              <span class="tecnologias__legenda">{{ .nome }}</span>
+            </a>
+          </li>
+        {{- end }}
+      </ul>
+    </div>
+  {{- end }}
+  <p class="tecnologias__nota">As marcas pertencem aos seus respectivos donos e indicam apenas os assuntos tratados no blog.</p>
+</section>

@@ -1,0 +1,28 @@
+# Partiu do languages.en.toml do Blowfish v3.10.0.
+# Fonte única dos perfis do autor (PLAN.md 3.4): partials e shortcodes próprios leem
+# site.Params.author.links. Só GitHub e LinkedIn. Sem YouTube, sem X/Twitter e SEM e-mail.
+
+disabled = false
+locale = "pt-BR"
+label = "Português"
+weight = 1
+title = "Blog do Aécio Pires"
+
+[params]
+  displayName = "PT"
+  isoCode = "pt-BR"
+  rtl = false
+  dateFormat = "2 Jan 2006"
+  description = "Compartilhando conhecimento sobre DevOps, SRE, Platform Engineering, Cloud, Kubernetes e observabilidade."
+  copyright = "© { year } Aécio Pires · Todos os direitos reservados"
+
+[params.author]
+  name = "Aécio Pires"
+  image = "img/autor.jpg"
+  imageQuality = 96
+  headline = "DevOps · SRE · Platform Engineer · Cloud Architect"
+  bio = "Compartilho o que aprendo no dia a dia com DevOps, SRE, Kubernetes, cloud e observabilidade. Autor e instrutor de cursos."
+  links = [
+    { github = "https://github.com/aeciopires" },
+    { linkedin = "https://www.linkedin.com/in/aeciopires" },
+  ]

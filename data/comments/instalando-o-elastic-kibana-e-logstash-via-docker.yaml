@@ -1,0 +1,23 @@
+# Comentários do blog antigo (WordPress), somente leitura. Só nome, data e texto (PLAN.md 6.5).
+- id: 47351
+  nome: "Rogério"
+  data: "2018-08-10T14:15:30-03:00"
+  texto: "Aécio muito bom artigo.\nPoderia tirar uma dúvida como altero a quantidade de memória do Java, usado pelo logstash?"
+- id: 47413
+  parent: 47351
+  nome: "Aécio Pires"
+  data: "2018-08-22T15:54:30-03:00"
+  texto: "Oi, Rogério!\n\nQue bom que o tutorial foi útil.\n\nPara ajustar a performance e parâmetros de configuração do logstash, olha o conteúdo dos links abaixo.\n\nhttps://www.elastic.co/guide/en/logstash/current/tuning-logstash.html\nhttps://discuss.elastic.co/t/changing-logstash-heap-size/69542\nhttps://www.elastic.co/guide/en/logstash/current/performance-troubleshooting.html\n\nAbraço e fique com Deus. :-)"
+- id: 50162
+  nome: "Manoel"
+  data: "2019-06-03T23:21:10-03:00"
+  texto: "Olá, Aécio Pires. Curti demais o seu site e já peguei muitas dicas aqui. Já tem 3 dias que luto para colocar o Kibana junto ao Elasticsearch, porém, seguindo qualquer tutorial, até os oficiais do site sempre me deparo com o erro Kibana server is not ready yet. Já pssou por isso? Obrigado"
+- id: 52277
+  nome: "Bruno Barreto Bergamo"
+  data: "2020-07-22T15:50:55-03:00"
+  texto: "Olá Aécio! Muito Obrigado pelas dicas !\n\né possível também subir multiplos nodes de elasticsearch com o docker?\n\nMuito Obrigado,\nBruno"
+- id: 52295
+  parent: 52277
+  nome: "Aécio Pires"
+  data: "2020-07-25T09:03:09-03:00"
+  texto: "Oi, Bruno!\n\nObrigado pelo Feedback. Ainda não fiz isso, não tecnicamente não vejo porque seria inviável. Pesquisa um pouco e tenta fazer. Dando certo compartilha os resultados aqui nos comentários que atualizarei o tutorial e te darei os créditos! :-)\n\nSerá útil para ajudar outras pessoas.\n\nAbraço e fica com Deus."

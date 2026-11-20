@@ -1,0 +1,9 @@
+# Comentários do blog antigo (WordPress), somente leitura. Só nome, data e texto (PLAN.md 6.5).
+- id: 56438
+  nome: "Rodolfo"
+  data: "2024-07-15T16:19:51-03:00"
+  texto: "Boa tarde Aécio;\n\nprimeiro gostei muito desse material era o que eu precisava em uma nova implantação, porem tenho uma questão referente ao acesso via ingress do kubernetes  para o service zabbix-web, ele esta exposto na porta 8080 e o ingress que esta no padrão das outras aplicações faz o redir na porta 80. o ingress aprece quando verifico com o comando kubectl describe zabbix ingress, quando acesso o container docker na porta 8080 através do comando kubectl 'pod' 'service 'ip:8080' leva para o zabbix agora através do link do ingress retorna o erro '404 not found' ja pesquisei bastante tentei algumas tentativas mas não encontro o motivo !"
+- id: 56479
+  nome: "Aécio Pires"
+  data: "2024-09-24T01:49:40-03:00"
+  texto: "Boa noite, Rodolfo!\n\nDesculpa pela demora na resposta.\nQue bom que o helm chart está te ajudando.\nCaso ainda esteja com este problema, poderia olhar este tópico que trato deste assunto? https://github.com/zabbix-community/helm-zabbix/discussions/27\n\nSe o problema persistir, poderia abrir um novo tópico aqui? https://github.com/zabbix-community/helm-zabbix/discussions\n\nFica melhor de compartilhar os arquivos YAML do helm values que está usando e também do arquivo de ingress gerado para que eu possa te ajudar.\n\nCaso tenha resolvido, agradeceria se pudesse compartilhar a solução para ajudar outras pessoas.\n\nBoa semana."

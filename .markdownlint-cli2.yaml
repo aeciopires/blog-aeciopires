@@ -1,0 +1,22 @@
+# Lint de Markdown ajustado para Hugo (PLAN.md 9.3.2). make lint-md / make lint-md-fix.
+config:
+  default: true
+  MD013: false              # sem limite de largura de linha
+  MD033: false              # HTML é omitido pelo Hugo (unsafe = false); comentários <!-- --> são úteis
+  MD041: false              # o título vem do front matter
+  MD024:
+    siblings_only: true     # títulos repetidos só entre irmãos
+  MD040: true               # linguagem obrigatória nos blocos de código
+  MD001: true               # títulos em sequência
+  MD045: true               # texto alternativo em imagens
+  MD034: false              # URLs nuas são comuns em posts antigos (revisar na Fase 4)
+  MD060: false              # estilo de tabela (posts migrados)
+  MD036: false              # negrito como "subtítulo" é estilo dos posts, não erro de sintaxe
+  MD026: false              # pontuação no fim de títulos (ex.: "Pré-requisitos:")
+  MD029: false              # passos "2)", "3)"… separados por blocos de código são listas de 1 item;
+                            # com a regra ativa, o --fix renumera tudo para 1 (ocorreu na migração)
+ignores:
+  - "themes/**"
+  - "node_modules/**"
+  - "public/**"
+  - "PLANS/blog-migration/PLAN.md"   # registro histórico, não é reescrito
