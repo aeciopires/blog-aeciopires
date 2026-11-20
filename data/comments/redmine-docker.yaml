@@ -1,0 +1,40 @@
+# Comentários do blog antigo (WordPress), somente leitura. Só nome, data e texto (PLAN.md 6.5).
+- id: 46766
+  nome: "Thiago Cordeiro"
+  data: "2018-06-12T18:08:55-03:00"
+  texto: "Fala Aécio, tudo certo amigo, com exceção da imagem do mysql que se você não especificar a versão 5.7, está baixando a última versão e dando alguns erros de permissão.\nO comando run da imagem ficaria:\nsudo docker run -d --name mysql-redmine \\\n -p 3306:3306 \\\n -v /opt/docker/mysql/data:/var/lib/mysql \\\n -e MYSQL_ROOT_PASSWORD=secret \\\n -e MYSQL_DATABASE=redmine \\\n mysql:5.7\n\nValeu abraço!"
+- id: 46830
+  parent: 46766
+  nome: "Aécio Pires"
+  data: "2018-06-16T19:49:12-03:00"
+  texto: "Boa noite, Thiago!\n\nObrigado pela correção. Já ajustei no tutorial.\n\nAbraço e fica com Deus"
+- id: 50816
+  nome: "Alex Menezes"
+  data: "2019-10-22T13:19:11-03:00"
+  texto: "Olá Aércio, quando eu executo o\ndocker run -d --name redmine \\\n -p 3001:3000 \\\n -v /opt/docker/redmine/data:/usr/src/redmine/files \\\n -v /opt/docker/redmine/plugins:/usr/src/redmine/plugins \\\n -v /opt/docker/redmine/themes:/usr/src/redmine/themes \\\n --link mysql-redmine:mysql \\\n redmine\n\napresenta o seguinte error:\n\ndocker: Error response from daemon: Cannot link to a non running container: /mysql-redmine AS /redmine/mysqlredmine."
+- id: 50862
+  parent: 50816
+  nome: "Aécio Pires"
+  data: "2019-11-01T09:06:03-03:00"
+  texto: "Bom dia, Alex!\n\nEste tutorial foi publicado em 2017. De lá para cá, as coisas mudaram e a forma de iniciar o conteiner do MySQL e do Redmine mudaram também.\n\nEu li a documentação, testei e atualizei o tutorial para contemplar a nova forma de instalar.\n\nTente novamente seguindo as novas instruções.\n\nAbraço e fica com Deus."
+- id: 52495
+  nome: "Afsoares"
+  data: "2020-09-02T19:04:26-03:00"
+  texto: "Como faço para chamar na localhost:3000/redmine não quero chamar na localhost:3000/"
+- id: 53935
+  nome: "Guilherme"
+  data: "2021-02-15T17:01:54-03:00"
+  texto: "Aério, a página de plugins apresenta a mensagem \"Nenhuma informação disponível\". Eu teria que instalar os plugins manualmente ou deveria ter uma lista que eu vou clicando em instalar direto no Redmine?"
+- id: 54047
+  parent: 53935
+  nome: "Aécio Pires"
+  data: "2021-02-28T23:05:04-03:00"
+  texto: "Olá, Guilherme!\n\nA instalação de plugins no Redmine é realizada de forma manual mesmo e cada plugin tem um jeito diferente de instalar e configurar. Recomendo olhar a documentação de cada plugin que deseja utilizar.\n\nAbraço."
+- id: 54080
+  nome: "Thiago"
+  data: "2021-03-08T09:13:11-03:00"
+  texto: "Apesar de antigo, em poucos passos(alterações) funciona perfeitamente com em 2021 nas versões latest."
+- id: 54091
+  nome: "Aécio Pires"
+  data: "2021-03-09T16:22:34-03:00"
+  texto: "Oi, Thiago!\n\nMuito obrigado pelo feedback.\nQue bom que o tutorial lhe foi útil.\nAtualizei o tutorial para dar suporte a versão 4.1 do Redmine e deixar a instalação mais flexível.\n\nAbraço."

@@ -1,0 +1,43 @@
+{{- /*
+  Nuvem de tags (PLAN.md 3.2.2): tamanho proporcional ao número de posts (escala logarítmica
+  entre 14 e 44 px), contagem visível e no title, cor por faixa. Lista acessível, sem JavaScript.
+  Parâmetros: limite (int, 0 = todas), botoes (bool: mostra "Ver todas as tags" e "Categorias").
+*/ -}}
+{{- $limite := .limite | default 0 -}}
+{{- $termos := site.Taxonomies.tags.ByCount -}}
+{{- if gt $limite 0 }}{{ $termos = first $limite $termos }}{{ end -}}
+{{- if $termos -}}
+  {{- $max := math.Log (float (index $termos 0).Count | math.Max 1) -}}
+  {{- $min := math.Log (float (index $termos (sub (len $termos) 1)).Count | math.Max 1) -}}
+  {{- $faixa := sub $max $min -}}
+  {{- /* ordem alfabética para a leitura; o tamanho mostra a frequência */ -}}
+  {{- $ordenados := sort $termos "Page.Title" -}}
+  <div class="tag-cloud not-prose">
+    {{- if .botoes }}
+      <div class="tag-cloud__topo">
+        <div>
+          <p class="eyebrow">Explorar</p>
+          <p class="tag-cloud__titulo">Tags mais usadas</p>
+        </div>
+        <div class="tag-cloud__botoes">
+          <a class="tag-cloud__botao" href="{{ "tags/" | relLangURL }}">Ver todas as tags →</a>
+          <a class="tag-cloud__botao" href="{{ "categories/" | relLangURL }}">Categorias</a>
+        </div>
+      </div>
+    {{- end }}
+    <ul class="tag-cloud__lista" aria-label="Nuvem de tags">
+      {{- range $ordenados }}
+        {{- $peso := 0.0 -}}
+        {{- if gt $faixa 0.0 }}{{ $peso = div (sub (math.Log (float .Count)) $min) $faixa }}{{ end -}}
+        {{- $px := add 14 (mul $peso 30) | math.Round -}}
+        {{- $nivel := cond (ge $peso 0.66) "alto" (cond (ge $peso 0.33) "medio" "baixo") -}}
+        <li>
+          <a class="tag-cloud__tag tag-cloud__tag--{{ $nivel }}" style="font-size: {{ $px }}px"
+            href="{{ .Page.RelPermalink }}" title="{{ .Page.Title }}: {{ .Count }} {{ cond (eq .Count 1) "post" "posts" }}">
+            {{- .Page.Title -}}<sup>{{ .Count }}</sup>
+          </a>
+        </li>
+      {{- end }}
+    </ul>
+  </div>
+{{- end -}}

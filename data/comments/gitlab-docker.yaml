@@ -1,0 +1,31 @@
+# Comentários do blog antigo (WordPress), somente leitura. Só nome, data e texto (PLAN.md 6.5).
+- id: 52678
+  nome: "Clecio Antao"
+  data: "2020-09-18T17:48:17-03:00"
+  texto: "Aecio, boa tarde. Eu criei o container e um volume para backups (/var/opt/gitlab/backups/) so que quando tento restaurar o backup ele da falta de espaço em disco. Como posso almentar o disco no container?\nObrigado"
+- id: 52705
+  parent: 52678
+  nome: "Aécio Pires"
+  data: "2020-09-20T14:30:04-03:00"
+  texto: "Bom dia, Clécio!\n\nSe entendi bem você criou um diretório no seu Docker Host (exemplo: /opt/docker/gitlab/backup) e montou um volume no conteiner com destino ao diretório de backup da aplicação (/var/opt/gitlab/backups). Correto?\n\nSe a aplicação está reclamando de espaço em disco no diretório /var/opt/gitlab/backups, você não aumenta o tamanho do disco no conteiner. Você aumenta o tamanho do disco no  Docker Host no qual está localizado o diretório /opt/docker/gitlab/backup, entendeu?\n\nO volume é como se fosse um link que aponta para o diretório no Docker Host.\n\nAbraço."
+- id: 56219
+  nome: "Denis Bonate"
+  data: "2022-01-13T11:57:47-03:00"
+  texto: "Não consegui logar...\nPede usuário e senha, não pareceu opção de criar senha para root."
+- id: 56222
+  nome: "Marcelo de Almeida"
+  data: "2022-03-18T10:22:31-03:00"
+  texto: "para saber a senha inicial do usuário root, execute os passos abaixo no seu terminal:\ndocker exec -ti seu_nome_container_gitlab /bin/bash\ncat /etc/gitlab/initial_root_password\n\nLembrando, o usuário inicial é root, e a senha é a do resultado co comando cat acima."
+- id: 56225
+  nome: "Aécio Pires"
+  data: "2022-04-03T11:50:37-03:00"
+  texto: "Bom dia, Marcelo!\n\nMuito obrigado pela dica. Realmente, a instalação do gitlab mudou bastante desde a última vez que instalei no ano passado.\n\nEu atualizei o tutorial.\n\nAbraço e boa semana."
+- id: 56249
+  nome: "rafael"
+  data: "2022-10-27T18:24:15-03:00"
+  texto: "ola. muito bom tutorial.\nCOmo seria p atualizar quando a imagem do docker for atualizada no dockerhub?\nobg"
+- id: 56250
+  parent: 56249
+  nome: "Aécio Pires"
+  data: "2022-11-02T00:27:19-03:00"
+  texto: "Olá, Rafael!\n\nVocê teria que olhar o changelog/notas da release de cada versão do Gitlab para ver se mudou alguma configuração a cada versão. Nem sempre é só trocar a tag da imagem Docker.\nMas em linhas gerais, o procedimento seria parar e remover o conteiner atual e repetir o tutorial usando a imagem nova.\n\nNovamente, tem que ficar de olho no changelog/notas da release porque o procedimento/configuração pode ser diferente para cada versão."

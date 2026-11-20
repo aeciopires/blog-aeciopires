@@ -1,0 +1,66 @@
+# Validação de pull requests, sem publicar (PLAN.md 8). Mesmo build e validações do make validate.
+name: PR check
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          submodules: true
+          persist-credentials: false
+
+      - uses: jdx/mise-action@90f833d396d0cc3674b631d2d225e306476c303a # v5.2.10
+        with:
+          install: true
+          cache: true
+
+      - name: Lint de Markdown
+        run: make lint-md
+
+      - name: Tags e categorias
+        run: make check-tags
+
+      - name: Build (com avisos de caminho e deprecations)
+        run: |
+          hugo --logLevel info --printPathWarnings 2>&1 | tee hugo.log
+          if grep -E '^(WARN|ERROR)' hugo.log; then echo "::error::corrija os avisos acima"; exit 1; fi
+
+      - name: Build de produção + links internos
+        run: make build validate-links
+
+      - name: actionlint
+        run: make actionlint
+
+      - name: shellcheck
+        run: make shellcheck
+
+      - name: URLs do WordPress preservadas
+        # bloqueante depois da migração (variable MIGRACAO_CONCLUIDA=true no repositório)
+        continue-on-error: ${{ vars.MIGRACAO_CONCLUIDA != 'true' }}
+        run: make compare-urls
+
+      - name: Arquivos Markdown alterados?
+        id: md
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ -n "${BASE_SHA}" ] && git diff --name-only "${BASE_SHA}" HEAD -- '*.md' | grep -q .; then
+            echo "mudou=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Diagramas Mermaid
+        if: steps.md.outputs.mudou == 'true' || github.event_name == 'workflow_dispatch'
+        run: make validate-diagrams

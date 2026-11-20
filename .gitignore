@@ -424,3 +424,12 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+# --- Hugo / blog (PLAN.md 4) ---
+public/
+resources/_gen/
+.hugo_build.lock
+reports/
+.mermaid-out/
+_privado/
+node_modules/

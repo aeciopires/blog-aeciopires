@@ -273,7 +273,7 @@ Sobre esse esquema, o site acrescenta:
 O T2 reproduzia a versão anterior do site. O T9 reproduz a atual.
 
 - **Arte de fundo:** a ilustração do blowfish.page é do próprio projeto e não deve ser copiada. Nos mockups ela foi simulada com gradientes CSS. Na implementação, será usada uma arte própria (por exemplo, o banner atual em versão escura ou uma imagem com licença livre), em `assets/img/background.webp`.
-- **Esforço extra:** o efeito de vidro e os números em destaque (81 posts, 26 categorias, 19 anos) exigem `custom.css` e um partial `layouts/partials/home/custom.html`.
+- **Esforço extra:** o efeito de vidro e os números em destaque (81 posts, 26 categorias, 20 anos) exigem `custom.css` e um partial `layouts/partials/home/custom.html`.
 
 | Computador · home | Computador · post |
 |---|---|
@@ -390,7 +390,7 @@ Contraste WCAG AA (≥ 4,5:1), todos os itens passam:
 Pontos de implementação:
 
 - **Arte de fundo:** arte **própria**, gerada para o projeto (seção 3.2.3). A ilustração do blowfish.page pertence ao projeto e **não é copiada**.
-- **Números em destaque e banner:** os números (81 posts, 26 categorias, 19 anos) e o banner de tecnologias são *shortcodes* próprios usados em `content/_index.md`. O layout `background` do Blowfish exibe esse conteúdo na home, então nenhum layout do tema precisa ser sobrescrito.
+- **Números em destaque e banner:** os números (81 posts, 26 categorias, 20 anos) e o banner de tecnologias são *shortcodes* próprios usados em `content/_index.md`. O layout `background` do Blowfish exibe esse conteúdo na home, então nenhum layout do tema precisa ser sobrescrito.
 - **Efeito de vidro:** classes em `assets/css/custom.css` (`backdrop-filter`). Os textos ficam legíveis mesmo em navegadores sem suporte a esse efeito, porque o fundo semitransparente garante o contraste.
 
 ### 3.2.3 Arte de fundo do T9 (aprovada para gerar)
@@ -650,7 +650,7 @@ mainSections = ["posts"]
 | `content/creditos.md` | Página Créditos e licenças: texto MIT completo do Blowfish, demais componentes, autoria da arte e marcas (3.8) |
 | `layouts/partials/extend-head.html` | Beacon do **Cloudflare Web Analytics** (só quando `hugo.IsProduction`) |
 | `layouts/shortcodes/jotform.html` | `{{< jotform >}}` → `<script src="https://form.jotformz.com/jsform/<ID>">` do formulário atual (ID em `params`) |
-| `content/_index.md` | Chamada "Compartilhando conhecimento há 19 anos" + `{{< button >}}` dos cursos |
+| `content/_index.md` | Chamada "Compartilhando conhecimento há 20 anos" + `{{< button >}}` dos cursos |
 | `content/privacidade.md` | Página nova: Cloudflare Web Analytics (sem cookies), Jotform, giscus/GitHub (dados do comentário ficam públicos no GitHub) |
 
 Ajustes em relação ao visual atual:
@@ -1016,6 +1016,10 @@ Publicar os comentários antigos como **HTML estático, somente leitura**. Sem f
    - criar a categoria **"Comentários"** do tipo **Announcements** (só mantenedores e o giscus abrem tópicos; os leitores apenas respondem);
    - remover ou arquivar as categorias padrão que não serão usadas, para que ninguém abra tópicos soltos.
 3. Gerar os IDs em <https://giscus.app> e colocá-los em `params.toml` (`[giscus]`, seção 3.4).
+   > **Registro da implementação (20/11/2026):** app instalado e categoria "Comentários" criada (<https://github.com/aeciopires/blog-aeciopires/discussions/categories/53362060>).
+   > O giscus exige os **IDs GraphQL** (`node_id`). O `id` numérico da API REST (`gh api repos/aeciopires/blog-aeciopires --jq .id` → `1464650030`) e o número da URL da categoria (`53362060`) **não funcionam**.
+   > Comando usado: `gh api graphql -f query='{repository(owner:"aeciopires",name:"blog-aeciopires"){id discussionCategories(first:25){nodes{id name}}}}'`
+   > → `repoId = "R_kgDOV0zJLg"` e `categoryId = "DIC_kwDOV0zJLs4DLj2M"` (também obtido com `gh api repos/aeciopires/blog-aeciopires --jq .node_id`). Passo a passo completo da instalação (repositório público, Discussions, categoria Announcement, app só neste repositório, validação em giscus.app) em `docs/MAINTENANCE.md`, seção 9.
 4. O *partial* inclui o script com:
    - `data-mapping="pathname"` e `data-strict="1"`: um tópico por URL, sem colisões;
    - `data-reactions-enabled="1"`;

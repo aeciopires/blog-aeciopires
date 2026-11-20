@@ -1,0 +1,30 @@
+# Mounts do projeto. Ao declarar qualquer mount, o Hugo deixa de usar os padrões,
+# por isso eles estão repetidos aqui. config/development/module.toml repete esta lista
+# e acrescenta _privado/ (rascunhos privados, só no make serve; PLAN.md 9.3.1).
+
+[[mounts]]
+  source = "content"
+  target = "content"
+[[mounts]]
+  source = "static"
+  target = "static"
+[[mounts]]
+  source = "layouts"
+  target = "layouts"
+[[mounts]]
+  source = "data"
+  target = "data"
+[[mounts]]
+  source = "assets"
+  target = "assets"
+[[mounts]]
+  source = "i18n"
+  target = "i18n"
+[[mounts]]
+  source = "archetypes"
+  target = "archetypes"
+
+# Texto integral da licença MIT do Blowfish para a página /creditos/ (PLAN.md 3.8).
+[[mounts]]
+  source = "themes/blowfish/LICENSE"
+  target = "assets/licencas/blowfish-LICENSE"

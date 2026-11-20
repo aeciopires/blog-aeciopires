@@ -1,0 +1,9 @@
+{{- /*
+  Texto INTEGRAL da licença MIT do Blowfish, lido do submódulo no build (PLAN.md 3.8).
+  Montado em assets/licencas/blowfish-LICENSE por config/_default/module.toml.
+*/ -}}
+{{- with resources.Get "licencas/blowfish-LICENSE" -}}
+<pre class="whitespace-pre-wrap text-sm"><code>{{ .Content }}</code></pre>
+{{- else -}}
+  {{- errorf "[licenca-blowfish] themes/blowfish/LICENSE não encontrado (submódulo inicializado?)" -}}
+{{- end -}}

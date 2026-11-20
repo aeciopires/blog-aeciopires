@@ -1,0 +1,33 @@
+# Verifica semanalmente o certificado da origem (GitHub Pages) para blog.aeciopires.com (PLAN.md 10.3).
+# Falha (e o GitHub avisa por e-mail) se faltarem menos de 20 dias ou se o certificado não for do domínio.
+# Só roda depois da virada de DNS: variable DOMINIO_ATIVO=true no repositório.
+name: Certificado da origem
+
+on:
+  schedule:
+    - cron: "17 9 * * 1"   # segundas, 06:17 em Recife
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    if: vars.DOMINIO_ATIVO == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Conferir certificado servido pelo GitHub Pages
+        env:
+          DOMINIO: blog.aeciopires.com
+          MIN_DIAS: "20"
+        run: |
+          set -euo pipefail
+          for ip in 185.199.108.153 185.199.109.153 185.199.110.153 185.199.111.153; do
+            cert="$(echo | openssl s_client -connect "${ip}:443" -servername "${DOMINIO}" 2>/dev/null | openssl x509 -noout -subject -ext subjectAltName -enddate)"
+            echo "== ${ip}"; echo "${cert}"
+            echo "${cert}" | grep -q "DNS:${DOMINIO}" || { echo "::error::certificado de ${ip} não cobre ${DOMINIO}"; exit 1; }
+            fim="$(echo "${cert}" | sed -n 's/^notAfter=//p')"
+            dias=$(( ( $(date -d "${fim}" +%s) - $(date +%s) ) / 86400 ))
+            echo "dias restantes: ${dias}"
+            [ "${dias}" -ge "${MIN_DIAS}" ] || { echo "::error::certificado da origem vence em ${dias} dias (contingência: docs/cloudflare.md)"; exit 1; }
+          done

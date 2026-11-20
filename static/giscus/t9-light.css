@@ -1,0 +1,14 @@
+/* Tema do giscus para o T9, modo claro (PLAN.md 6.6). Lido pelo iframe de giscus.app. */
+@import url("https://giscus.app/themes/light.css");
+
+main {
+  --color-canvas-default: #f6f7fc;
+  --color-canvas-overlay: #ffffff;
+  --color-canvas-subtle: #eceef8;
+  --color-border-default: #c9cfe8;
+  --color-border-muted: #dde1f2;
+  --color-accent-fg: #1f5fc0;
+  --color-accent-emphasis: #1f5fc0;
+  --color-fg-default: #121633;
+  --color-fg-muted: #4a5278;
+}

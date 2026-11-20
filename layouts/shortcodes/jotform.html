@@ -1,0 +1,15 @@
+{{- /*
+  Formulário de contato atual do Jotform, embutido por script como no WordPress (PLAN.md 3.5 e 11.5).
+  Uso: {{< jotform >}}. O ID fica em params.toml ([jotform] formId).
+  CSP: form.jotformz.com e cdn.jotfor.ms em script-src; form.jotformz.com em frame-src.
+*/ -}}
+{{- with site.Params.jotform.formId -}}
+  <div class="jotform not-prose my-6">
+    <script src="https://form.jotformz.com/jsform/{{ . }}"></script>
+    <noscript>
+      <p>O formulário precisa de JavaScript. <a href="https://form.jotformz.com/{{ . }}" rel="noopener noreferrer">Abrir o formulário em outra página</a>.</p>
+    </noscript>
+  </div>
+{{- else -}}
+  {{- warnf "[jotform] params.jotform.formId não definido (%s)" $.Page.File.Path -}}
+{{- end -}}

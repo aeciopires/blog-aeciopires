@@ -1,0 +1,33 @@
+# Só no ambiente de desenvolvimento (make serve): mesmos mounts de _default + _privado/.
+# _privado/ está no .gitignore e nunca é commitado (PLAN.md 9.3.1).
+
+[[mounts]]
+  source = "content"
+  target = "content"
+[[mounts]]
+  source = "static"
+  target = "static"
+[[mounts]]
+  source = "layouts"
+  target = "layouts"
+[[mounts]]
+  source = "data"
+  target = "data"
+[[mounts]]
+  source = "assets"
+  target = "assets"
+[[mounts]]
+  source = "i18n"
+  target = "i18n"
+[[mounts]]
+  source = "archetypes"
+  target = "archetypes"
+
+# Texto integral da licença MIT do Blowfish para a página /creditos/ (PLAN.md 3.8).
+[[mounts]]
+  source = "themes/blowfish/LICENSE"
+  target = "assets/licencas/blowfish-LICENSE"
+
+[[mounts]]
+  source = "_privado"     # mesma estrutura de content/ (posts/<slug>/, <slug>/)
+  target = "content"

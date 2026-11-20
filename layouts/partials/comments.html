@@ -1,0 +1,48 @@
+{{- /*
+  Comentários (PLAN.md 6.5 e 6.6), chamado pelo Blowfish quando showComments = true.
+  1) Novos: giscus (GitHub Discussions). O script é criado por assets/js/giscus.js (sem JS inline),
+     que também acompanha o modo claro/escuro. Só aparece com repoId e categoryId definidos.
+  2) Arquivados: data/comments/<slug>.yaml, somente leitura. Texto puro, SEMPRE com escape:
+     nunca usar safeHTML, markdownify ou htmlUnescape neste conteúdo.
+*/ -}}
+{{- $g := site.Params.giscus -}}
+<section id="comentarios" aria-labelledby="comentarios-titulo">
+  <h2 id="comentarios-titulo" class="text-2xl font-bold text-neutral-900 dark:text-neutral">Comentários</h2>
+
+  {{- if and $g.repoId $g.categoryId }}
+    {{- $js := resources.Get "js/giscus.js" | resources.Minify | resources.Fingerprint (site.Params.fingerprintAlgorithm | default "sha512") }}
+    <div id="giscus-container" class="giscus-container mt-4"
+      data-repo="{{ $g.repo }}"
+      data-repo-id="{{ $g.repoId }}"
+      data-category="{{ $g.category }}"
+      data-category-id="{{ $g.categoryId }}"
+      data-theme-dark="{{ "giscus/t9-dark.css" | absURL }}"
+      data-theme-light="{{ "giscus/t9-light.css" | absURL }}"></div>
+    <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
+  {{- end }}
+
+  {{- /* chave = slug do post (data/comments/<slug>.yaml) */ -}}
+  {{- $slug := .Slug | default .File.ContentBaseName -}}
+  {{- $arquivados := index (hugo.Data.comments | default dict) $slug -}}
+  {{- with $arquivados }}
+    <div class="comentarios-arquivados mt-8">
+      <p class="comentarios-arquivados__rotulo">
+        <span aria-hidden="true">🔒</span> Comentários arquivados do blog antigo (somente leitura)
+      </p>
+      <ol class="comentarios-arquivados__lista">
+        {{- range . }}
+          <li class="comentario-arquivado{{ if .parent }} comentario-arquivado--resposta{{ end }}" id="comentario-{{ .id }}">
+            <p class="comentario-arquivado__meta">
+              <strong>{{ .nome }}</strong>
+              · <time datetime="{{ .data }}">{{ partial "functions/date.html" (time .data) }}</time>
+            </p>
+            {{- /* Parágrafos em "\n\n"; quebra simples vira <br>. Cada linha é escapada pelo template (sem safeHTML). */}}
+            {{- range (split .texto "\n\n") }}
+              {{- with strings.TrimSpace . }}<p>{{ range $i, $linha := split . "\n" }}{{ if $i }}<br>{{ end }}{{ $linha }}{{ end }}</p>{{ end }}
+            {{- end }}
+          </li>
+        {{- end }}
+      </ol>
+    </div>
+  {{- end }}
+</section>

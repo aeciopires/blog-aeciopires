@@ -1,0 +1,30 @@
+# Comentários do blog antigo (WordPress), somente leitura. Só nome, data e texto (PLAN.md 6.5).
+- id: 31222
+  nome: "Matheus"
+  data: "2016-06-01T12:11:04-03:00"
+  texto: "Acredito que esse projeto possa ajudar :D\nhttps://letsencrypt.org/"
+- id: 54822
+  nome: "Maurício Venzi"
+  data: "2021-06-02T20:27:21-03:00"
+  texto: "Muito bom o tutorial Aécio Pires, acho que faltou apenas permissão no arquivo /etc/certs/server.key\n\nconforme logs do grafana abaixo:\nt=2021-06-02T19:06:16-0300 lvl=eror msg=\"A service failed\" logger=server err=\"open /etc/certs/server.key: permission denied\"\nt=2021-06-02T19:06:16-0300 lvl=eror msg=\"Server shutdown\" logger=server reason=\"open /etc/certs/server.key: permission denied\"\n\nsolucionado com o comando\n\nchmod 755 server.key"
+- id: 54849
+  nome: "Aécio Pires"
+  data: "2021-06-06T02:07:10-03:00"
+  texto: "Oi, Maurício!\nObrigado pelo aviso. Já adicionei no tutorial.\nAbraço."
+- id: 56196
+  nome: "Felipe Cardoso"
+  data: "2021-11-26T16:37:37-03:00"
+  texto: "Existe a possibilidade de usar o grafana em um dominio direto ? Sem o uso do :3000 ? Tipo graficos.seudominio.com.br"
+- id: 56200
+  parent: 56196
+  nome: "Aécio Pires"
+  data: "2021-11-29T09:48:29-03:00"
+  texto: "Bom dia, Felipe!\n\nSim, você pode colocar na frente do Grafana o Nginx ou Apache para atuar como proxy reverso... ele receberia a requisição na porta 80 ou 443 e repassaria para o grafana na porta 3000. Para o usuário fica transparente... Ele tem a impressão que está acessando o Grafana diretamente na porta 80 ou 443, mas não está.\n\nPara fazer isso, tem vários tutoriais na Internet.\n\nhttps://www.google.com/search?q=nginx+proxy+reverse&oq=nginx+proxy+re&aqs=chrome.2.0i512l3j69i57j0i512l3j69i60.7472j0j7&sourceid=chrome&ie=UTF-8\n\nAbraço."
+- id: 56247
+  nome: "Marcio Knasel"
+  data: "2022-09-26T17:05:36-03:00"
+  texto: "Não precisa de um proxy reverso, pois o grafana server faz esse trabalho na sua própria configuração, você especifica o domínio e a url padrão, tendo domínio registrado e ja propagado para o IP do grafana e liberado as portas corretas tudo deve funcionar."
+- id: 56289
+  nome: "Goku"
+  data: "2023-07-03T11:41:02-03:00"
+  texto: "Onde estão essas configurações Marcio?"

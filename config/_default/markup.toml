@@ -1,0 +1,29 @@
+# -- Markup --
+# Partiu do markup.toml do Blowfish v3.10.0.
+# unsafe = false é o objetivo do projeto (PLAN.md 3.6.3): HTML cru no Markdown não é renderizado.
+# Shortcodes do tema e próprios geram HTML normalmente. Se um post migrado precisar de HTML cru,
+# avaliar caso a caso (o conteúdo é só do autor; comentários antigos são renderizados à parte, com escape).
+
+[goldmark]
+  [goldmark.parser]
+    wrapStandAloneImageWithinParagraph = false
+
+    [goldmark.parser.attribute]
+      block = true
+
+  [goldmark.renderer]
+    unsafe = false
+
+  [goldmark.extensions]
+    [goldmark.extensions.passthrough]
+      enable = true
+      [goldmark.extensions.passthrough.delimiters]
+        block = [['\[', '\]'], ['$$', '$$']]
+        inline = [['\(', '\)']]
+
+[highlight]
+  noClasses = false
+
+[tableOfContents]
+  startLevel = 2
+  endLevel = 4

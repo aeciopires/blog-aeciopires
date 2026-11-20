@@ -1,0 +1,35 @@
+# Comentários do blog antigo (WordPress), somente leitura. Só nome, data e texto (PLAN.md 6.5).
+- id: 52516
+  nome: "oscar gomes"
+  data: "2020-09-04T15:22:29-03:00"
+  texto: "root@ubuntu-server-logs:~$ docker logs elasticsearch\nOpenJDK 64-Bit Server VM warning: If the number of processors is expected to increase from one, then you should configure the number of parallel GC threads appropriately using -XX:ParallelGCThreads=N\nOpenJDK 64-Bit Server VM warning: INFO: os::commit_memory(0x0000000085330000, 2060255232, 0) failed; error='Cannot allocate memory' (errno=12)\n#\n# There is insufficient memory for the Java Runtime Environment to continue.\n# Native memory allocation (mmap) failed to map 2060255232 bytes for committing reserved memory.\n\nVale lembrar que para executar tudo isso, precisa verificar se há memória suficiente no servidor."
+- id: 52517
+  nome: "oscar gomes"
+  data: "2020-09-04T15:38:25-03:00"
+  texto: "--hostname graylog-server falta uma barra (\\)"
+- id: 52546
+  parent: 52517
+  nome: "Aécio Pires"
+  data: "2020-09-06T10:44:24-03:00"
+  texto: "Obrigado, Oscar!\n\nJá corrigi.\n\nAbraço."
+- id: 52929
+  nome: "Glauber B Souza"
+  data: "2020-10-05T19:41:35-03:00"
+  texto: "Boa noite,\n-e GRAYLOG_WEB_ENDPOINT_URI=\"http://IP-SERVIDOR:9001/api\" \\\nNesta opão de ip do servidor, eu aponto o ip do elastiticsearch ou posso colocar localhost?"
+- id: 52985
+  parent: 52929
+  nome: "Aécio Pires"
+  data: "2020-10-10T13:32:09-03:00"
+  texto: "Bom dia, Glauber!\n\nÉ para colocar o IP do servidor no qual o Graylog está sendo instalado via Docker.\n\nSe colocar 'localhost' não vai funcionar, pois quando estamos trabalhando com contêiner, se você usar 'localhost' a aplicação tentará acessar o próprio contêiner e não o servidor que executa o contêiner, entendeu?\n\nEntão, para evitar essa confusão, a gente deve especificar o IP do servidor no qual o Graylog está sendo instalado.\n\nEssa configuração aí não tem relação alguma com o ElasticSearch, ela se refere em qual endpoint (URL) será disponibilizada a interface web do Graylog.\n\nAbraço."
+- id: 54631
+  nome: "Bruno Santinato"
+  data: "2021-05-06T13:14:30-03:00"
+  texto: "Aécio,\nOs serviços docker subiu e estão up na minha configuração.\nPorem a interface web fica branco.\npode me ajudar ?\n Já subi o recurso da maquina de laboratório que estou fazendo os testes. esta com 4GB de RAM e 4vCPU."
+- id: 54641
+  nome: "Aécio Pires"
+  data: "2021-05-08T03:06:35-03:00"
+  texto: "Oi, Bruno!\n\n1- Você olhou os logs de cada contêiner para identificar as possíveis mensagens de erro?\n\n2- Se sim, chegou a pesquisar no google sobre as mensagens de erro?\n\n3- No comando que inicia o contêiner do Graylog, você informou o IP ou usou localhost? É para usar o IP do host e não localhost, conforme expliquei para Glauber no comentário anterior.\n\n4- Você está tentando acessar o Graylog no navegador usando o mesmo IP e porta da criação do contêiner?\n\nNo momento eu só consigo pensar nestes cenários...\n\nAbraço."
+- id: 56440
+  nome: "Thiago"
+  data: "2024-07-16T20:57:49-03:00"
+  texto: "Sensacional, muito obrigado!"
