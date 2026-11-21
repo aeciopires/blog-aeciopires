@@ -1,7 +1,8 @@
 {{- /*
   Formulário de contato atual do Jotform, embutido por script como no WordPress (PLAN.md 3.5 e 11.5).
   Uso: {{< jotform >}}. O ID fica em params.toml ([jotform] formId).
-  CSP: form.jotformz.com e cdn.jotfor.ms em script-src; form.jotformz.com em frame-src.
+  CSP: form.jotformz.com e cdn.jotfor.ms em script-src; form.jotformz.com e form.jotform.com em frame-src
+  (o formulário abre num iframe de form.jotform.com). Ver docs/cloudflare.md, seção 5.
 */ -}}
 {{- with site.Params.jotform.formId -}}
   <div class="jotform not-prose my-6">

@@ -33,7 +33,7 @@
               {{- else }}
                 <span class="tecnologias__texto">{{ .nome }}</span>
               {{- end }}
-              <span class="tecnologias__legenda">{{ .nome }}</span>
+              <span class="tecnologias__legenda">{{ .legenda | default .nome }}</span>
             </a>
           </li>
         {{- end }}

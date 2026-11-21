@@ -9,7 +9,7 @@ git clone --recurse-submodules git@github.com:aeciopires/blog-aeciopires.git
 cd blog-aeciopires
 make check-deps      # diagnóstico, não altera nada
 make install-deps    # mise + ferramentas + submódulo do tema + skill
-make install-hooks   # pre-commit: segredos/chaves/e-mail (todo commit) + check-tags e lint-md nos .md alterados
+make install-hooks   # pre-commit: repositórios do GitHub (data/github.json) + segredos/chaves/e-mail (todo commit) + check-tags e lint-md nos .md alterados
 make serve           # http://localhost:1313
 ```
 
@@ -38,9 +38,11 @@ make serve           # http://localhost:1313
 | Tags | `check-tags` / `fix-tags` | `make fix-tags SLUG=meu-post CONFIRM=sim` |
 | | `new-tag` / `merge-tag` | `make new-tag NAME=opentofu DESC="OpenTofu"` · `make merge-tag FROM=tf TO=terraform CONFIRM=sim` |
 | | `tags-report` / `install-hooks` | `make tags-report` |
+| Dados | `github-repos` | `make github-repos` (o pre-commit já roda) |
 | Imagens | `optimize-images` | `make optimize-images` |
 | Qualidade | `lint-md` / `lint-md-fix` | `make lint-md` |
-| | `validate` | `make validate` (check-secrets, lint-md, check-tags, build, validate-links, actionlint, shellcheck, compare-urls) |
+| | `validate` | `make validate` (check-secrets, lint-md, check-tags, build, validate-links, check-home, actionlint, shellcheck, compare-urls) |
+| | `check-home` | `make build check-home` (home leve: cards, JSON com SRI, URLs e fidelidade ao card do tema; seção 8) |
 | | `check-secrets` | `make check-secrets` (gitleaks no histórico do Git; exceções em `.gitleaks.toml`) |
 | | `validate-diagrams` | `make validate-diagrams` (Docker) |
 | | `check-links-online` | `make check-links-online` → `reports/links.md` |
@@ -65,7 +67,9 @@ make serve           # http://localhost:1313
 | Categorias e tags | Só as registradas em `data/taxonomia.yaml` (1 a 5 tags por post). Tag nova: `make new-tag`; sinônimo: `make fix-tags`; unir: `make merge-tag`. O `make check-tags` bloqueia o que estiver fora do padrão |
 | Diagramas em posts | Shortcode `{{</* mermaid */>}}` do Blowfish |
 | Novos embeds | Shortcodes do Blowfish. Se envolver um novo domínio, **atualizar a CSP** ([cloudflare.md](cloudflare.md)) antes |
-| Banner de tecnologias | `data/tecnologias.yaml` + logo oficial em `assets/img/logos/` + linha em `assets/img/logos/SOURCES.md` |
+| Banner de tecnologias | `data/tecnologias.yaml` + logo oficial em `assets/img/logos/` + linha em `assets/img/logos/SOURCES.md`. Nome longo que quebra feio no celular: campo opcional `legenda` com hífen opcional, ex.: `legenda: "Victoria\u00ADMetrics"` (no celular estreito vira "Victoria-/Metrics"; o `nome` continua no `alt` e no `title`) |
+| Links nos posts | Externos (`http://`/`https://`) abrem **sozinhos** em nova aba: o Blowfish adiciona `target="_blank" rel="noreferrer"` (`article.externalLinkForceNewTab`, ligado por padrão; desligar num post: `externalLinkForceNewTab: false` no front matter). Links internos: caminho relativo (`/slug/`) ou `{{</* ref */>}}`, nunca `https://blog.aeciopires.com/...` (abriria em nova aba). Não escreva `target` à mão: HTML cru é omitido |
+| Páginas de lista (Categorias, Tags, Posts) | O título vem de `content/<seção ou taxonomia>/_index.md` (`title` em pt-BR). Sem esse arquivo, o Hugo usa o nome interno em inglês (era o caso de `/categories/`). Taxonomia nova: criar o `_index.md` junto |
 
 Notas:
 
@@ -94,13 +98,14 @@ Notas:
 Um post novo continua rascunho (`draft: true`) até o `make publish-post`: aparece no `make serve`, mas **não** no `make serve-prod` (nem a página, nem o card na home). Isso é esperado; veja a seção 11 ("Post não aparece").
 | Ambiente isolado / sem mise | `make serve-docker` |
 | Mesma validação da CI | `make lint-md validate` |
+| Desempenho (Lighthouse) | No site publicado ou no PageSpeed Insights. **Não** meça no `make serve`/`serve-prod`: o servidor do Hugo não minifica, não comprime (sem Brotli/gzip), não manda cache e injeta o *live reload* (a home chegava a 454 KB contra 22 KB publicados) |
 | Diagramas da documentação | `make validate-diagrams` |
 
 O que olhar no navegador:
 
 - home, um post longo, `/tags/`, `/posts/` e Contato;
 - botão claro/escuro (a primeira visita abre escura, como no blowfish.page);
-- largura de celular (DevTools, 390 px);
+- larguras de celular no DevTools (modo dispositivo): 320, 360 (Galaxy S2x e a maioria dos Android), 390/393 (iPhone/Pixel), 412 e 430 px; depois 640, 768 e ≥ 1024 px. Em cada uma: sem rolagem horizontal e nada saindo da borda das caixas (banner de tecnologias, números da home, nuvem de tags, tabelas e blocos de código);
 - busca (`Ctrl K`);
 - comentários: o giscus só carrega com `repoId`/`categoryId` preenchidos e no domínio real; localmente aparece só a parte arquivada.
 
@@ -122,7 +127,7 @@ O que olhar no navegador:
 
 | Skill | Quando usar | Exemplo de pedido |
 |---|---|---|
-| `blowfish` | Qualquer mudança de tema, configuração, layout, shortcode ou front matter | "Usando a skill blowfish, adicione uma série 'Helm Chart do Zabbix' aos 4 posts" |
+| `blowfish` | Qualquer mudança de tema, configuração, layout, shortcode ou front matter | "Usando a skill blowfish, mostre o sumário em todos os posts longos" |
 | `revisar-conteudo` | Atualizar e testar posts com base em fontes oficiais | "Revise o post X com a skill revisar-conteudo" ou "Teste com Docker e kind os posts com comandos" |
 | `escrever-post` | Escrever um post novo (fica como rascunho) | "Escreva um post sobre o repositório github.com/aeciopires/X" |
 | `atualizar-site` | Atualizar Hugo, Blowfish, ferramentas e imagens | "Use a skill atualizar-site e proponha as atualizações disponíveis" |
@@ -160,10 +165,13 @@ O que olhar no navegador:
 | Mudança | Onde |
 |---|---|
 | Tamanho da fonte, largura do texto e margens no computador | Variáveis `--blog-fonte-lg`, `--blog-fonte-2xl`, `--blog-largura-texto` e `--blog-margem-lateral` no fim de `assets/css/custom.css` (celular e tablet seguem o tema). Mantenha o texto entre 60 e 80 caracteres por linha |
-| Busca (termos em qualquer ordem, sem acento, tolerância a erro) | `assets/js/busca.js`: só ajusta as opções da Fuse.js do tema (`useTokenSearch`, `tokenMatch: "all"`, `ignoreDiacritics`, `threshold: 0.15`), sem copiar o `search.js`. Mais tolerância (0.2+) acha "zabix", mas faz "istio" casar com "isto". Após atualizar o Blowfish, conferir se o tema ainda usa `new Fuse(...)` e se a Fuse.js é ≥ 7.5 |
+| Busca (termos em qualquer ordem, sem acento, tolerância a erro) | `assets/js/busca.js`: ajusta as opções da Fuse.js do tema (`useTokenSearch`, `tokenMatch: "all"`, `ignoreDiacritics`, `threshold: 0.15`), sem copiar o `search.js`. Mais tolerância (0.2+) acha "zabix", mas faz "istio" casar com "isto". **Segurança:** o `search.js` do tema monta os resultados com `innerHTML`; o `busca.js` envolve `fuse.search` e entrega ao tema cópias com escape (título, seção, data; resumo com escape duplo porque o tema faz `innerHTML` → `textContent` → `innerHTML`) e links só do próprio site. Após atualizar o Blowfish, conferir se o tema ainda usa `new Fuse(...)` e `fuse.search(...)`, os campos `title`/`summary`/`permalink`/`section`/`date`/`externalUrl`, e se a Fuse.js é ≥ 7.5; testar uma busca e o `/?s=termo` |
 | Ordenação dos posts da home (Mais recentes, Mais antigos, Mais lidos, Menos lidos) | Ver "Ordenação dos posts da home" logo abaixo |
 | Logos pequenos dentro de posts | `{{< figure src="logo.svg" alt="Logo do X" figureClass="logo-post" nozoom=true >}}`: 80 px de altura, vários lado a lado (classe `logo-post` em `assets/css/custom.css`) |
 | Blocos de código sem barra de rolagem | Fim de `assets/css/custom.css`: linhas longas quebram só na exibição (`pre-wrap`); copiar traz o comando original, sem `\` extra. Para voltar à rolagem horizontal, remova esse bloco |
+| Números da home (posts, categorias, repositórios no GitHub) | `layouts/shortcodes/blog-stats.html`: cada cartão é um link. Trocar um número: acrescentar/remover um `dict` em `$itens` (`valor`, `rotulo`, `url` e `externo` para abrir em nova aba). Dado externo novo: gerar um `data/*.json` por script (como `scripts/github-repos.mjs`), nunca ampliar `security.http.urls` |
+| Banner de tecnologias no celular | `assets/css/custom.css`, bloco "Banner de tecnologias": até 640 px, 3 colunas fluidas (`repeat(3, minmax(0, 1fr))`, placas com `width: 100%`); até 340 px, 2 colunas; legendas com fonte menor que quebram em até 2 linhas. **Não use largura fixa em px** em grades do celular: foi o que fez as placas saírem da borda no Galaxy S26 (360 px) |
+| Taxonomias | Só `tags` e `categories` (`[taxonomies]` em `hugo.toml`). `series` foi desligada porque nenhum post usava (gerava `/series/` vazia). Para usar séries: reativar em `[taxonomies]` e em `[related.indices]`, criar `content/series/_index.md` com `title: "Séries"` e pôr `series: ["Nome"]` nos posts |
 | Cores, vidro, banner, nuvem | `assets/css/custom.css` (cores do esquema nativo `blowfish` via `--color-*`; não criar esquema próprio sem necessidade) |
 | Parâmetros do tema | `config/_default/params.toml`, conferindo a documentação da versão fixada |
 | Comportamento de layout | Override em `layouts/partials/` ou shortcode em `layouts/shortcodes/`; **nunca** editar `themes/blowfish/` |
@@ -177,8 +185,9 @@ O Blowfish não tem ordenação escolhida pelo leitor: só `list.orderByWeight`,
 
 | Peça | Papel |
 |---|---|
-| `layouts/partials/recent-articles/cardview.html` | **Override** do tema (v3.10.0): renderiza todos os posts como cards com `data-data` (data) e `data-visitas`, deixa visíveis só os `homepage.showRecentItems` primeiros e mostra os botões. Mantém o `.Paginate` do tema para não sumir com `/page/N/` |
-| `assets/js/ordenar-home.js` | Reordena os cards, ativa um botão por vez (`aria-pressed`), troca o título da seção e lembra a escolha no navegador (`localStorage`). Sem JavaScript, os botões não aparecem e a home fica como no tema |
+| `layouts/partials/recent-articles/cardview.html` | **Override** do tema (v3.10.0). **Home leve:** o HTML traz só os `homepage.showRecentItems` posts mais recentes (cards do tema), os botões e um `<template data-card-molde>` com um card renderizado pelo tema. Os dados de todos os posts vão para `js/posts-home.<hash>.json` (fingerprint + integridade nos atributos `data-json`/`data-json-integridade`). O JSON é extraído da **saída dos partials do tema** (`article-link/card.html` para a imagem, `article-meta/basic.html` para metadados e chips), então acompanha a configuração e as versões do Blowfish; se a extração falhar, o build emite WARN. Mantém o `.Paginate` do tema para não sumir com `/page/N/` |
+| `assets/js/ordenar-home.js` | Na ordem padrão não baixa nada. Ao escolher outra ordem, baixa o JSON uma vez (`fetch` com `integrity`), valida e monta os cards que faltam **clonando o molde** e preenchendo só com `textContent` e URLs validadas. Ativa um botão por vez (`aria-pressed`), troca o título da seção e lembra a escolha (`localStorage`). Falha no JSON (rede, integridade, dados inválidos) → volta para "Mais recentes". Sem JavaScript, os botões não aparecem e a home fica como no tema |
+| `scripts/check-home.mjs` + `make check-home` | Roda no `make validate`, no `pr-check` e no deploy: confere os cards da home, o molde, o SRI do JSON, as URLs e compara título, imagem, metadados e chips do JSON com o card do tema em `/posts/` (todos os posts). É o alarme para mudanças do Blowfish |
 | `assets/css/custom.css` (bloco "Ordenação dos posts da home") | Visual dos botões nos modos claro e escuro |
 | `scripts/visualizacoes.mjs` + `make visualizacoes` | Gera `data/visualizacoes.json` (ignorado pelo Git) com as visualizações por caminho dos últimos 180 dias, pela API GraphQL do Cloudflare Web Analytics (`rumPageloadEventsAdaptiveGroups`). A API só responde até 26 semanas e 2 dias (184 dias) atrás; pedir mais dá o erro *cannot request data older than 26w2d*. Os números são aproximados (a API usa amostragem) |
 | `.github/workflows/deploy.yml` | Passo "Visualizações por página" antes do build e republicação toda segunda (09:15 UTC) para atualizar os números |
@@ -187,12 +196,20 @@ Sem `data/visualizacoes.json` (sem o secret no deploy, ou num build local sem `m
 
 **Novos posts ou posts removidos:** nada a fazer. A lista vem do Hugo a cada build, e os números são recalculados no deploy seguinte (no máximo uma semana depois, ou na hora com Actions → *Deploy* → *Run workflow*). Um post novo começa com 0 visitas. Se um post mudar de endereço, as visitas antigas ficam no caminho antigo até saírem da janela de 180 dias.
 
+**Regras de segurança da home leve** (não relaxar):
+
+- no JavaScript, nada de `innerHTML`, `outerHTML`, `insertAdjacentHTML` ou `document.write`: texto só por `textContent`, atributos por `setAttribute`;
+- URLs do JSON (post, imagem, termos) só se forem caminhos do próprio site (`/…`, sem `//`, sem esquema, sem `\`, aspas, `<`, `>` ou espaços); item inválido é descartado. A mesma regra está em `scripts/check-home.mjs`;
+- o JSON só leva dados do próprio build (front matter e saída do tema); nunca comentários, dados de visitantes ou de APIs de terceiros;
+- mesma origem e `connect-src 'self'`: a CSP não muda. O `htmlUnescape` no override vale só porque o resultado vai para o JSON e vira `textContent`.
+
 **Ao atualizar o Blowfish ou o Hugo**, confira:
 
-1. Se `themes/blowfish/layouts/partials/recent-articles/cardview.html` mudou: `git -C themes/blowfish diff <tag-antiga> <tag-nova> -- layouts/partials/recent-articles/ layouts/partials/article-link/card.html`. Traga para o override as mudanças do tema (classes do grid, chamada do card) e mantenha os atributos `data-*`, os botões e o `<script>`.
-2. Se o tema passou a oferecer ordenação nativa ou se `homepage.showRecentItems`/`cardView` mudaram de nome (notas da versão e https://blowfish.page/docs/homepage-layout/).
-3. Se `hugo.Data`, `.Paginate` e `.Date.Unix` continuam válidos (`hugo --logLevel info` sem avisos de deprecated).
-4. Teste: `make serve-prod` → home → cada botão muda a ordem e só um fica ativo; desligue o JavaScript e veja os 6 mais recentes; celular e modos claro/escuro.
+1. `make update-theme TAG=…` lista o diff do tema nos arquivos que a home usa (`recent-articles/`, `article-link/card.html`, `article-meta/basic.html`). Traga para o override as mudanças do tema (classes do grid, chamada do card) e mantenha os atributos `data-*`, o molde, os botões e o `<script>`.
+2. `make validate` roda o `check-home`. Se falhar com "difere do card do tema" ou "molde incompleto", o HTML do card mudou: ajuste no override as expressões `$separador`, `$reLinhaMeta` e `$reTermo` e, no `ordenar-home.js`, os seletores do molde (`img`, `header a`, `h2`, `header + div` e suas duas linhas, `.px-2`, `.article-link__summary`). WARN do `cardview.html` no build indica o mesmo.
+3. Se o tema passou a oferecer ordenação nativa ou se `homepage.showRecentItems`/`cardView`/`list.showSummary` mudaram de nome (notas da versão e https://blowfish.page/docs/homepage-layout/).
+4. Se `hugo.Data`, `.Paginate`, `.Date.Unix`, `findRESubmatch`, `resources.FromString` e `jsonify` continuam válidos (`hugo --logLevel info` sem avisos de deprecated).
+5. Teste no navegador: `make serve-prod` → home → cada botão muda a ordem, só um fica ativo e os cards montados ficam iguais aos do tema (imagem, data, palavras, tempo, chips); recarregue com outra ordem salva; desligue o JavaScript e veja os 6 mais recentes; DevTools → Console sem erros de CSP; celular e modos claro/escuro.
 5. Para testar "Mais lidos" com os números reais: exporte `CLOUDFLARE_ANALYTICS_TOKEN` e `CLOUDFLARE_ACCOUNT_ID` no terminal (sem salvar o token em arquivo) e rode `make visualizacoes` antes do `make serve-prod`. Só exportar as variáveis não basta: o Hugo lê o arquivo, não as variáveis. Com o servidor já rodando, ele recarrega sozinho ao surgir o arquivo.
 6. Para testar "Mais lidos" sem token, crie um `data/visualizacoes.json` de exemplo: `{"paginas": {"/zabbix-docker/": 10, "/primeiros-passos-com-docker/": 5}}` (o arquivo é ignorado pelo Git).
 
@@ -205,7 +222,8 @@ Peças próprias do site:
 | Arquivo | Para quê |
 |---|---|
 | `layouts/shortcodes/blog-chamada.html` | Chamada da home (eyebrow, título, botões) |
-| `layouts/shortcodes/blog-stats.html` | Números da home, calculados no build |
+| `layouts/shortcodes/blog-stats.html` | Números da home, cada um é um link: posts publicados (→ `/posts/`) e categorias (→ `/categories/`), calculados no build, e repositórios públicos no GitHub (→ aba de repositórios do perfil, nova aba), lidos de `data/github.json` |
+| `scripts/github-repos.mjs` + `make github-repos` | Atualiza `data/github.json` pela API REST pública do GitHub (`GET /users/{usuario}`, campo `public_repos`). Roda no pre-commit (`.githooks/pre-commit`, ativado por `make install-hooks`): se o número mudou, o hook inclui `data/github.json` no commit. Sem rede, com timeout de 5 s ou erro da API, mantém o arquivo como está e não bloqueia o commit; para pular, `GITHUB_REPOS_SKIP=1 git commit …`. O deploy não consulta a API: publica o número versionado. O Hugo não consulta a API direto porque `security.http.urls` só libera `/repos/` |
 | `layouts/shortcodes/tecnologias.html` | Banner "Stacks que uso no dia a dia" |
 | `layouts/shortcodes/nuvem-tags.html` + `layouts/partials/tag-cloud.html` | Nuvem de tags (home e `/tags/`): o tamanho mostra a frequência; o número de posts fica só no `title` e num texto para leitor de tela (classe `tag-cloud__contagem`). A lista "Todas as tags de A a Z" de `/tags/` mantém o número visível (todas têm o mesmo tamanho) |
 | `layouts/tags/terms.html` | Página `/tags/` com nuvem e lista A–Z (override do tema) |
@@ -222,16 +240,31 @@ Peças próprias do site:
 - **Contas:** 2FA no GitHub e no Cloudflare; *branch protection* na `main` (exigir `pr-check`, sem force-push); *secret scanning* e *push protection* ligados.
 - **Segredos:** nunca no repositório. O único segredo é `CLOUDFLARE_API_TOKEN` (só *Cache Purge*, zona `aeciopires.com`, com expiração), em GitHub Secrets. O token do **Web Analytics** (`[cloudflareAnalytics] token` em `params.toml`) **não é segredo**: é um identificador público que vai no HTML de toda página, como um ID do Google Analytics; por isso pode ficar no Git.
 - **Barreiras contra vazamento**, em camadas:
-  1. *pre-commit* (`make install-hooks`), em todo commit: gitleaks nas mudanças staged (tokens, chaves privadas, senhas), arquivos sensíveis (`.env`, `*.pem`, `*.key`, `id_rsa`, `credentials.json`, `.claude/settings.local.json`…) e o e-mail do autor (lido de `git config user.email` e de `git config --get-all hooks.emailbloqueado`, para não ficar escrito no repositório).
+  1. *pre-commit* (`make install-hooks`), em todo commit (antes, atualiza `data/github.json`, que também passa pelo gitleaks): gitleaks nas mudanças staged (tokens, chaves privadas, senhas), arquivos sensíveis (`.env`, `*.pem`, `*.key`, `id_rsa`, `credentials.json`, `.claude/settings.local.json`…) e o e-mail do autor (lido de `git config user.email` e de `git config --get-all hooks.emailbloqueado`, para não ficar escrito no repositório).
   2. CI (`pr-check.yml` → `make check-secrets`): gitleaks no histórico completo; pega o que passou com `--no-verify`.
   3. GitHub *secret scanning* + *push protection*: recusa o push de segredos conhecidos.
 - **Falso positivo do gitleaks:** confira se é mesmo exemplo/placeholder; então adicione uma exceção bem delimitada em `.gitleaks.toml` (ou `gitleaks:allow` na linha). **Segredo real que vazou:** revogue/rotacione primeiro, depois remova do histórico.
 - **Workflows:** actions por SHA, com `permissions` mínimas.
 - **Hugo:** `security` em `hugo.toml` restrito (`http.urls` só `api.github.com/repos/`); `unsafe = false`.
-- **Navegador do leitor:** CSP, HSTS e demais headers ([cloudflare.md](cloudflare.md)); qualquer novo script ou iframe exige atualizar a CSP primeiro, em modo *Report-Only*.
+- **Navegador do leitor:** CSP, HSTS e demais headers ([cloudflare.md](cloudflare.md)); qualquer novo script ou iframe exige atualizar a CSP primeiro, em modo *Report-Only*. Conferir de vez em quando que a CSP está **aplicada**: `curl -sI https://blog.aeciopires.com/ | grep -i content-security` deve mostrar `content-security-policy:` (sem `-report-only`). Depois de mudar a CSP, seguir "Testar a CSP" em [cloudflare.md](cloudflare.md), seção 5 (o formulário de contato depende de `form.jotform.com`).
+- **JavaScript próprio** (`assets/js/`): nunca `innerHTML`/`outerHTML`/`insertAdjacentHTML`/`eval` com dados; texto por `textContent`; URLs vindas de dados só do próprio site (validadas); `postMessage` com origem fixa; nada inline (fingerprint/SRI). Código do tema que monta HTML com dados (busca) é neutralizado por envoltório (`busca.js`), nunca editando `themes/`.
+- **Riscos residuais aceitos:** `style-src 'unsafe-inline'` (o tema usa `style=` nos elementos); `img-src https:` (imagens externas antigas); `client.js` do giscus sem SRI (o arquivo muda sem versão; isolado no domínio giscus.app e no iframe).
 - **Comentários:** moderação semanal; *interaction limits* em ondas de spam; nunca renderizar HTML vindo de comentários.
 - **Conteúdo:** exemplos sem credenciais, IPs internos ou dados pessoais. Revisar *screenshots* antes de publicar. Nunca publicar o e-mail do autor.
 - **Privacidade:** página Privacidade atualizada sempre que entrar ou sair um serviço de terceiros.
+
+### Checagens externas de TLS e headers
+
+| Ferramenta | Link | Última nota | O que avalia |
+|---|---|---|---|
+| Qualys SSL Labs | <https://www.ssllabs.com/ssltest/analyze.html?d=blog.aeciopires.com&latest> | **A+** (21/11/2026) | Certificado e cadeia, versões de TLS e cifras da **borda do Cloudflare**, HSTS |
+| securityheaders.com | <https://securityheaders.com/?q=blog.aeciopires.com> | **A** (20/11/2026) | Headers de segurança (CSP, HSTS, `X-Frame-Options`, `Referrer-Policy`…) |
+
+- **Quando rodar:** mensalmente (seção 10) e sempre depois de mexer em SSL/TLS, *Edge Certificates* ou nos headers do Cloudflare.
+- **SSL Labs:** o parâmetro `&latest` mostra o resultado em cache (até alguns dias). Para um teste novo, clique em *Clear cache* na página do resultado; leva de 1 a 3 minutos. O Cloudflare tem vários IPs na borda: a nota vale para todos os listados.
+- **O que mantém o A+:** HSTS com `max-age` de pelo menos 6 meses (hoje `31536000`, [cloudflare.md](cloudflare.md), seção 5), TLS mínimo 1.2 e certificado de borda válido (Universal SSL do Cloudflare, renovado sozinho). Sem HSTS a nota cai para A; TLS 1.0/1.1 habilitado derruba para B.
+- **Se a nota cair:** ler o motivo no topo do relatório (avisos em laranja/vermelho), comparar com as configurações de SSL/TLS do Cloudflare e com a seção 5 do [cloudflare.md](cloudflare.md), corrigir no painel (pelo autor) e registrar a nova data e nota nesta tabela. O certificado da **origem** (GitHub Pages ↔ Cloudflare) não aparece no SSL Labs: é vigiado pelo `origin-cert.yml`.
+- Registrar a nota e a data nesta tabela a cada checagem.
 
 ### Configuração do repositório no GitHub
 
@@ -339,11 +372,11 @@ Alternativa sem CLI: o configurador em <https://giscus.app> mostra os mesmos IDs
 |---|---|
 | Semanal | Moderar comentários do giscus (e-mails de Discussions); olhar falhas de workflow |
 | A cada PR do Dependabot | Ler o changelog da action, deixar o `pr-check` rodar e fazer merge |
-| Mensal | `make check-updates` (só **ver**); alertas de segurança do GitHub; `make check-links-online` |
+| Mensal | `make check-updates` (só **ver**); alertas de segurança do GitHub; `make check-links-online`; SSL Labs e securityheaders.com (seção 9, "Checagens externas"), anotando nota e data |
 | Trimestral | `make tags-report` + `make merge-tag` nas tags fracas; `make audit-content` + skill `revisar-conteudo` nos 5 posts mais lidos e nos 5 mais antigos; eventos do WAF, cache e relatórios da CSP; limites do plano Free |
 | Quando sair versão do Hugo ou do Blowfish | Skill `atualizar-site` ou `make update-theme`; notas de migração; `hugo --logLevel info`; conferir os overrides (incluindo a ordenação da home, seção 8); `make serve` (claro/escuro/celular) e `make validate` antes do PR |
 | Toda segunda (automático) | O `deploy.yml` republica o site às 09:15 UTC para atualizar "Mais lidos"/"Menos lidos" da home. Se o passo "Visualizações por página" falhar, ver seção 8 ("Janela de dados" e "Se a API do Cloudflare mudar") |
-| 1º de janeiro (automático) | O `deploy.yml` republica o site às 03:05 UTC para atualizar os anos calculados na home ("há N anos", "anos de blog"). Conferir em Actions que rodou; se o repositório ficou 60 dias sem atividade, o GitHub desativa o agendamento: reative em Actions → Deploy → *Enable workflow* ou rode *Run workflow* |
+| 1º de janeiro (automático) | O `deploy.yml` republica o site às 03:05 UTC para atualizar os anos calculados na home ("há N anos" na chamada da home). Conferir em Actions que rodou; se o repositório ficou 60 dias sem atividade, o GitHub desativa o agendamento: reative em Actions → Deploy → *Enable workflow* ou rode *Run workflow* |
 | Anual | Rotacionar os tokens do Cloudflare (purge e analytics); revisar permissões do app giscus; revisar `CLAUDE.md`, `README.md`, `docs/*.md`, página Créditos e `assets/img/logos/SOURCES.md` |
 | Sempre que o `origin-cert.yml` falhar | Contingência em [cloudflare.md](cloudflare.md) |
 
@@ -367,4 +400,10 @@ Alternativa sem CLI: o configurador em <https://giscus.app> mostra os mesmos IDs
 | Post não aparece nem no `make serve` | Data no futuro (`buildFuture = false` em `hugo.toml`), por exemplo fuso errado na `date` | `mise exec -- hugo list future`; corrigir a `date` (com `-03:00`) ou usar `make publish-post SLUG=… DATE=now` |
 | Feed antigo não redireciona | Regras R1/R2 | [cloudflare.md](cloudflare.md) |
 | giscus não carrega | IDs vazios, CSP sem `giscus.app` ou app desinstalado | Preencher `[giscus]`, corrigir a CSP ou reinstalar o app |
+| Página de lista com nome em inglês (ex.: "categories", "series") | Falta `content/<taxonomia>/_index.md` | Criar com `title` em pt-BR (ver seção 3, "Páginas de lista") |
+| Caixas saindo da borda no celular | Largura fixa em px numa grade ou flex | Trocar por colunas fluidas (`minmax(0, 1fr)`, `width: 100%`) e conferir nas larguras da seção 4 |
+| Número de repositórios na home desatualizado | Hook não ativado, commit com `GITHUB_REPOS_SKIP=1`, sem rede ou nenhum commit desde a mudança no GitHub | `make install-hooks` (uma vez) ou `make github-repos` e commitar `data/github.json` |
+| Formulário de contato some (ícone de página quebrada no lugar) | A CSP bloqueou o iframe do Jotform (`form.jotform.com`, ou outro domínio novo do Jotform) | DevTools → Console mostra o domínio recusado; incluir em `frame-src` ([cloudflare.md](cloudflare.md), seção 5) |
+| `check-home` falha depois de atualizar o Blowfish | O HTML do card do tema mudou | Seção 8, "Ao atualizar o Blowfish ou o Hugo", item 2 |
+| Lighthouse pior no `make serve-prod` que no site | O servidor do Hugo não minifica nem comprime | Medir no site publicado (seção 4) |
 | Tema do giscus não troca | Script de observação da classe `dark` | Revisar `assets/js/giscus.js` |

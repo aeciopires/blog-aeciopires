@@ -14,7 +14,8 @@
 - Rodar: `make serve` (com rascunhos) | `make serve-prod` (como o leitor vê) | `make serve-docker`
 - "Mais/Menos lidos" localmente: `make visualizacoes` antes do serve (com `CLOUDFLARE_ANALYTICS_TOKEN` e
   `CLOUDFLARE_ACCOUNT_ID` exportados); sem `data/visualizacoes.json` esses botões não aparecem
-- Validar (obrigatório antes de commit): `make lint-md validate` (inclui `make check-secrets`)
+- Validar (obrigatório antes de commit): `make lint-md validate` (inclui `make check-secrets` e `make check-home`)
+- Repositórios públicos do GitHub (cartão da home): `make github-repos` (o pre-commit já roda; `GITHUB_REPOS_SKIP=1` pula)
 - Conteúdo: `make new-post|new-page SLUG=`, `make publish-post|publish-page SLUG= [DATE=now]`,
   `make unpublish-post|unpublish-page SLUG= [PRIVATE=1]`, `make rm-post|rm-page SLUG= [REDIRECT=] CONFIRM=sim`
 - Tags: `make check-tags`, `make fix-tags`, `make new-tag NAME= DESC=`, `make merge-tag FROM= TO=`, `make tags-report`
@@ -40,6 +41,14 @@
 - Shortcodes permitidos: do Blowfish `alert`, `button`, `figure`, `github`, `mermaid`, `tabs`, `youtubeLite`;
   próprios `jotform`, `blog-chamada`, `blog-stats`, `tecnologias`, `nuvem-tags`, `licenca-blowfish`, `removido` (arquivo/mídia que sumiu da origem: só nome + tooltip).
   Logo pequeno num post: `figure` com `figureClass="logo-post" nozoom=true` (não usar imagem Markdown, que ocupa a largura toda).
+- Links: externos abrem sozinhos em nova aba (Blowfish, `externalLinkForceNewTab`); internos sempre relativos (`/slug/`)
+  ou `{{< ref >}}`, nunca `https://blog.aeciopires.com/...`. Não escrever `target` à mão.
+- Páginas de lista/taxonomia precisam de `content/<nome>/_index.md` com `title` em pt-BR (senão o Hugo mostra o nome
+  interno em inglês, ex.: "categories"). Taxonomias ativas: só `tags` e `categories` (`series` desligada).
+- Banner de tecnologias (`data/tecnologias.yaml`): `nome`, `logo`, `url` e `legenda` opcional (hífen opcional `\u00AD`
+  para nomes longos no celular).
+- Layout no celular: nada de largura fixa em px em grades; conferir 320, 360, 390, 412 e 430 px (sem rolagem
+  horizontal nem caixa saindo da borda), além de 768 e ≥ 1024 px.
 - Tags e categorias: só as de `data/taxonomia.yaml` (1–5 tags/post). Nunca criar tag sem `make new-tag`;
   trocar sinônimos com `make fix-tags`; `make check-tags` deve passar.
 - Atualizar post: `make aviso-atualizacao SLUG= RESUMO=` (aviso `alert` "Atualizado em DD/MM/AAAA" + `lastmod`);
@@ -57,14 +66,19 @@
 ## Segurança (regras obrigatórias)
 
 - Nunca commitar segredos, tokens, `.env` ou dados pessoais; segredos só em GitHub Secrets.
-  Antes de cada commit, o pre-commit (`make install-hooks`) roda gitleaks, bloqueia arquivos sensíveis e o e-mail do autor.
+  Antes de cada commit, o pre-commit (`make install-hooks`) atualiza `data/github.json`, roda gitleaks, bloqueia arquivos sensíveis e o e-mail do autor.
   Nunca usar `git commit --no-verify` para contornar; falso positivo só com exceção pontual em `.gitleaks.toml`.
 - Nunca publicar o e-mail do autor (páginas, posts, rodapé, JSON-LD, `params.author`); contato só via Jotform. Sem X/Twitter, sem YouTube como perfil.
 - Perfis do autor só em `config/_default/languages.pt-br.toml` (`params.author.links`); os ícones do menu repetem as URLs (exceção documentada).
 - Não adicionar scripts/iframes de terceiros sem atualizar a CSP (`docs/cloudflare.md`) e pedir aprovação.
 - Comentários: novos só via giscus (GitHub Discussions); antigos em `data/comments/` são somente leitura.
   Nunca usar `safeHTML`, `markdownify`, `htmlUnescape` ou `unsafe` em conteúdo de terceiros ou de `data/comments/`.
-- JavaScript próprio só em `assets/js/`, carregado com fingerprint/SRI (nada inline).
+- JavaScript próprio só em `assets/js/`, carregado com fingerprint/SRI (nada inline). Nunca `innerHTML`/`outerHTML`/
+  `insertAdjacentHTML`/`eval` com dados: texto por `textContent`; URLs vindas de dados só do próprio site (validadas);
+  JSON só com dados do build (nunca de visitantes ou terceiros), na mesma origem (CSP inalterada).
+- CSP: aplicada desde 21/11/2026 (`content-security-policy:`, não `-report-only`). Valor oficial em `docs/cloudflare.md`,
+  seção 5, incluindo `form.jotform.com` (iframe do contato) e `giscus.app` em `style-src`. Qualquer mudança na CSP ou
+  serviço novo: seguir "Testar a CSP" dessa seção, sempre conferindo `/contato/` (formulário com reCAPTCHA).
 - `security` do Hugo em `hugo.toml`: não ampliar `exec.allow`, `funcs.getenv` nem `http.urls`.
 - Actions fixadas por SHA, `permissions` mínimas; não ampliar permissões de workflows.
 - Não alterar regras que tocam `/.well-known/acme-challenge/` (renovação do certificado).
@@ -78,6 +92,9 @@
   O `deploy.yml` também republica todo 1º de janeiro (anos calculados na home) e toda segunda ("Mais lidos" da home,
   `data/visualizacoes.json` gerado com o secret `CLOUDFLARE_ANALYTICS_TOKEN`; janela de 180 dias, no máximo,
   porque a API recusa dados com mais de 184 dias).
+- Total de repositórios públicos (home): `data/github.json`, versionado, atualizado pelo pre-commit
+  (`scripts/github-repos.mjs`, que o inclui no commit se mudar; sem rede, mantém o valor). À mão: `make github-repos`.
+- Taxonomias: só `tags` e `categories` (`series` desligada, nenhum post usa).
 - Nunca force-push em `main`. Rollback = `git revert` + push.
 - Não fazer commit/push sem pedido explícito do usuário.
 
@@ -91,11 +108,17 @@
   GNU Make 3.81, bash 3.2, sem `sed -i`, `date -d`, `readlink -f`, `grep -P`; passar no shellcheck.
 - Customizar o tema só por override (`assets/css/custom.css`, `layouts/partials`, `layouts/shortcodes`), nunca editando `themes/blowfish/`.
   Overrides de layout do tema existentes: `layouts/tags/terms.html` e `layouts/partials/recent-articles/cardview.html`
-  (ordenação dos posts da home + `assets/js/ordenar-home.js` + `scripts/visualizacoes.mjs`; revisar a cada atualização
-  do Blowfish conforme `docs/MAINTENANCE.md`, seção 8).
+  (home leve: só 6 cards no HTML; o resto vem de um JSON extraído da saída de `article-link/card.html` e
+  `article-meta/basic.html` e é montado por `assets/js/ordenar-home.js` clonando um molde do tema; ordenação +
+  `scripts/visualizacoes.mjs`). `make check-home` (no `validate` e na CI) compara o JSON com o card do tema em
+  `/posts/`: se falhar após atualizar o Blowfish, seguir o checklist de `docs/MAINTENANCE.md`, seção 8.
   O CSS de leitura no computador sobrescreve as classes `.max-w-prose` e `.lg:px-32` do tema, e o dos blocos de código
   (quebra visual de linhas longas) sobrescreve `.chroma .line` e `.chroma > code`: conferir a cada atualização.
-  A busca é ajustada por `assets/js/busca.js` (envolve `window.Fuse` com opções extras; não copiar o `search.js` do tema).
+  A busca é ajustada por `assets/js/busca.js` (envolve `window.Fuse` com opções extras e entrega ao `search.js` do
+  tema resultados com escape, porque ele usa `innerHTML`; não copiar o `search.js` do tema).
+  Links externos em nova aba dependem de `render-link.html` do tema (`article.externalLinkForceNewTab`).
+  O `make update-theme` lista o diff do tema em todos esses arquivos.
+- Lighthouse: medir no site publicado; `make serve`/`serve-prod` não minificam nem comprimem.
 - Corrigir avisos de `hugo --logLevel info`; não usar funções deprecated (ex.: `hugo.Data`, não `site.Data`).
 - Ao mudar comportamento, atualizar `README.md`, `docs/ARCHITECTURE.md`, `docs/MAINTENANCE.md`, `docs/cloudflare.md` e este arquivo.
 

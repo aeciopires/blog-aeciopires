@@ -23,9 +23,10 @@ Revisa posts em `content/posts/<slug>/index.md` contra **fontes oficiais**, test
    - `make aviso-atualizacao SLUG=<slug> RESUMO="..."`: insere ou substitui o aviso `{{< alert icon="circle-info" >}}**Atualizado em DD/MM/AAAA:** ...{{< /alert >}}` e atualiza o `lastmod` (troca também o formato antigo `**Atualizado em: 7 de outubro de 2026**`). O resumo diz **o que foi testado e com que versões** e o que mudou;
    - **preserve o sentido histórico**: anúncios e posts sobre uma versão específica ganham aviso, não reescrita; frases como "durante a elaboração foi usada a versão X" ficam;
    - não mude `slug`, `date` nem URLs; tags só as de `data/taxonomia.yaml`;
+   - links para o próprio blog com domínio (`https://blog.aeciopires.com/x/`) viram relativos (`/x/`): com domínio, o tema os abre em nova aba como se fossem externos;
    - revise a gramática (seção "Gramática") de todo o post, não só do trecho alterado.
 7. **Links:** link morto (404/410/DNS) → cópia do Internet Archive (`https://archive.org/wayback/available?url=...`), marcada `(cópia arquivada)`, ou endereço atual oficial; sem cópia útil (cursos interativos, serviços encerrados) → remover a linha. 403/429 costumam ser bloqueio de robô: não conclua nada. Repositórios do autor que deram 404: pergunte antes de trocar.
-8. **Valide:** `make lint-md validate` verde, `make validate-diagrams` se houver Mermaid, e confira no `make serve` (claro, escuro e celular).
+8. **Valide:** `make lint-md validate` verde, `make validate-diagrams` se houver Mermaid, e confira no `make serve` (claro, escuro e celular em 360 e 412 px: sem rolagem horizontal; tabelas e blocos de código dentro da coluna).
 9. **Relatório:** registre cada item em `reports/revisao-posts-<AAAA-MM-DD>.md` (ignorado pelo Git) com a tabela abaixo; ela vira o corpo do PR.
 10. **Limpeza** (seção própria) e **PR** só com pedido explícito do autor.
 

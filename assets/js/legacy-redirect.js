@@ -11,8 +11,10 @@
   if (id && /^[0-9]+$/.test(id) && self) {
     try {
       var mapa = JSON.parse(self.getAttribute("data-map") || "{}");
-      if (Object.prototype.hasOwnProperty.call(mapa, id)) {
-        window.location.replace(mapa[id]);
+      var destino = Object.prototype.hasOwnProperty.call(mapa, id) ? String(mapa[id]) : "";
+      // Só caminhos do próprio site ("/slug/"): nunca outro domínio nem "javascript:".
+      if (/^\/(?![\/\\])[^\s"'<>`\\]*$/.test(destino)) {
+        window.location.replace(destino);
         return;
       }
     } catch (e) { /* mapa inválido: segue na home */ }

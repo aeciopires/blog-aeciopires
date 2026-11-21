@@ -1,6 +1,8 @@
 # Banner "Stacks que uso no dia a dia" (PLAN.md 3.7.1).
 # Cada item: nome (legenda e alt), logo (arquivo OFICIAL em assets/img/logos/, sem alterações;
 # registrar origem e licença em assets/img/logos/SOURCES.md) e url (site oficial).
+# Opcional: legenda (texto sob o logo, se diferente do nome), ex.: "Victoria\u00ADMetrics"
+# com hífen opcional (soft hyphen) para quebrar no lugar certo em celular estreito.
 # Sem logo (ou arquivo ausente): a placa mostra só o nome em texto. Nunca um logo modificado.
 grupos:
   - nome: Kubernetes e containers
@@ -22,7 +24,7 @@ grupos:
     itens:
       - { nome: Prometheus, logo: prometheus.svg, url: "https://prometheus.io" }
       - { nome: Grafana, logo: grafana.svg, url: "https://grafana.com" }
-      - { nome: VictoriaMetrics, logo: victoriametrics.svg, url: "https://victoriametrics.com" }
+      - { nome: VictoriaMetrics, legenda: "Victoria\u00ADMetrics", logo: victoriametrics.svg, url: "https://victoriametrics.com" }
       - { nome: Zabbix, logo: zabbix.svg, url: "https://www.zabbix.com" }
       - { nome: Datadog, logo: datadog.png, url: "https://www.datadoghq.com" }
   - nome: IA no dia a dia

@@ -27,7 +27,7 @@ COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compos
 	new new-post new-page publish-post publish-page unpublish-post unpublish-page rm-post rm-page list-drafts \
 	check-tags fix-tags new-tag merge-tag rm-tag tags-report install-hooks normalize-tags optimize-images \
 	lint-md lint-md-fix validate validate-links actionlint shellcheck compare-urls validate-diagrams \
-	check-links-online audit-content check-updates update-theme skill-sync outdated migrate-install
+	check-links-online audit-content check-updates update-theme skill-sync outdated migrate-install github-repos check-home
 
 help: ## Lista os alvos
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / { printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2 } /^## / { printf "\n%s\n", substr($$0, 4) }' $(MAKEFILE_LIST)
@@ -109,7 +109,7 @@ normalize-tags: ## (Fase 3, uma vez) aplica o mapa de limpeza das tags (grava s�
 
 install-hooks: ## Ativa o pre-commit versionado (.githooks/)
 	git config core.hooksPath .githooks
-	@echo "pre-commit ativo: segredos/chaves/e-mail (todo commit) + check-tags e lint-md nos .md alterados"
+	@echo "pre-commit ativo: repositórios do GitHub (data/github.json) + segredos/chaves/e-mail (todo commit) + check-tags e lint-md nos .md alterados"
 
 optimize-images: ## oxipng nos PNGs novos ou alterados
 	@files="$$( { git diff --name-only --diff-filter=AM HEAD; git ls-files --others --exclude-standard; } | grep -Ei '\.png$$' | sort -u)"; \
@@ -124,11 +124,14 @@ lint-md-fix: ## Corrige o que for seguro no Markdown e mostra o diff
 	-$(RUN) markdownlint-cli2 --fix $(MD_LINT)
 	git --no-pager diff --stat
 
-validate: check-secrets lint-md check-tags build validate-links actionlint shellcheck compare-urls ## O mesmo que a CI
+validate: check-secrets lint-md check-tags build validate-links check-home actionlint shellcheck compare-urls ## O mesmo que a CI
 	@echo "validate: OK"
 
 validate-links: ## Links internos e imagens (lychee offline sobre public/)
 	$(RUN) lychee --offline --no-progress --root-dir "$(CURDIR)/public" 'public/**/*.html'
+
+check-home: ## Home leve: cards, JSON (SRI, URLs) e fidelidade ao card do tema (sobre public/)
+	@$(NODE) scripts/check-home.mjs
 
 check-secrets: ## Segredos, tokens e chaves no histórico do Git (gitleaks + .gitleaks.toml)
 	$(RUN) gitleaks git --no-banner --redact .
@@ -165,6 +168,9 @@ prosa: ## Texto corrido de posts (sem código), para revisão gramatical: SLUG="
 
 verificar-texto: ## Restos da migração e erros recorrentes nos posts [SLUG="slug1 slug2"]
 	@$(NODE) scripts/conteudo.mjs verificar $(SLUG)
+
+github-repos: ## Atualiza data/github.json (total de repositórios públicos no GitHub, home)
+	@$(NODE) scripts/github-repos.mjs
 
 visualizacoes: ## Gera data/visualizacoes.json (Cloudflare Web Analytics) para "Mais/Menos lidos" da home
 	@$(NODE) scripts/visualizacoes.mjs

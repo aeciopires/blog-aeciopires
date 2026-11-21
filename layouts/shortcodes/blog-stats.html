@@ -1,23 +1,33 @@
 {{- /*
-  Números em destaque da home (PLAN.md 3.2.2), calculados no build.
-  Uso: {{< blog-stats desde="2007" >}}  (desde = ano de início do blog)
+  Números em destaque da home (PLAN.md 3.2.2). Uso: {{< blog-stats >}}
+  Cada cartão é um link: posts → /posts/, categorias → /categories/,
+  repositórios públicos → aba de repositórios do perfil do GitHub (nova aba).
+  O total de repositórios vem de data/github.json (scripts/github-repos.mjs, atualizado no deploy);
+  sem o arquivo, o cartão não aparece. O perfil vem de site.Params.author.links (fonte única).
   Reaproveita as classes do shortcode `stat` do Blowfish (já presentes no CSS compilado do tema).
   Nome próprio (não "stats") para não sobrescrever o shortcode `stats` do tema.
 */ -}}
 {{- $posts := where site.RegularPages "Section" "posts" -}}
-{{- $categorias := len site.Taxonomies.categories -}}
-{{- $desde := .Get "desde" | default "2007" | int -}}
-{{- $anos := sub now.Year $desde -}}
-{{- $itens := slice
-  (dict "valor" (len $posts) "rotulo" "posts publicados")
-  (dict "valor" $categorias "rotulo" "categorias")
-  (dict "valor" $anos "rotulo" "anos de blog")
--}}
+{{- $itens := slice -}}
+{{- with site.GetPage "/posts" -}}
+  {{- $itens = $itens | append (dict "valor" (len $posts) "rotulo" "posts publicados" "url" .RelPermalink) -}}
+{{- end -}}
+{{- with site.GetPage "/categories" -}}
+  {{- $itens = $itens | append (dict "valor" (len site.Taxonomies.categories) "rotulo" "categorias" "url" .RelPermalink) -}}
+{{- end -}}
+{{- $github := "" -}}
+{{- range site.Params.author.links }}{{ with .github }}{{ $github = . }}{{ end }}{{ end -}}
+{{- with hugo.Data.github -}}
+  {{- if and $github (isset . "repositoriosPublicos") -}}
+    {{- $itens = $itens | append (dict "valor" .repositoriosPublicos "rotulo" "repositórios no GitHub" "url" (printf "%s?tab=repositories" $github) "externo" true) -}}
+  {{- end -}}
+{{- end -}}
 <div class="blog-stats not-prose my-10 grid gap-4 sm:grid-cols-3">
   {{- range $itens }}
-    <div class="glass rounded-2xl border border-neutral-200/80 bg-white/60 p-6 text-center shadow-sm backdrop-blur-xl dark:border-neutral-800 dark:bg-neutral-900/50">
+    <a class="blog-stats__item glass rounded-2xl border border-neutral-200/80 bg-white/60 p-6 text-center shadow-sm backdrop-blur-xl dark:border-neutral-800 dark:bg-neutral-900/50" href="{{ .url }}"
+      {{- if .externo }} target="_blank" rel="noopener noreferrer"{{ end }}>
       <p class="text-4xl font-black tracking-tight text-primary-600 dark:text-primary-400">{{ .valor }}</p>
       <p class="mt-2 text-neutral-700 dark:text-neutral-300">{{ .rotulo }}</p>
-    </div>
+    </a>
   {{- end }}
 </div>

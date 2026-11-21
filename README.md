@@ -18,6 +18,7 @@ git clone --recurse-submodules git@github.com:aeciopires/blog-aeciopires.git
 cd blog-aeciopires
 make check-deps      # diagnóstico, não altera nada
 make install-deps    # mise + ferramentas + submódulo do tema + skill do Blowfish
+make install-hooks   # pre-commit: atualiza data/github.json e barra segredos/e-mail
 make serve           # http://localhost:1313
 ```
 
@@ -35,12 +36,13 @@ docker context use colima
 | `make help` | Lista todos os alvos |
 | `make serve` | Servidor local com rascunhos e *live reload* |
 | `make serve-prod` | Servidor local como o leitor vê (sem rascunhos) |
+| `make github-repos` | Atualiza `data/github.json` (total de repositórios públicos no GitHub, cartão da home) pela API pública; o pre-commit já faz isso a cada commit |
 | `make visualizacoes` | Gera `data/visualizacoes.json` ("Mais/Menos lidos" da home); exige `CLOUDFLARE_ANALYTICS_TOKEN` e `CLOUDFLARE_ACCOUNT_ID` no ambiente |
 | `make new-post SLUG=meu-post TITLE="Meu post"` | Cria um post como rascunho |
 | `make publish-post SLUG=meu-post DATE=now` | Publica o post (sai no próximo push em `main`) |
 | `make unpublish-post SLUG=meu-post` | Volta o post para rascunho |
 | `make check-tags` | Valida tags e categorias contra `data/taxonomia.yaml` |
-| `make lint-md validate` | Mesma validação da CI |
+| `make lint-md validate` | Mesma validação da CI (inclui `check-home`, que confere a home leve contra o card do tema) |
 | `make check-updates` | Mostra atualizações disponíveis (não altera nada) |
 | `make update-theme TAG=vX.Y.Z` | Atualiza o Blowfish para uma release |
 
