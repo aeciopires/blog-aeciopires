@@ -19,7 +19,7 @@
 - Validar (obrigatório antes de commit): `make lint-md validate` (inclui `check-secrets`, `check-i18n`, `check-correcoes`
   e `check-home`)
 - Inglês: `make i18n-status`, `make i18n-diff SLUG=`, `make i18n-sync-fm SLUG=`, `make i18n-ok SLUG= [FORCAR=1]`,
-  `make prosa-en SLUG=`, `make check-i18n`, `make check-correcoes`, `make test-idioma` (redirecionamento por idioma, Docker)
+  `make prosa-en SLUG=`, `make check-i18n`, `make check-correcoes`, `make test-idioma [URL=https://blog.aeciopires.com]` (redirecionamento por idioma, Docker; com URL, no site publicado)
 - Repositórios públicos do GitHub (cartão da home): `make github-repos` (o pre-commit já roda; `GITHUB_REPOS_SKIP=1` pula)
 - Conteúdo: `make new-post|new-page SLUG=`, `make publish-post|publish-page SLUG= [DATE=now]`,
   `make unpublish-post|unpublish-page SLUG= [PRIVATE=1]`, `make rm-post|rm-page SLUG= [REDIRECT=] CONFIRM=sim`

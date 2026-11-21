@@ -8,8 +8,10 @@ import { join, extname } from "node:path";
 import { createRequire } from "node:module";
 const require = createRequire("/usr/local/lib/node_modules/lighthouse/package.json");
 const puppeteer = require("puppeteer-core");
+// BASE definida (make test-idioma URL=https://…): testa o site publicado, com a CSP que o Cloudflare envia.
+const BASE = (process.env.BASE || "").replace(/\/+$/, "");
 const CSP = process.env.CSP || "";
-if (!CSP) { console.error("CSP vazia: rode via make test-idioma"); process.exit(2); }
+if (!BASE && !CSP) { console.error("CSP vazia: rode via make test-idioma"); process.exit(2); }
 const T = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".json": "application/json", ".svg": "image/svg+xml", ".png": "image/png", ".webp": "image/webp", ".jpg": "image/jpeg", ".xml": "application/xml" };
 const srv = http.createServer((q, r) => {
   let f = join("/site", decodeURIComponent(q.url.split("?")[0]));
@@ -18,7 +20,8 @@ const srv = http.createServer((q, r) => {
   r.writeHead(200, { "Content-Type": T[extname(f)] || "application/octet-stream", "Content-Security-Policy": CSP });
   createReadStream(f).pipe(r);
 });
-await new Promise((ok) => srv.listen(8080, "127.0.0.1", ok));
+if (!BASE) await new Promise((ok) => srv.listen(8080, "127.0.0.1", ok));
+const ORIGEM = BASE || "http://127.0.0.1:8080";
 const b = await puppeteer.launch({ executablePath: "/usr/bin/chromium", args: ["--no-sandbox", "--headless=new"] });
 const UA_NORMAL = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36";
 const UA_GOOGLE = "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)";
@@ -40,7 +43,7 @@ async function pagina(idiomas, ua) {
   return { ctx, p, erros };
 }
 async function ir(p, url) {
-  await p.goto(`http://127.0.0.1:8080${url}`, { waitUntil: "networkidle0" }).catch(() => {});
+  await p.goto(`${ORIGEM}${url}`, { waitUntil: "networkidle0" }).catch(() => {});
   await new Promise((r) => setTimeout(r, 300));
   return new URL(p.url()).pathname;
 }
@@ -81,6 +84,6 @@ for (const [nome, idiomas, ua, url, esperado] of casos) {
   await ctx.close();
 }
 await b.close();
-srv.close();
+if (!BASE) srv.close();
 console.log(falhas ? `\n${falhas} falha(s)` : "\ntodos os cenários OK");
 process.exitCode = falhas ? 1 : 0;

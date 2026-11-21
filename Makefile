@@ -161,8 +161,8 @@ check-home: ## Home leve: cards, JSON (SRI, URLs) e fidelidade ao card do tema (
 lighthouse: ## Lighthouse em Docker no site publicado [URL=https://blog.aeciopires.com/] → reports/lighthouse/
 	@bash scripts/lighthouse.sh "$(URL)"
 
-test-idioma: ## Testa (Docker, Chromium, CSP oficial) o redirecionamento pelo idioma do navegador e o seletor
-	@bash scripts/test-idioma.sh
+test-idioma: ## Testa (Docker, Chromium, CSP oficial) o redirecionamento por idioma e o seletor [URL=https://… = site publicado]
+	@bash scripts/test-idioma.sh "$(URL)"
 
 lighthouse-local: ## Lighthouse em Docker no build local de produção [PAGINAS="/ /en/ /slug/ /en/slug/"]
 	@bash scripts/lighthouse.sh --local "$(PAGINAS)"

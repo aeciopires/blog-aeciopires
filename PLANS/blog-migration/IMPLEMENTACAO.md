@@ -152,12 +152,10 @@ Registrado em 21/11/2026. Resumo das decisões na seção 19 do [PLAN.md](PLAN.m
 | Customizar o tema só por override, o mínimo possível | Novo override: `layouts/partials/language-redirect.html` | Única forma de ligar o redirecionamento por idioma sem afrouxar a CSP; protegido pelo hash no `check-i18n` e pelo `make test-idioma` |
 | Lighthouse só no site publicado | Também `make lighthouse-local` (build de produção servido no container) | Medir antes do commit e comparar pt-BR com en-US |
 
+**Publicado em 21/11/2026:** PR #10 mesclado; deploy `44929679151` verde (inclusive "Versão em inglês completa e em dia" e "Limpar cache do Cloudflare"). Site publicado × build local: 897 de 906 arquivos idênticos (diferenças só do Cloudflare e do JSON das visualizações). `make test-idioma URL=https://blog.aeciopires.com`: 12 cenários OK com a CSP real. Lighthouse publicado (8 páginas pt-BR/en, celular e computador): 100 em todas as categorias (Performance 99 em `/en/` no celular, variação).
+
 ### Pendências do autor (PR #10)
 
-1. Revisar e fazer o merge do PR #10.
-2. Search Console, depois do deploy ([cloudflare.md](../../docs/cloudflare.md), seção 10):
-   - reenviar o `sitemap.xml`, que agora é um índice de `/pt-br/sitemap.xml` e `/en/sitemap.xml`;
-   - opcional: adicionar `/en/sitemap.xml`;
-   - inspecionar `/en/` e solicitar a indexação;
-   - testar a `/` publicada e confirmar que ela não redireciona para `/en/`.
+1. ~~Revisar e fazer o merge do PR #10.~~ Feito.
+2. ~~Search Console, depois do deploy ([cloudflare.md](../../docs/cloudflare.md), seção 10): sitemaps e inspeção de URL dos dois idiomas.~~ Feito pelo autor em 21/11/2026. **Pendente:** em 1–2 semanas, conferir em **Indexação → Páginas** as páginas `/en/...` indexadas.
 3. Formulário de contato em inglês (Jotform): fica a cargo do autor; a página `/en/contato/` usa o mesmo formulário por enquanto.
