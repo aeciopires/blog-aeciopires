@@ -58,6 +58,9 @@ jobs:
         # build com o baseURL padrão (caminhos a partir de /) só para o lychee
         run: make build validate-links
 
+      - name: Home leve (JSON, URLs e fidelidade ao card do tema)
+        run: make check-home
+
       - name: Visualizações por página (Mais/Menos lidos da home)
         # Sem o secret ou a variable, o script não faz nada e os botões de leitura ficam ocultos.
         env:

@@ -48,7 +48,8 @@ flowchart LR
 | Customizações | Visual T9, banner, nuvem de tags, comentários, analytics | `assets/`, `layouts/`, `data/`, `i18n/` |
 | mise | Versões exatas das ferramentas (local e CI) | `mise.toml` |
 | Make + scripts | Interface única de operação | `Makefile`, `scripts/` |
-| GitHub Actions | Validação (`pr-check.yml`), publicação (`deploy.yml`: push na `main`, manual e todo 1º de janeiro), certificado (`origin-cert.yml`) | `.github/workflows/` |
+| pre-commit | Atualiza `data/github.json` e barra segredos, arquivos sensíveis e o e-mail do autor; lint dos `.md` alterados | `.githooks/pre-commit` (`make install-hooks`) |
+| GitHub Actions | Validação (`pr-check.yml`), publicação (`deploy.yml`: push na `main`, manual, todo 1º de janeiro e toda segunda), certificado (`origin-cert.yml`) | `.github/workflows/` |
 | GitHub Pages | Origem: serve os arquivos estáticos | Settings → Pages (fonte: GitHub Actions) |
 | Cloudflare Free | DNS, TLS de borda, WAF, rate limit, redirects, cache, headers, Web Analytics | painel; documentado em [cloudflare.md](cloudflare.md) |
 | giscus | Comentários novos no GitHub Discussions | `config/_default/params.toml` (`[giscus]`), `layouts/partials/comments.html` |
@@ -63,9 +64,12 @@ flowchart LR
 | `static/wp-content/uploads/` | Mídias antigas no mesmo caminho do WordPress |
 | `data/taxonomia.yaml` | Registro de tags, sinônimos e categorias |
 | `data/comments/<slug>.yaml` | Comentários arquivados (somente leitura, sanitizados) |
-| `data/tecnologias.yaml` + `assets/img/logos/` | Banner de tecnologias |
+| `data/tecnologias.yaml` + `assets/img/logos/` | Banner de tecnologias (`nome`, `logo`, `url` e `legenda` opcional) |
+| `content/categories/_index.md`, `content/tags/_index.md` | Título em pt-BR das páginas `/categories/` e `/tags/` (sem eles, o Hugo usa o nome interno em inglês) |
 | `assets/css/custom.css` | Visual T9 (vidro, banner, nuvem, comentários) e leitura no computador (fonte e largura do texto em telas ≥ 1024px) |
-| `assets/js/` | JS próprio (giscus, redirecionamentos legados, ajuste da busca em `busca.js`, ordenação da home em `ordenar-home.js`) |
+| `assets/js/` | JS próprio (giscus, redirecionamentos legados, ajuste e escape da busca em `busca.js`, ordenação e home leve em `ordenar-home.js`) |
+| `js/posts-home.<hash>.json` (gerado) | Dados leves dos posts para a ordenação da home, criado pelo `cardview.html` a partir da saída do tema; validado por `scripts/check-home.mjs` |
+| `data/github.json` | Total de repositórios públicos no GitHub (cartão da home); versionado; atualizado por `scripts/github-repos.mjs` no pre-commit, que inclui o arquivo no commit se o número mudar (à mão: `make github-repos`) |
 | `data/visualizacoes.json` | Visualizações por página dos últimos 180 dias (gerado no deploy por `scripts/visualizacoes.mjs` a partir do Cloudflare Web Analytics; localmente, `make visualizacoes`; ignorado pelo Git) |
 | `layouts/` | Só partials, shortcodes e overrides próprios |
 | `.claude/skills/` | Skills do Claude Code (`blowfish` é link para o submódulo) |
@@ -84,6 +88,7 @@ sequenceDiagram
   participant CF as Cloudflare
   actor Leitor
   Autor->>Autor: make validate (local)
+  Autor->>Autor: pre-commit: data/github.json + gitleaks
   Autor->>Repo: git push / merge do PR
   Repo->>CI: dispara deploy.yml
   CI->>CI: mise install (versões do mise.toml)
@@ -186,6 +191,10 @@ flowchart TD
 | Comentários antigos estáticos | Nada para atacar; sem dados pessoais | Somente leitura |
 | Cloudflare na frente do GitHub Pages | Cache, WAF, headers, analytics sem cookies | Acesso direto à origem possível (risco aceito) |
 | Sem rolagem infinita | SEO, acessibilidade, rodapé alcançável, sem JS extra | Paginação clássica |
+| Total de repositórios do GitHub atualizado no pre-commit (`data/github.json` versionado) | `security.http.urls` do Hugo fica restrito a `/repos/`; o deploy não depende da API do GitHub | O número só muda no site quando há commit; sem rede, fica o último valor |
+| Só as taxonomias `tags` e `categories` | Nenhum post usava `series`; evita página vazia | Séries precisam ser reativadas na configuração |
+| Home leve: só 6 cards no HTML, o resto por JSON + molde do tema | HTML da home de ~298 KB para ~83 KB (minificado) e DOM menor no celular; o JSON (~7 KB comprimido) só é baixado ao trocar a ordem | Depende do HTML do card do tema: protegido pelo `check-home` na CI |
+| Escape dos resultados da busca no `busca.js` | O `search.js` do tema usa `innerHTML` com dados do índice | Envoltório a revisar a cada atualização do Blowfish |
 | Rascunhos versionados (`draft: true`) | Simples e com histórico | Repositório público: rascunho legível no GitHub (privado só com `PRIVATE=1`) |
 
 ## 8. Limites conhecidos

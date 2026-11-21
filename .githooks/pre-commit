@@ -3,6 +3,8 @@
 # 1) Em todo commit: bloqueia segredos/tokens/chaves privadas (gitleaks), arquivos sensíveis
 #    e o e-mail do autor no conteúdo adicionado.
 # 2) Só se houver .md alterado: check-tags e lint-md nesses arquivos.
+# 0) Antes de tudo: atualiza data/github.json (repositórios públicos no GitHub, home) e o inclui
+#    no commit se o número mudou. Sem rede, segue sem mudar nada. Pular: GITHUB_REPOS_SKIP=1
 # Falso positivo: ajuste .gitleaks.toml (exceção bem delimitada) ou marque a linha com
 # "gitleaks:allow". "git commit --no-verify" só em último caso (a CI roda make check-secrets).
 set -euo pipefail
@@ -16,6 +18,17 @@ bloquear() {
   echo "Remova do commit (git restore --staged <arquivo>) e guarde segredos só em GitHub Secrets." >&2
   exit 1
 }
+
+# --- 0) Repositórios públicos no GitHub (cartão da home) ---
+# Fica antes do gitleaks para o arquivo atualizado também ser verificado.
+if [ "${GITHUB_REPOS_SKIP:-}" != "1" ]; then
+  $RUN node scripts/github-repos.mjs || true
+  # Só se o script mudou o arquivo (diferente do stage) ou se ele ainda não está no Git.
+  if ! git diff --quiet -- data/github.json || [ -n "$(git ls-files --others --exclude-standard -- data/github.json)" ]; then
+    git add data/github.json
+    echo "pre-commit: data/github.json atualizado e incluído no commit."
+  fi
+fi
 
 # --- 1a) Segredos, tokens e chaves privadas nas mudanças staged ---
 if ! $GITLEAKS git --pre-commit --staged --redact --no-banner --log-level warn .; then

@@ -34,7 +34,7 @@ refLinksErrorLevel = "ERROR"
 [taxonomies]
   tag = "tags"
   category = "categories"
-  series = "series"
+  # series desligada: nenhum post usa (gerava /series/ vazia). Para usar, reativar aqui e em [related].
 
 # URLs herdadas do WordPress: NÃO alterar (PLAN.md 7.2).
 [permalinks]
@@ -77,10 +77,6 @@ refLinksErrorLevel = "ERROR"
     [[related.indices]]
         name = "categories"
         weight = 100
-
-    [[related.indices]]
-        name = "series"
-        weight = 50
 
     [[related.indices]]
         name = "date"

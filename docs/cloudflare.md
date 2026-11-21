@@ -194,7 +194,14 @@ Conferido contra todas as URLs do build e de `static/wp-content/` (nenhuma casa 
 
 ## 5. Headers de segurança (Transform Rules → Response Headers, só `blog.aeciopires.com`)
 
-**Status (20/11/2026):** regra aplicada; CSP já efetiva (`Content-Security-Policy`); securityheaders.com nota **A**. HSTS em `max-age=31536000` desde 20/11/2026 (passo 7).
+**Status (20/11/2026):** regra aplicada; securityheaders.com nota **A**. HSTS em `max-age=31536000` desde 20/11/2026 (passo 7).
+
+**CSP aplicada em 21/11/2026** (header renomeado para `Content-Security-Policy` pelo autor). Teste no site publicado, com o Chrome, logo depois: home, ordenação, busca, `/?p=`, `/?s=`, `/tags/`, `/creditos/` sem violações, mas **duas violações reais**, que a fase *Report-Only* não pegou:
+
+1. **Contato quebrado:** o script do Jotform (`form.jotformz.com`) abre o formulário num iframe de **`https://form.jotform.com`** (sem "z"), que não estava em `frame-src`. O iframe aparecia como página de erro. O reCAPTCHA (`www.google.com`) fica dentro do iframe do Jotform e segue a CSP do Jotform, não a do blog.
+2. **giscus:** o `client.js` injeta `https://giscus.app/default.css` na página do blog (tamanho e borda do iframe), bloqueado por `style-src`. Os comentários carregavam, mas sem esse CSS.
+
+**Corrigido em 21/11/2026:** o autor aplicou o valor da tabela abaixo (`https://form.jotform.com` em `frame-src` e `https://giscus.app` em `style-src`). Teste no site publicado: header `content-security-policy` idêntico a esta seção; 0 violações em home (com ordenação), busca, `/?s=`, `/?p=1010`, post com giscus, post com YouTube, `/contato/` (formulário com reCAPTCHA), `/tags/`, `/categories/` e `/creditos/`. Os 404 restantes no Console não são da CSP: discussão do giscus ainda não criada (normal até o primeiro comentário) e uma variante de miniatura do YouTube inexistente.
 
 | Header | Valor |
 |---|---|
@@ -208,11 +215,11 @@ Conferido contra todas as URLs do build e de `static/wp-content/` (nenhuma casa 
 ```text
 default-src 'self';
 script-src 'self' https://static.cloudflareinsights.com https://form.jotformz.com https://cdn.jotfor.ms https://giscus.app;
-style-src 'self' 'unsafe-inline';
+style-src 'self' 'unsafe-inline' https://giscus.app;
 img-src 'self' data: https:;
 font-src 'self';
 connect-src 'self' https://cloudflareinsights.com;
-frame-src https://form.jotformz.com https://giscus.app https://www.youtube-nocookie.com https://www.youtube.com;
+frame-src https://form.jotformz.com https://form.jotform.com https://giscus.app https://www.youtube-nocookie.com https://www.youtube.com;
 frame-ancestors 'none';
 form-action 'self';
 base-uri 'self';
@@ -222,8 +229,8 @@ upgrade-insecure-requests
 
 - O Blowfish aplica o modo escuro com JS do bundle (`assets/js/appearance.js`), sem script inline; confirmar na fase *Report-Only*. Se aparecer script inline, usar *hashes* `'sha256-…'`, nunca `'unsafe-inline'` em `script-src`.
 - `style-src 'unsafe-inline'`: o tema e a nuvem de tags usam atributos `style`.
-- giscus: `client.js` de `giscus.app` cria um iframe do mesmo domínio; as folhas de tema (`/giscus/t9-*.css`) são lidas pelo iframe.
-- Jotform (embed por script): `form.jotformz.com` e `cdn.jotfor.ms` em `script-src`; confirmar a lista exata na fase *Report-Only* (pode usar outros `*.jotfor.ms`).
+- giscus: `client.js` de `giscus.app` cria um iframe do mesmo domínio e injeta `https://giscus.app/default.css` na página do blog (por isso `giscus.app` em `style-src`); as folhas de tema (`/giscus/t9-*.css`) são lidas pelo iframe.
+- Jotform (embed por script): `form.jotformz.com` e `cdn.jotfor.ms` em `script-src`; o formulário abre num iframe de `form.jotform.com` (`frame-src`). O que roda dentro desse iframe (reCAPTCHA do Google, CDN do Jotform) segue a CSP do Jotform, não a do blog. Se o Jotform mudar de domínio, o contato quebra em silêncio: testar `/contato/` depois de qualquer mudança na CSP.
 - Todo novo embed/serviço: atualizar esta CSP **antes** de publicar o conteúdo.
 
 ### Passo a passo no painel
@@ -235,7 +242,7 @@ Fazer **depois** de um deploy já com o domínio (HTML sem o prefixo `/blog-aeci
 3. [x] Em **Then → Modify response header**, um **Set static** por header da tabela acima, com HSTS em `max-age=300` e a CSP com o nome `Content-Security-Policy-Report-Only`. A CSP vai em uma linha só:
 
    ```text
-   default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://form.jotformz.com https://cdn.jotfor.ms https://giscus.app; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-src https://form.jotformz.com https://giscus.app https://www.youtube-nocookie.com https://www.youtube.com; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
+   default-src 'self'; script-src 'self' https://static.cloudflareinsights.com https://form.jotformz.com https://cdn.jotfor.ms https://giscus.app; style-src 'self' 'unsafe-inline' https://giscus.app; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://cloudflareinsights.com; frame-src https://form.jotformz.com https://form.jotform.com https://giscus.app https://www.youtube-nocookie.com https://www.youtube.com; frame-ancestors 'none'; form-action 'self'; base-uri 'self'; object-src 'none'; upgrade-insecure-requests
    ```
 
 4. [x] **Deploy** e conferir:
@@ -246,9 +253,15 @@ Fazer **depois** de um deploy já com o domínio (HTML sem o prefixo `/blog-aeci
    ```
 
 5. [x] **Fase *Report-Only* (1–2 semanas):** com DevTools → Console aberto, navegar pela home, busca, troca claro/escuro, um post com comentários (giscus), um post com vídeo (YouTube) e `/contato/` (Jotform). Cada violação aparece como `[Report Only] Refused to …`. Para cada domínio legítimo citado: atualizar primeiro a CSP desta seção (PR) e depois a regra no painel.
-6. [x] Sem violações: renomear o header para `Content-Security-Policy` (mesmo valor) e repetir os testes do passo 5.
+6. [x] Sem violações: renomear o header para `Content-Security-Policy` (mesmo valor) e repetir os testes do passo 5. Feito em 21/11/2026; o teste revelou as duas violações descritas no status, corrigidas no mesmo dia com o valor atual desta seção.
 7. [x] Estável por alguns dias: HSTS para `max-age=31536000` (**sem** `includeSubDomains`/`preload`).
 8. [x] <https://securityheaders.com/?q=blog.aeciopires.com> com nota A; marcar o item na seção 9.
+
+**Testar a CSP** (depois de qualquer mudança no valor ou de um serviço novo):
+
+1. `curl -sI https://blog.aeciopires.com/ | grep -i content-security`: deve aparecer `content-security-policy:` (sem `-report-only`) com o valor desta seção.
+2. Navegador com DevTools → Console, numa janela anônima: home (trocar a ordenação), busca (`Ctrl K` e `/?s=docker`), `/?p=1010`, um post com comentários (giscus), um post com vídeo do YouTube, `/contato/` (o formulário precisa aparecer com o reCAPTCHA), `/tags/` e `/creditos/`. Nenhuma mensagem `Refused to …` / `violates the following Content Security Policy directive`.
+3. Para testar um valor **antes** de aplicar: extensões de troca de header ou a sobrescrita de headers do DevTools (*Network → Override headers*) na página publicada.
 
 **Se algo quebrar:** desativar a regra (efeito imediato) ou voltar só a CSP para `-Report-Only`. O HSTS já enviado continua no navegador do leitor até expirar; por isso começar com `max-age=300`.
 
@@ -280,7 +293,7 @@ O GitHub renova o certificado da origem (~90 dias). Com o proxy ligado, a valida
 - [x] `/wp-content/uploads/…` → 200.
 - [x] `https://aeciopires.com/` e `https://www.aeciopires.com/` → 301 para o blog (R3).
 - [x] `jenkins.aeciopires.com` e `puppet.aeciopires.com` → 301 para os sites dos livros (R4, R5).
-- [x] SSL Labs nota A (20/11/2026).
+- [x] SSL Labs nota A (20/11/2026); **A+** em 21/11/2026, com HSTS de 1 ano ([relatório](https://www.ssllabs.com/ssltest/analyze.html?d=blog.aeciopires.com&latest)). Checagem mensal: `docs/MAINTENANCE.md`, seção 9.
 - [x] securityheaders.com nota A (CSP efetiva, 20/11/2026).
 - [x] Deploy de teste aparece em ~2 min (purge automático ok, deploy `44766555983`).
 - [x] Web Analytics registrando; `origin-cert.yml` verde (20/11/2026; certificado da origem até 18/02/2027).

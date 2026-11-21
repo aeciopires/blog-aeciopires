@@ -3,9 +3,18 @@
   Revisar a cada atualização do tema (docs/MAINTENANCE.md, "Ordenação dos posts da home").
 
   Diferença em relação ao tema: o leitor escolhe a ordem dos posts da home
-  (mais recentes, mais antigos, mais lidos, menos lidos). Todos os posts são renderizados,
-  mas só os primeiros `homepage.showRecentItems` ficam visíveis; assets/js/ordenar-home.js
-  reordena os cards no navegador. Sem JavaScript, a home fica como no tema (mais recentes).
+  (mais recentes, mais antigos, mais lidos, menos lidos).
+
+  Home leve: o HTML traz só os `homepage.showRecentItems` posts mais recentes (cards do tema).
+  Os demais dados vão para um JSON leve (posts-home.<hash>.json, com fingerprint e integridade),
+  que assets/js/ordenar-home.js só baixa quando o leitor escolhe outra ordem. O script monta os
+  cards clonando um MOLDE renderizado pelo próprio tema (<template data-card-molde>), preenchendo-o
+  só com textContent e atributos de URL validados (caminhos do próprio site). Sem JavaScript, a
+  home fica como no tema (mais recentes).
+
+  O JSON é extraído da SAÍDA dos partials do tema (article-link/card.html e article-meta/basic.html),
+  para acompanhar mudanças de configuração e de versão do Blowfish. Se a extração parar de funcionar
+  depois de uma atualização do tema, o build avisa (WARN, que falha o pr-check).
 
   "Mais lidos"/"menos lidos" usam data/visualizacoes.json (gerado por scripts/visualizacoes.mjs
   a partir do Cloudflare Web Analytics). Sem esse arquivo, esses dois botões não aparecem.
@@ -16,6 +25,75 @@
 {{- $paginacao := .Paginate $posts -}}
 {{- $paginas := index (hugo.Data.visualizacoes | default dict) "paginas" | default dict -}}
 {{- $temVisitas := gt (len $paginas) 0 -}}
+{{- $mostrarResumo := site.Params.list.showSummary | default false -}}
+
+{{- /* Separador e linhas usados pelo tema em article-meta/basic.html (revisar a cada atualização). */ -}}
+{{- $separador := `<span class="px-2 text-primary-500">&middot;</span>` -}}
+{{- $reLinhaMeta := `(?s)^\s*<div class="flex flex-row flex-wrap items-center">(.*?)</div>` -}}
+{{- $reTermo := `(?s)<a class="relative[^"]*" href="([^"]+)">(.*?)</a>` -}}
+
+{{- $itens := slice -}}
+{{- $termos := slice -}}
+{{- $indiceTermos := dict -}}
+{{- $molde := "" -}}
+{{- range $posts.ByDate.Reverse -}}
+  {{- $p := . -}}
+  {{- $card := partial "article-link/card.html" $p -}}
+  {{- $meta := partial "article-meta/basic.html" $p -}}
+
+  {{- /* Imagem: a mesma que o tema escolheu (feature, redimensionada, padrão do site). */ -}}
+  {{- $imagem := "" -}}
+  {{- with findRESubmatch `<img\s+src="([^"]+)"` $card 1 }}{{ $imagem = index (index . 0) 1 }}{{ end -}}
+
+  {{- /* Textos da linha de metadados (data, palavras, tempo de leitura…), na ordem do tema.
+         São textos do tema/i18n e do autor; viram textContent no navegador. */ -}}
+  {{- $textos := slice -}}
+  {{- with findRESubmatch $reLinhaMeta $meta 1 -}}
+    {{- range split (index (index . 0) 1) $separador -}}
+      {{- $t := . | plainify | htmlUnescape | strings.TrimSpace -}}
+      {{- with $t }}{{ $textos = $textos | append . }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* Chips de categorias e tags, como o tema mostra (respeita showTaxonomies/showCategories/showTags). */ -}}
+  {{- $chips := slice -}}
+  {{- range findRESubmatch $reTermo $meta -}}
+    {{- $url := index . 1 -}}
+    {{- $rotulo := index . 2 | plainify | htmlUnescape | strings.TrimSpace -}}
+    {{- if not (isset $indiceTermos $url) -}}
+      {{- $indiceTermos = merge $indiceTermos (dict $url (len $termos)) -}}
+      {{- $termos = $termos | append (dict "r" $rotulo "u" $url) -}}
+    {{- end -}}
+    {{- $chips = $chips | append (index $indiceTermos $url) -}}
+  {{- end -}}
+
+  {{- /* Molde: o card do tema de um post com imagem e chips (tem todas as partes). */ -}}
+  {{- if and (not $molde) $imagem (gt (len $chips) 0) }}{{ $molde = $card }}{{ end -}}
+
+  {{- $item := dict
+    "u" $p.RelPermalink
+    "t" $p.Title
+    "i" $imagem
+    "dt" ($p.Date | time.Format "2006-01-02T15:04:05-07:00")
+    "d" $p.Date.Unix
+    "m" $textos
+    "c" $chips
+    "v" (index $paginas $p.RelPermalink | default 0)
+  -}}
+  {{- if $mostrarResumo }}{{ $item = merge $item (dict "s" ($p.Summary | plainify | htmlUnescape | strings.TrimSpace)) }}{{ end -}}
+  {{- $itens = $itens | append $item -}}
+{{- end -}}
+
+{{- if and (gt (len $itens) 0) (eq (len (index (index $itens 0) "m")) 0) -}}
+  {{- warnf "cardview.html (ordenação da home): nenhum metadado extraído de article-meta/basic.html. O Blowfish mudou o HTML? Revise $reLinhaMeta e $separador (docs/MAINTENANCE.md, seção 8)." -}}
+{{- end -}}
+{{- if not $molde -}}
+  {{- warnf "cardview.html (ordenação da home): nenhum post com imagem e chips para servir de molde; os cards montados pelo JavaScript podem sair incompletos." -}}
+  {{- with $posts.ByDate.Reverse }}{{ $molde = partial "article-link/card.html" (index . 0) }}{{ end -}}
+{{- end -}}
+
+{{- $json := resources.FromString "js/posts-home.json" (jsonify (dict "versao" 1 "termos" $termos "posts" $itens))
+  | resources.Fingerprint (site.Params.fingerprintAlgorithm | default "sha512") -}}
 
 <div class="ordenar-home" role="group" aria-label="Ordenar posts" data-ordenar-home hidden>
   <span class="ordenar-home__rotulo">Ordenar:</span>
@@ -27,13 +105,15 @@
   {{- end }}
 </div>
 
-<section class="w-full grid gap-4 sm:grid-cols-2 md:grid-cols-3" data-posts-home data-visiveis="{{ $visiveis }}">
-  {{- range $i, $p := $posts.ByDate.Reverse }}
-  <div class="ordenar-home__item" data-data="{{ $p.Date.Unix }}" data-visitas="{{ index $paginas $p.RelPermalink | default 0 }}"{{ if ge $i $visiveis }} hidden{{ end }}>
-    {{ partial "article-link/card.html" $p }}
+<section class="w-full grid gap-4 sm:grid-cols-2 md:grid-cols-3" data-posts-home data-visiveis="{{ $visiveis }}"
+  data-json="{{ $json.RelPermalink }}" data-json-integridade="{{ $json.Data.Integrity }}">
+  {{- range first $visiveis $posts.ByDate.Reverse }}
+  <div class="ordenar-home__item" data-url="{{ .RelPermalink }}">
+    {{ partial "article-link/card.html" . }}
   </div>
   {{- end }}
 </section>
+<template data-card-molde>{{ $molde }}</template>
 
 {{- $js := resources.Get "js/ordenar-home.js" | resources.Minify | resources.Fingerprint (site.Params.fingerprintAlgorithm | default "sha512") }}
 <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>

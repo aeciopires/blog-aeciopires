@@ -34,8 +34,11 @@ fi
 echo
 echo "== Overrides do projeto para revisar contra o tema novo"
 echo "  layouts/tags/terms.html (baseado em _default/terms.html do tema)"
-echo "  layouts/partials/recent-articles/cardview.html (ordenação da home; ver docs/MAINTENANCE.md, seção 8)"
-git -C themes/blowfish diff --stat "$ANTIGA..$TAG" -- layouts/_default/terms.html layouts/partials/home/background.html layouts/partials/footer.html layouts/partials/recent-articles/ layouts/partials/article-link/card.html config/_default || true
+echo "  layouts/partials/recent-articles/cardview.html + assets/js/ordenar-home.js (home leve; extrai dados de article-link/card.html e article-meta/basic.html)"
+echo "  assets/js/busca.js (envolve a Fuse e escapa os resultados do assets/js/search.js do tema)"
+echo "  links externos em nova aba (layouts/_default/_markup/render-link.html, article.externalLinkForceNewTab)"
+echo "  Ver docs/MAINTENANCE.md, seção 8 (checklist); o make validate abaixo roda o check-home."
+git -C themes/blowfish diff --stat "$ANTIGA..$TAG" -- layouts/_default/terms.html layouts/partials/home/background.html layouts/partials/footer.html layouts/partials/recent-articles/ layouts/partials/article-link/card.html layouts/partials/article-meta/basic.html layouts/_default/_markup/render-link.html assets/js/search.js config/_default || true
 echo
 bash scripts/skill-sync.sh
 make validate

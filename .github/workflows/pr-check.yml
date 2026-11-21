@@ -44,6 +44,9 @@ jobs:
       - name: Build de produção + links internos
         run: make build validate-links
 
+      - name: Home leve (JSON, URLs e fidelidade ao card do tema)
+        run: make check-home
+
       - name: actionlint
         run: make actionlint
 

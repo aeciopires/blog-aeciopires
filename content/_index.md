@@ -6,7 +6,7 @@ description: "Tutoriais práticos de Kubernetes, AWS, observabilidade e automaç
 
 {{< blog-chamada desde="2007" >}}
 
-{{< blog-stats desde="2007" >}}
+{{< blog-stats >}}
 
 {{< tecnologias >}}
 
