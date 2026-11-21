@@ -21,7 +21,7 @@ Estou começando a dar os primeiros passos com o [**Elasticsearch**](https://www
 - [https://sysadmins.co.za/how-to-setup-a-2-node-elasticsearch-cluster-on-centos-7-with-some-example-usage/](https://sysadmins.co.za/how-to-setup-a-2-node-elasticsearch-cluster-on-centos-7-with-some-example-usage/)
 - [https://fdv.github.io/running-elasticsearch-fun-profit/006-operating-daily/006-operating-daily.html](https://fdv.github.io/running-elasticsearch-fun-profit/006-operating-daily/006-operating-daily.html)
 
-**Apostila e livro sobre ElasticSearch para iniciantes:**
+**Apostila e livro sobre Elasticsearch para iniciantes:**
 
 - [https://github.com/alefeans/elastic-stack](https://github.com/alefeans/elastic-stack)
 - [https://fdv.github.io/running-elasticsearch-fun-profit/](https://fdv.github.io/running-elasticsearch-fun-profit/)
@@ -33,11 +33,11 @@ Estou começando a dar os primeiros passos com o [**Elasticsearch**](https://www
 - [http://shop.oreilly.com/product/0636920028505.do](http://shop.oreilly.com/product/0636920028505.do)
 - [https://github.com/elastic/examples/blob/master/README.md](https://github.com/elastic/examples/blob/master/README.md)
 
-**Query Sintax:**
+**Query Syntax:**
 
 - [https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html#query-string-syntax)
 
-**Links importantes sobre o funcionamento de cluster ElasticSearch:**
+**Links importantes sobre o funcionamento de cluster Elasticsearch:**
 
 - [https://github.com/alefeans/elastic-stack/blob/master/pages/shards\_replicas.md](https://github.com/alefeans/elastic-stack/blob/master/pages/shards_replicas.md)
 - [https://www.elastic.co/guide/en/elasticsearch/reference/6.5/getting-started-concepts.html](https://www.elastic.co/guide/en/elasticsearch/reference/6.5/getting-started-concepts.html)
@@ -57,12 +57,12 @@ Estou começando a dar os primeiros passos com o [**Elasticsearch**](https://www
 - [https://www.elastic.co/guide/en/elasticsearch/guide/current/hardware.html#\_network](https://www.elastic.co/guide/en/elasticsearch/guide/current/hardware.html#_network)
 - [https://www.slideshare.net/ErtuKaramatl/crosscluster-and-crossdatacenter-elasticsearch-replication-at-sahibindencom](https://www.slideshare.net/ErtuKaramatl/crosscluster-and-crossdatacenter-elasticsearch-replication-at-sahibindencom)
 
-**Links sobre boas práticas de atualização e instalação do cluster ElasticSearch:**
+**Links sobre boas práticas de atualização e instalação do cluster Elasticsearch:**
 
 - [https://logz.io/blog/elasticsearch-cluster-setup/](https://logz.io/blog/elasticsearch-cluster-setup/)
 - [https://thoughts.t37.net/designing-the-perfect-elasticsearch-cluster-the-almost-definitive-guide-e614eabc1a87](https://thoughts.t37.net/designing-the-perfect-elasticsearch-cluster-the-almost-definitive-guide-e614eabc1a87)
 
-**Links sobre a instalação e configuração de um cluster ElasticSearch:**
+**Links sobre a instalação e configuração de um cluster Elasticsearch:**
 
 - [https://www.youtube.com/watch?v=lRAS7H09f78](https://www.youtube.com/watch?v=lRAS7H09f78)
 - [https://www.syspanda.com/index.php/2017/02/06/setting-up-elasticsearch-on-centos-7-minimal-part-1/](https://www.syspanda.com/index.php/2017/02/06/setting-up-elasticsearch-on-centos-7-minimal-part-1/)

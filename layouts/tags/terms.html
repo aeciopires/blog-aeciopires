@@ -37,7 +37,7 @@
   </section>
 
   <section class="mt-10">
-    <h2 class="text-2xl font-bold text-neutral-900 dark:text-neutral">Todas as tags de A a Z</h2>
+    <h2 class="text-2xl font-bold text-neutral-900 dark:text-neutral">{{ i18n "blog.tags_a_z" }}</h2>
     <div class="mt-4 flex max-w-prose flex-wrap gap-2">
       {{ range .Data.Terms.Alphabetical }}
         {{ partial "term-link/text.html" . }}

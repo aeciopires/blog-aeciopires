@@ -2,13 +2,17 @@
 title: "Instalando o Zabbix via Docker"
 slug: "zabbix-docker"
 date: 2017-08-16T16:39:55-03:00
-lastmod: 2026-11-20T12:00:00-03:00
+lastmod: 2026-11-21T13:11:13-03:00
 draft: false
 categories: ["docker", "tutoriais", "zabbix-2"]
 tags: ["docker", "mysql", "zabbix"]
 description: "Neste repositório do GitHub tem várias informações sobre o uso das imagens oficiais do Zabbix no Docker."
 wp_id: 1498
 ---
+
+{{< alert icon="circle-info" >}}
+**Atualizado em 21/11/2026:** corrigido o texto do `openssl dhparam`: o comando gera parâmetros Diffie-Hellman, não um par de chaves.
+{{< /alert >}}
 
 {{< alert icon="circle-info" >}}
 **Atualizado em 20/11/2026:** testado com as imagens `ubuntu-8.0-latest` (Zabbix 8.0.0) e o MySQL 9.7 (o Zabbix 8.0 suporta MySQL 8.4 a 9.7): banco, SNMP traps, server, frontend com HTTP e HTTPS, agent e proxy. Corrigido o texto sobre a validade do certificado (o comando gera 10 anos, não 1000) e a permissão da chave privada passou para `644` (o frontend roda como usuário não-root e só precisa ler o arquivo).
@@ -366,7 +370,7 @@ sudo openssl x509 -req -days 3650 -sha256 -in ssl.csr -signkey ssl.key -out ssl.
 
 Usando o comando acima, você estará assinando o certificado com validade de 10 anos (aproximadamente 3650 dias). Se quiser mudar este tempo, altere a quantidade de dias no parâmetro **-days**.
 
-Agora crie um par de chaves Diffie-Hellman com o seguinte comando:
+Agora crie os parâmetros Diffie-Hellman com o seguinte comando:
 
 ```bash
 sudo openssl dhparam -out dhparam.pem 4096

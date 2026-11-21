@@ -70,7 +70,6 @@ Quero compartilhar os links que já estudei até aqui e que servem de bússola p
 - Kubernetes: [https://youtu.be/WkM9R9-WQCk](https://youtu.be/WkM9R9-WQCk)
 - Docker Swarm, Docker e Docker Compose: [https://youtu.be/T3lpAjOcbU8](https://youtu.be/T3lpAjOcbU8)
 - Kubernetes para iniciantes: [https://www.youtube.com/watch?v=QAc\_nWXfffY](https://www.youtube.com/watch?v=QAc_nWXfffY)
-- Kubernetes e Helm: [https://www.youtube.com/watch?v=QAc\_nWXfffY](https://www.youtube.com/watch?v=QAc_nWXfffY)
 - Kubernetes e Istio: [https://www.youtube.com/watch?v=cUMAj8xPL2Q](https://www.youtube.com/watch?v=cUMAj8xPL2Q)
 
 **Ambiente de Teste para Docker e Kubernetes:**

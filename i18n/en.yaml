@@ -1,0 +1,55 @@
+# Versão em inglês (en-US). Sobrescreve só as chaves do i18n/en.yaml do Blowfish que o projeto muda e traz
+# as chaves "blog.*" dos layouts próprios (as mesmas de i18n/pt-BR.yaml). make check-i18n confere que os
+# dois arquivos têm as mesmas chaves.
+
+# Título da seção de posts da home, igual ao botão "Most recent" (como em pt-BR).
+shortcode:
+  recent_articles: "Most recent"
+
+# Nome do botão de busca com o texto visível (Lighthouse label-content-name-mismatch), como em pt-BR.
+search:
+  open_button_title: "Search: Ctrl K or /"
+
+# Chaves que o tema usa e o en.yaml do Blowfish v3.10.0 não tem (aria-label vazio sem elas).
+nav:
+  toggle_submenu: "Open or close submenu"
+term:
+  no_articles: "There are no posts here yet."
+
+global:
+  language: "EN"
+
+blog:
+  comentarios: "Comments"
+  comentarios_arquivados: "Archived comments from the old blog (read-only, in Portuguese)"
+  rodape_tema: "Blowfish theme © 2022 Nuno Coração, MIT license"
+  creditos: "Credits and licenses"
+  explorar: "Explore"
+  tags_mais_usadas: "Most used tags"
+  ver_todas_tags: "See all tags →"
+  categorias: "Categories"
+  nuvem_tags: "Tag cloud"
+  posts_contagem:
+    one: "{{ .Count }} post"
+    other: "{{ .Count }} posts"
+  tags_a_z: "All tags from A to Z"
+  chamada_titulo: "Sharing knowledge for {{ .Anos }} years."
+  chamada_texto: "Hands-on tutorials on Kubernetes, AWS, observability and automation, written by {{ .Autor }}."
+  curso_docker: "Docker Course"
+  curso_kubernetes: "Kubernetes Course"
+  stats_posts: "published posts"
+  stats_categorias: "categories"
+  stats_repositorios: "repositories on GitHub"
+  tecnologias_titulo: "Stacks I use every day"
+  tecnologias_subtitulo: "Technologies I have hands-on experience with"
+  tecnologias_nota: "Trademarks belong to their respective owners and only indicate the topics covered on the blog."
+  ordenar_grupo: "Sort posts"
+  ordenar: "Sort:"
+  ordem_recentes: "Most recent"
+  ordem_antigos: "Oldest"
+  ordem_mais_lidos: "Most read"
+  ordem_menos_lidos: "Least read"
+  jotform_sem_js: "The form requires JavaScript."
+  jotform_abrir: "Open the form on another page"
+  removido_arquivo: "File removed: \"{{ .Nome }}\" is no longer available on the original site."
+  removido_imagem: "Image removed: \"{{ .Nome }}\" is no longer available on the original site."

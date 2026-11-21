@@ -6,13 +6,13 @@ lastmod: 2026-10-01T20:42:31-03:00
 draft: false
 categories: ["devops", "docker", "git", "tutoriais"]
 tags: ["aws", "cdk", "iac", "python", "docker"]
-description: "Há poucos dias, eu precisei a estudar o AWS CDK (Cloud Development Kit) e organizei o conteúdo, exemplos de código e testes neste repositório:…"
+description: "Há poucos dias, eu precisei estudar o AWS CDK (Cloud Development Kit) e organizei o conteúdo, exemplos de código e testes neste repositório:…"
 wp_id: 3550
 ---
 
-Há poucos dias, eu precisei a estudar o [AWS CDK (Cloud Development Kit)](https://docs.aws.amazon.com/cdk/v2/guide/home.html) e organizei o conteúdo, exemplos de código e testes neste repositório: [https://github.com/aeciopires/learning-cdk-python](https://github.com/aeciopires/learning-cdk-python). O material cresceu tanto que virou uma trilha de aprendizado.
+Há poucos dias, eu precisei estudar o [AWS CDK (Cloud Development Kit)](https://docs.aws.amazon.com/cdk/v2/guide/home.html) e organizei o conteúdo, exemplos de código e testes neste repositório: [https://github.com/aeciopires/learning-cdk-python](https://github.com/aeciopires/learning-cdk-python). O material cresceu tanto que virou uma trilha de aprendizado.
 
-Minha intenção é também ajudar outras pessoas que está estudando o CDK para utilizar no trabalho,
+Minha intenção é também ajudar outras pessoas que estão estudando o CDK para utilizar no trabalho.
 
 ## O que é o AWS CDK?
 
@@ -20,7 +20,7 @@ Minha intenção é também ajudar outras pessoas que está estudando o CDK para
 
 > O AWS Cloud Development Kit (AWS CDK) é um framework de desenvolvimento de software de código aberto para definir infraestrutura de nuvem em código e provisioná-la por meio do [AWS CloudFormation](https://aws.amazon.com/pt/cloudformation/).
 
-Na prática, em vez de clicar no console da AWS ou escrever centenas de linhas de JSON/YAML do CloudFormation, você escreve uma classe Python (uma `*Stack*`) descrevendo uma fila, um bucket, um banco de dados... O CDK transforma esse código num template do CloudFormation ( `cdk synth`), mostra o que vai mudar ( `cdk diff`) e cria os recursos ( `cdk deploy`).
+Na prática, em vez de clicar no console da AWS ou escrever centenas de linhas de JSON/YAML do CloudFormation, você escreve uma classe Python (uma `*Stack*`) descrevendo uma fila, um bucket, um banco de dados... O CDK transforma esse código num template do CloudFormation (`cdk synth`), mostra o que vai mudar (`cdk diff`) e cria os recursos (`cdk deploy`).
 
 Se você já usa [Terraform](https://developer.hashicorp.com/terraform) (escrevi sobre ele [aqui](/conhecendo-o-terraform/)), vai se sentir em casa com a ideia de infraestrutura como código. A diferença é que, com o CDK, você usa uma linguagem de programação de verdade: laços, funções, classes, testes unitários, tudo aquilo que já conhecemos do desenvolvimento de software.
 
@@ -30,7 +30,7 @@ Se você já usa [Terraform](https://developer.hashicorp.com/terraform) (escrevi
 
 O grande obstáculo para quem está aprendendo AWS é o medo da fatura no fim do mês. Um NAT Gateway, um banco RDS ou um cluster EKS esquecidos ligados podem gerar uma surpresa bem desagradável.
 
-Para resolver isso, os códigos do repositório são executados no [floci](https://floci.io), **um emulador local da AWS, gratuito e de código aberto**, que roda com um simples `docker compose up`. Os comandos do AWS CLI, do SDK (boto3) e do próprio CDK funcionam da mesmo forma que se estivesse usando a AWS, só que apontando para um conteiner executando no ambiente local.
+Para resolver isso, os códigos do repositório são executados no [floci](https://floci.io), **um emulador local da AWS, gratuito e de código aberto**, que roda com um simples `docker compose up`. Os comandos do AWS CLI, do SDK (boto3) e do próprio CDK funcionam da mesma forma que se estivesse usando a AWS, só que apontando para um contêiner executando no ambiente local.
 
 Assim, você pode errar, apagar, recriar e quebrar tudo à vontade, sem custo nenhum. Quando se sentir confiante, cada módulo também tem as instruções para fazer o deploy numa conta real da AWS (com os avisos de custo bem claros, para ninguém ser pego de surpresa).
 

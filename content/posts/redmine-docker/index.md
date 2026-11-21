@@ -18,15 +18,15 @@ wp_id: 1490
 
 Neste [repositório do GitHub](https://github.com/docker-library/redmine) tem um tutorial para executar o [Redmine](http://www.redmine.org/) no Docker.
 
-Segundo o tutorial, o Redmine é executado usando um conteiner [Docker](https://www.docker.com/), o que deixa a instalação bem simples e rapidamente você tem o serviço funcionando.
+Segundo o tutorial, o Redmine é executado usando um contêiner [Docker](https://www.docker.com/), o que deixa a instalação bem simples e rapidamente você tem o serviço funcionando.
 
 Se você não sabe o que é Docker, recomendo começar lendo os links desta página. É um longo caminho, mas vale a pena conhecer essa tecnologia.
 
 [/primeiros-passos-com-docker/](/primeiros-passos-com-docker/)
 
-Também dou curso de Docker: [/curso-docker](/curso-docker)
+Também dou curso de Docker: [/curso-docker/](/curso-docker/)
 
-Abaixo tem o tutorial customizado para iniciar o conteiner Redmine e MySQL persistindo os dados.
+Abaixo tem o tutorial customizado para iniciar o contêiner Redmine e MySQL persistindo os dados.
 
 1) Crie o diretório de dados do MySQL.
 
@@ -44,7 +44,7 @@ sudo mkdir -p /docker/redmine/themes;
 sudo chmod -R 775 /docker/redmine;
 ```
 
-3) Inicie o conteiner docker do [MySQL](https://hub.docker.com/_/mysql/) com o banco de dados para o Redmine.
+3) Inicie o contêiner docker do [MySQL](https://hub.docker.com/_/mysql/) com o banco de dados para o Redmine.
 
 ```text
 MYSQL_VERSION="8";docker run -d --name mysql-redmine \
@@ -60,7 +60,7 @@ MYSQL_VERSION="8";docker run -d --name mysql-redmine \
 mysql:$MYSQL_VERSION --mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_bin
 ```
 
-4) Inicie o conteiner docker do [Redmine](https://hub.docker.com/_/redmine/) acessando o banco de dados criado no MySQL.
+4) Inicie o contêiner docker do [Redmine](https://hub.docker.com/_/redmine/) acessando o banco de dados criado no MySQL.
 
 ```bash
 REDMINE_VERSION="7";
@@ -88,7 +88,7 @@ docker logs mysql-redmine
 
 6) Aguarde uns 5 minutos até o Redmine iniciar. Acesse o Redmine na URL **http://IP-Servidor:3001**. O login é **admin** e a senha padrão é **admin**.
 
-7) Se quiser parar o conteiner, é só executar o comando abaixo.
+7) Se quiser parar o contêiner, é só executar o comando abaixo.
 
 ```bash
 docker stop redmine;
@@ -112,13 +112,13 @@ Para mais informações sobre o Redmine e sobre como configurá-lo, acesse os li
 
 [https://hub.docker.com/\_/mysql/](https://hub.docker.com/_/mysql/)
 
-Se precisar fazer o dump de todos os bancos de dados do conteiner MySQL criado anteriormente, use o comando abaixo.
+Se precisar fazer o dump de todos os bancos de dados do contêiner MySQL criado anteriormente, use o comando abaixo.
 
 ```bash
 docker exec mysql-redmine sh -c 'exec mysqldump redmine -uroot -p"$MYSQL_ROOT_PASSWORD"' > /home/redmine.sql
 ```
 
-Lembrando que os dados do banco são persistidos no diretório **/docker/redmine/mysql/data** do Docker Host no qual o conteiner está sendo executado.
+Lembrando que os dados do banco são persistidos no diretório **/docker/redmine/mysql/data** do Docker Host no qual o contêiner está sendo executado.
 
 Se precisar restaurar o dump, use os comandos abaixo.
 

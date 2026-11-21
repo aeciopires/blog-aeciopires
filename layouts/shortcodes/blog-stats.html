@@ -8,18 +8,20 @@
   Nome próprio (não "stats") para não sobrescrever o shortcode `stats` do tema.
 */ -}}
 {{- $posts := where site.RegularPages "Section" "posts" -}}
+{{- /* Inclui os posts sem tradução (bilingue: true), como a home e a busca do tema: mesmo total nos dois idiomas. */ -}}
+{{- with hugo.Sites.Default }}{{ $posts = $posts | lang.Merge (where .RegularPages "Section" "posts") }}{{ end -}}
 {{- $itens := slice -}}
 {{- with site.GetPage "/posts" -}}
-  {{- $itens = $itens | append (dict "valor" (len $posts) "rotulo" "posts publicados" "url" .RelPermalink) -}}
+  {{- $itens = $itens | append (dict "valor" (len $posts) "rotulo" (i18n "blog.stats_posts") "url" .RelPermalink) -}}
 {{- end -}}
 {{- with site.GetPage "/categories" -}}
-  {{- $itens = $itens | append (dict "valor" (len site.Taxonomies.categories) "rotulo" "categorias" "url" .RelPermalink) -}}
+  {{- $itens = $itens | append (dict "valor" (len site.Taxonomies.categories) "rotulo" (i18n "blog.stats_categorias") "url" .RelPermalink) -}}
 {{- end -}}
 {{- $github := "" -}}
 {{- range site.Params.author.links }}{{ with .github }}{{ $github = . }}{{ end }}{{ end -}}
 {{- with hugo.Data.github -}}
   {{- if and $github (isset . "repositoriosPublicos") -}}
-    {{- $itens = $itens | append (dict "valor" .repositoriosPublicos "rotulo" "repositórios no GitHub" "url" (printf "%s?tab=repositories" $github) "externo" true) -}}
+    {{- $itens = $itens | append (dict "valor" .repositoriosPublicos "rotulo" (i18n "blog.stats_repositorios") "url" (printf "%s?tab=repositories" $github) "externo" true) -}}
   {{- end -}}
 {{- end -}}
 <div class="blog-stats not-prose my-10 grid gap-4 sm:grid-cols-3">

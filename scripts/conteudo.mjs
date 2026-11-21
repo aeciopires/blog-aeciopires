@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 // Auxiliares para revisar e escrever posts (skills revisar-conteudo e escrever-post).
 //
-//   node scripts/conteudo.mjs aviso <slug> "<resumo>"   aviso "Atualizado em DD/MM/AAAA" + lastmod
+//   node scripts/conteudo.mjs aviso <slug> "<resumo>" ["<resumo em inglês>"]
+//                                                       aviso "Atualizado em DD/MM/AAAA" + lastmod (acima do aviso
+//                                                       anterior, que fica; no mesmo dia, substitui); com o 2º
+//                                                       resumo, também "Updated on Month D, YYYY" no index.en.md
 //   node scripts/conteudo.mjs prosa <slug>...           texto corrido, para revisão gramatical
 //   node scripts/conteudo.mjs verificar [<slug>...]     restos da migração e erros recorrentes
 //
@@ -36,23 +39,36 @@ function agora() {
       hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23",
     }).formatToParts(new Date()).map((x) => [x.type, x.value]),
   );
-  return { iso: `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}-03:00`, br: `${p.day}/${p.month}/${p.year}` };
+  const en = new Intl.DateTimeFormat("en-US", { timeZone: "America/Recife", month: "long", day: "numeric", year: "numeric" }).format(new Date());
+  return { iso: `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}:${p.second}-03:00`, br: `${p.day}/${p.month}/${p.year}`, en };
 }
 
-function aviso(slug, resumo) {
+function aviso(slug, resumo, resumoEn) {
   if (!resumo) {
-    console.error('uso: aviso <slug> "<resumo do que mudou>"');
+    console.error('uso: aviso <slug> "<resumo do que mudou>" ["<resumo em inglês>"]');
     process.exit(2);
   }
-  const p = arquivo(slug);
+  const quando = agora();
+  aplicarAviso(arquivo(slug), quando.iso, `**Atualizado em ${quando.br}:** ${resumo}`, /\*\*Atualizado em \d{2}\/\d{2}\/\d{4}:\*\*/);
+  const en = arquivo(slug).replace(/\.md$/, ".en.md");
+  if (resumoEn && existsSync(en)) {
+    aplicarAviso(en, quando.iso, `**Updated on ${quando.en}:** ${resumoEn}`, /\*\*Updated on [A-Z][a-z]+ \d{1,2}, \d{4}:\*\*/);
+  } else if (existsSync(en)) {
+    console.log(`lembrete: ${en} precisa do mesmo aviso e lastmod (RESUMO_EN="…") e da tradução das mudanças (make i18n-diff SLUG=${slug}).`);
+  }
+}
+
+function aplicarAviso(p, iso, linhaAviso, reLinha) {
   const { fm, corpo } = partes(readFileSync(p, "utf8"));
-  const { iso, br } = agora();
   const novoFm = /^lastmod:/m.test(fm) ? fm.replace(/^lastmod:.*$/m, `lastmod: ${iso}`) : fm.replace(/^(date:.*)$/m, `$1\nlastmod: ${iso}`);
-  const bloco = `{{< alert icon="circle-info" >}}\n**Atualizado em ${br}:** ${resumo}\n{{< /alert >}}`;
+  const bloco = `{{< alert icon="circle-info" >}}\n${linhaAviso}\n{{< /alert >}}`;
   let novoCorpo;
-  const existente = /\{\{< alert icon="circle-info" >\}\}\n\*\*Atualizado em \d{2}\/\d{2}\/\d{4}:\*\*[^\n]*\n\{\{< \/alert >\}\}/;
+  const existente = new RegExp(`\\{\\{< alert icon="circle-info" >\\}\\}\\n${reLinha.source}[^\\n]*\\n\\{\\{< \\/alert >\\}\\}`);
   const antigo = /\n\*\*Atualizado em:? ?[^*\n]+\*\*[ \t ]*\n/;
-  if (existente.test(corpo)) novoCorpo = corpo.replace(existente, bloco);
+  // Aviso do MESMO dia: substitui. Aviso de outro dia: o novo entra acima e o antigo fica (histórico das revisões).
+  const m = corpo.match(existente);
+  if (m && m[0].includes(linhaAviso.match(reLinha)[0])) novoCorpo = corpo.replace(existente, bloco);
+  else if (m) novoCorpo = corpo.replace(existente, `${bloco}\n\n${m[0]}`);
   else if (antigo.test(corpo)) novoCorpo = corpo.replace(antigo, `\n${bloco}\n`);
   else novoCorpo = `\n${bloco}\n\n${corpo.replace(/^\n+/, "")}`;
   writeFileSync(p, `---\n${novoFm}\n---\n${novoCorpo}`);
@@ -131,7 +147,7 @@ function verificar(slugs) {
   console.log(total ? `\n${total} ponto(s) para conferir (nem todos são erro; revise cada um).` : "verificar-texto: nada encontrado");
 }
 
-if (comando === "aviso") aviso(args[0], args.slice(1).join(" "));
+if (comando === "aviso") aviso(args[0], args[1], args[2]);
 else if (comando === "prosa") prosa(args);
 else if (comando === "verificar") verificar(args);
 else {

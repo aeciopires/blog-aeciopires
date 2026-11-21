@@ -23,9 +23,13 @@ Cria um post em `content/posts/<slug>/index.md` seguindo o `CLAUDE.md`. O post f
 6. **Imagens:** `feature.png` na pasta do post (imagem própria do autor ou captura da própria ferramenta; nunca de terceiros sem licença). Otimize com `mise exec -- oxipng -q -o 4 --strip safe <arquivo>`. Toda imagem com `alt`; legenda com `{{< figure ... caption="..." >}}`.
 7. **Links:** externos em Markdown normal (abrem sozinhos em nova aba pelo tema; não escreva `target`); internos sempre relativos (`/slug/`) ou `{{< ref >}}`, nunca `https://blog.aeciopires.com/...`.
 8. **Comandos nos exemplos:** use a tag de versão fixa da imagem (não `latest`), portas padrão do projeto, e explique o que trocar (`aeciopires` → sua organização). Placeholders evidentes; nada de token, e-mail ou dado pessoal.
-9. **Revise:** `make verificar-texto SLUG=<slug>`, `make prosa SLUG=<slug>` (gramática, ver `revisar-conteudo`), `make validate-diagrams`, `make lint-md validate` e `make serve` (rascunhos aparecem só no `make serve`; confira claro, escuro e celular em 360 e 412 px, sem rolagem horizontal).
-10. **Limpeza** dos testes como na `revisar-conteudo`. Commit/PR só com pedido do autor.
-11. **Ao entregar**, avise que o post é rascunho: aparece no `make serve`, mas não no `make serve-prod` nem no site (página e card da home) até `make publish-post SLUG=<slug> DATE=now`. Não é erro de renderização.
+9. **Versão em inglês:** se o post já for escrito em pt-BR e inglês no mesmo arquivo, marque `bilingue: true` no front
+   matter e não crie tradução. Senão, com o texto pt-BR pronto e revisado, siga a skill `traduzir-conteudo` (cria
+   `index.en.md`, mesmos comandos e links, `make i18n-ok SLUG=<slug>`). Sem ela, o `make publish-post`, o
+   pre-commit e a CI recusam. Se o pt-BR mudar depois, atualize a tradução (`make i18n-diff SLUG=<slug>`).
+10. **Revise:** `make verificar-texto SLUG=<slug>`, `make prosa SLUG=<slug>` (gramática, ver `revisar-conteudo`), `make validate-diagrams`, `make lint-md validate` e `make serve` (rascunhos aparecem só no `make serve`; confira claro, escuro e celular em 360 e 412 px, sem rolagem horizontal), também em `/en/<slug>/`.
+11. **Limpeza** dos testes como na `revisar-conteudo`. Commit/PR só com pedido do autor.
+12. **Ao entregar**, avise que o post é rascunho: aparece no `make serve`, mas não no `make serve-prod` nem no site (página e card da home) até `make publish-post SLUG=<slug> DATE=now`. Não é erro de renderização.
 
 ## Não faça
 

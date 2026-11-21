@@ -1,7 +1,8 @@
 {{- /*
   Cacheado pelo tema (partialCached com .Site). Só o que vale para todas as páginas.
   Cloudflare Web Analytics (PLAN.md 11.7): só no build de produção (nunca no hugo server,
-  nem no make serve-prod) e com token definido.
+  nem no make serve-prod) e com token definido. HUGO_SEM_ANALYTICS=1 tira o beacon do build
+  (make lighthouse-local: visitas de teste não entram nas estatísticas).
   CSP: static.cloudflareinsights.com (script-src) e cloudflareinsights.com (connect-src).
 */ -}}
 {{- /* Busca flexível (assets/js/busca.js): defer, depois do bundle do tema que define window.Fuse. */}}
@@ -9,7 +10,7 @@
   {{- $busca := resources.Get "js/busca.js" | resources.Minify | resources.Fingerprint (site.Params.fingerprintAlgorithm | default "sha512") }}
   <script defer src="{{ $busca.RelPermalink }}" integrity="{{ $busca.Data.Integrity }}"></script>
 {{- end }}
-{{- if and hugo.IsProduction (not hugo.IsServer) site.Params.cloudflareAnalytics.token }}
+{{- if and hugo.IsProduction (not hugo.IsServer) site.Params.cloudflareAnalytics.token (not (getenv "HUGO_SEM_ANALYTICS")) }}
   <script defer src="https://static.cloudflareinsights.com/beacon.min.js"
     data-cf-beacon='{"token": "{{ site.Params.cloudflareAnalytics.token }}"}'></script>
 {{- end }}

@@ -26,9 +26,16 @@ Revisa posts em `content/posts/<slug>/index.md` contra **fontes oficiais**, test
    - links para o próprio blog com domínio (`https://blog.aeciopires.com/x/`) viram relativos (`/x/`): com domínio, o tema os abre em nova aba como se fossem externos;
    - revise a gramática (seção "Gramática") de todo o post, não só do trecho alterado.
 7. **Links:** link morto (404/410/DNS) → cópia do Internet Archive (`https://archive.org/wayback/available?url=...`), marcada `(cópia arquivada)`, ou endereço atual oficial; sem cópia útil (cursos interativos, serviços encerrados) → remover a linha. 403/429 costumam ser bloqueio de robô: não conclua nada. Repositórios do autor que deram 404: pergunte antes de trocar.
-8. **Valide:** `make lint-md validate` verde, `make validate-diagrams` se houver Mermaid, e confira no `make serve` (claro, escuro e celular em 360 e 412 px: sem rolagem horizontal; tabelas e blocos de código dentro da coluna).
-9. **Relatório:** registre cada item em `reports/revisao-posts-<AAAA-MM-DD>.md` (ignorado pelo Git) com a tabela abaixo; ela vira o corpo do PR.
-10. **Limpeza** (seção própria) e **PR** só com pedido explícito do autor.
+8. **Versão em inglês:** toda correção do pt-BR vai também para o `index.en.md` (mesmos comandos, versões e
+   links; o `make check-i18n` exige comandos idênticos e bloqueia o commit com a tradução desatualizada).
+   Use `make aviso-atualizacao SLUG=<slug> RESUMO="..." RESUMO_EN="..."`, depois a skill `traduzir-conteudo`
+   (`make i18n-diff SLUG=<slug>` mostra o que mudou) e `make i18n-ok SLUG=<slug>`. Teste o pt-BR; a tradução
+   herda os mesmos comandos.
+   Correções de gramática e de texto feitas na revisão também vão para `reports/correcoes-conteudo-AAAA-MM-DD.md`
+   (skill `traduzir-conteudo`, "Correções no original"), para o autor conferir antes do commit.
+9. **Valide:** `make lint-md validate` verde, `make validate-diagrams` se houver Mermaid, e confira no `make serve`, em pt-BR e em `/en/<slug>/` (claro, escuro e celular em 360 e 412 px: sem rolagem horizontal; tabelas e blocos de código dentro da coluna).
+10. **Relatório:** registre cada item em `reports/revisao-posts-<AAAA-MM-DD>.md` (ignorado pelo Git) com a tabela abaixo; ela vira o corpo do PR.
+11. **Limpeza** (seção própria) e **PR** só com pedido explícito do autor.
 
 | Post | Item | Antes | Depois | Teste | Fonte oficial (URL, data) |
 |---|---|---|---|---|---|

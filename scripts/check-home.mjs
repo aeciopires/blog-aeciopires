@@ -11,6 +11,7 @@
 //  4. fidelidade ao tema: para cada post, título, imagem, metadados e chips do JSON são iguais
 //     aos do card que o tema renderiza em /posts/ (mesmo partial). Se o Blowfish mudar o HTML
 //     do card, este teste falha e aponta o post e o campo.
+// Roda para cada idioma (pt-BR na raiz e en-US em /en/).
 // Documentação: docs/MAINTENANCE.md, seção 8 ("Ordenação dos posts da home").
 
 import { readFileSync, existsSync, readdirSync } from "node:fs";
@@ -77,99 +78,128 @@ function cardsDe(pagina) {
   return [...pagina.matchAll(/<article class="?article-link--card[\s\S]*?<\/article>/g)].map((m) => m[0]);
 }
 
-// ---------- 1. home ----------
-if (!existsSync(join(PUBLIC, "index.html"))) {
-  console.error("check-home: public/index.html não existe; rode make build antes.");
-  process.exit(1);
-}
-const home = html("index.html");
-const secao = home.match(/<section[^>]*data-posts-home[^>]*>/);
-if (!secao) {
-  erro("home sem <section data-posts-home> (override cardview.html não está em uso?)");
-}
-const visiveis = secao ? Number(attr(secao[0], "data-visiveis")) : 0;
-const urlJson = secao ? attr(secao[0], "data-json") : null;
-const integridade = secao ? attr(secao[0], "data-json-integridade") : null;
-const itensHome = [...home.matchAll(/<div class="?ordenar-home__item"?\s+data-url=("?)([^"\s>]+)\1/g)].map((m) => m[2]);
-if (itensHome.length !== visiveis) {
-  erro(`home com ${itensHome.length} card(s); esperado ${visiveis} (data-visiveis)`);
-}
-const molde = home.match(/<template data-card-molde>([\s\S]*?)<\/template>/);
-if (!molde) {
-  erro("home sem <template data-card-molde>");
-} else {
-  const p = partesDoCard(molde[1]);
-  if (!p.url || !p.imagem || !p.titulo || p.meta.length === 0 || p.chips.length === 0) {
-    erro(`molde incompleto (url=${!!p.url} img=${!!p.imagem} h2=${!!p.titulo} meta=${p.meta.length} chips=${p.chips.length}): o HTML do card do Blowfish mudou?`);
+// Cada idioma tem a sua home, o seu JSON e o seu índice de busca: "" = pt-BR (raiz), "en/" = inglês.
+const IDIOMAS = ["", "en/"];
+const resumo = [];
+function verificarIdioma(prefixo) {
+  const erroIdioma = (msg) => erro(`[${prefixo || "pt-BR "}] ${msg}`);
+  // ---------- 1. home ----------
+  if (!existsSync(join(PUBLIC, prefixo, "index.html"))) {
+    erroIdioma(`public/${prefixo}index.html não existe; rode make build antes.`);
+    return "";
   }
-}
-
-// ---------- 2. JSON ----------
-let dados = { posts: [], termos: [] };
-if (!urlJson || !caminhoSeguro(urlJson) || !existsSync(join(PUBLIC, urlJson))) {
-  erro(`JSON da home ausente ou com caminho inválido: ${urlJson}`);
-} else {
-  const bruto = readFileSync(join(PUBLIC, urlJson));
-  const [alg, valor] = String(integridade || "").split("-");
-  const calculado = alg ? createHash(alg).update(bruto).digest("base64") : "";
-  if (!valor || calculado !== valor) {
-    erro("integridade (SRI) do JSON não confere com o arquivo");
+  const home = html(`${prefixo}index.html`);
+  const secao = home.match(/<section[^>]*data-posts-home[^>]*>/);
+  if (!secao) {
+    erroIdioma("home sem <section data-posts-home> (override cardview.html não está em uso?)");
   }
-  dados = JSON.parse(bruto.toString("utf8"));
-}
-const termos = dados.termos || [];
-const porUrl = new Map((dados.posts || []).map((p) => [p.u, p]));
-
-const indice = JSON.parse(html("index.json"));
-// Posts do índice da busca, sem a própria página de lista (/posts/).
-const totalPosts = indice.filter((i) => i.type === "posts" && i.permalink !== "/posts/").length;
-if (porUrl.size !== totalPosts) {
-  erro(`JSON com ${porUrl.size} post(s); o índice da busca tem ${totalPosts}`);
-}
-const recentes = [...(dados.posts || [])].sort((a, b) => b.d - a.d).slice(0, visiveis).map((p) => p.u);
-if (recentes.join() !== itensHome.join()) {
-  erro("os cards visíveis da home não são os mais recentes do JSON");
-}
-
-// ---------- 3. URLs ----------
-for (const p of dados.posts || []) {
-  if (!caminhoSeguro(p.u)) erro(`URL inválida no JSON: ${p.u}`);
-  if (p.i && !caminhoSeguro(p.i)) erro(`imagem inválida no JSON (${p.u}): ${p.i}`);
-  if (!p.t || !Array.isArray(p.m) || p.m.length === 0) erro(`post sem título ou metadados no JSON: ${p.u}`);
-  for (const c of p.c || []) {
-    if (!termos[c] || !caminhoSeguro(termos[c].u)) erro(`termo inválido (${p.u}): índice ${c}`);
+  const visiveis = secao ? Number(attr(secao[0], "data-visiveis")) : 0;
+  const urlJson = secao ? attr(secao[0], "data-json") : null;
+  const integridade = secao ? attr(secao[0], "data-json-integridade") : null;
+  const itensHome = [...home.matchAll(/<div class="?ordenar-home__item"?\s+data-url=("?)([^"\s>]+)\1/g)].map((m) => m[2]);
+  if (itensHome.length !== visiveis) {
+    erroIdioma(`home com ${itensHome.length} card(s); esperado ${visiveis} (data-visiveis)`);
   }
-}
+  const molde = home.match(/<template data-card-molde>([\s\S]*?)<\/template>/);
+  if (!molde) {
+    erroIdioma("home sem <template data-card-molde>");
+  } else {
+    const p = partesDoCard(molde[1]);
+    if (!p.url || !p.imagem || !p.titulo || p.meta.length === 0 || p.chips.length === 0) {
+      erroIdioma(`molde incompleto (url=${!!p.url} img=${!!p.imagem} h2=${!!p.titulo} meta=${p.meta.length} chips=${p.chips.length}): o HTML do card do Blowfish mudou?`);
+    }
+  }
 
-// ---------- 4. fidelidade ao card do tema (/posts/ e /posts/page/N/) ----------
-const paginas = ["posts/index.html"];
-const dirPaginas = join(PUBLIC, "posts", "page");
-if (existsSync(dirPaginas)) {
-  for (const n of readdirSync(dirPaginas)) paginas.push(join("posts", "page", n, "index.html"));
-}
-let comparados = 0;
-for (const pagina of paginas) {
-  if (!existsSync(join(PUBLIC, pagina))) continue;
-  for (const card of cardsDe(html(pagina))) {
-    const t = partesDoCard(card);
-    const j = porUrl.get(t.url);
-    if (!j) continue;
-    comparados += 1;
-    const doJson = {
-      titulo: j.t,
-      imagem: j.i || "",
-      meta: j.m,
-      chips: (j.c || []).map((i) => [termos[i]?.r, termos[i]?.u]),
-    };
-    for (const campo of ["titulo", "imagem", "meta", "chips"]) {
-      if (JSON.stringify(doJson[campo]) !== JSON.stringify(t[campo])) {
-        erro(`${t.url}: "${campo}" do JSON difere do card do tema\n    tema: ${JSON.stringify(t[campo])}\n    json: ${JSON.stringify(doJson[campo])}`);
+  // ---------- 2. JSON ----------
+  let dados = { posts: [], termos: [] };
+  if (!urlJson || !caminhoSeguro(urlJson) || !existsSync(join(PUBLIC, urlJson))) {
+    erroIdioma(`JSON da home ausente ou com caminho inválido: ${urlJson}`);
+  } else {
+    const bruto = readFileSync(join(PUBLIC, urlJson));
+    const [alg, valor] = String(integridade || "").split("-");
+    const calculado = alg ? createHash(alg).update(bruto).digest("base64") : "";
+    if (!valor || calculado !== valor) {
+      erroIdioma("integridade (SRI) do JSON não confere com o arquivo");
+    }
+    dados = JSON.parse(bruto.toString("utf8"));
+  }
+  const termos = dados.termos || [];
+  const porUrl = new Map((dados.posts || []).map((p) => [p.u, p]));
+
+  const indice = JSON.parse(html(`${prefixo}index.json`));
+  // Posts do índice da busca, sem a própria página de lista (/posts/).
+  const totalPosts = indice.filter((i) => i.type === "posts" && i.permalink !== `/${prefixo}posts/`).length;
+  if (porUrl.size !== totalPosts) {
+    erroIdioma(`JSON com ${porUrl.size} post(s); o índice da busca tem ${totalPosts}`);
+  }
+  const recentes = [...(dados.posts || [])].sort((a, b) => b.d - a.d).slice(0, visiveis).map((p) => p.u);
+  if (recentes.join() !== itensHome.join()) {
+    erroIdioma("os cards visíveis da home não são os mais recentes do JSON");
+  }
+
+  // ---------- 3. URLs ----------
+  for (const p of dados.posts || []) {
+    if (!caminhoSeguro(p.u)) erroIdioma(`URL inválida no JSON: ${p.u}`);
+    if (p.i && !caminhoSeguro(p.i)) erroIdioma(`imagem inválida no JSON (${p.u}): ${p.i}`);
+    if (!p.t || !Array.isArray(p.m) || p.m.length === 0) erroIdioma(`post sem título ou metadados no JSON: ${p.u}`);
+    for (const c of p.c || []) {
+      if (!termos[c] || !caminhoSeguro(termos[c].u)) erroIdioma(`termo inválido (${p.u}): índice ${c}`);
+    }
+  }
+
+  // ---------- 4. fidelidade ao card do tema (/posts/ e /posts/page/N/) ----------
+  const paginas = [`${prefixo}posts/index.html`];
+  const dirPaginas = join(PUBLIC, prefixo, "posts", "page");
+  if (existsSync(dirPaginas)) {
+    for (const n of readdirSync(dirPaginas)) paginas.push(join(prefixo, "posts", "page", n, "index.html"));
+  }
+  let comparados = 0;
+  for (const pagina of paginas) {
+    if (!existsSync(join(PUBLIC, pagina))) continue;
+    for (const card of cardsDe(html(pagina))) {
+      const t = partesDoCard(card);
+      const j = porUrl.get(t.url);
+      if (!j) continue;
+      comparados += 1;
+      const doJson = {
+        titulo: j.t,
+        imagem: j.i || "",
+        meta: j.m,
+        chips: (j.c || []).map((i) => [termos[i]?.r, termos[i]?.u]),
+      };
+      for (const campo of ["titulo", "imagem", "meta", "chips"]) {
+        if (JSON.stringify(doJson[campo]) !== JSON.stringify(t[campo])) {
+          erroIdioma(`${t.url}: "${campo}" do JSON difere do card do tema\n    tema: ${JSON.stringify(t[campo])}\n    json: ${JSON.stringify(doJson[campo])}`);
+        }
       }
     }
   }
+  if (comparados < Math.min(totalPosts, 10)) {
+    erroIdioma(`só ${comparados} card(s) do tema encontrados em /posts/ para comparar (o HTML do card mudou?)`);
+  }
+  return `${prefixo || "pt-BR: "}${itensHome.length} cards na home, ${porUrl.size} posts no JSON, ${comparados} comparados com o tema`;
 }
-if (comparados < Math.min(totalPosts, 10)) {
-  erro(`só ${comparados} card(s) do tema encontrados em /posts/ para comparar (o HTML do card mudou?)`);
+for (const prefixo of IDIOMAS) resumo.push(verificarIdioma(prefixo));
+
+// ---------- 5. redirecionamento pelo idioma do navegador (override de language-redirect.html) ----------
+// Sem <script> inline (CSP), um script com SRI e data-config JSON válido, traduções só com caminhos do site,
+// e hreflang x-default apontando para o pt-BR. Pega mudanças do Blowfish/Hugo na saída.
+for (const pagina of ["index.html", "en/index.html", "posts/index.html", "en/posts/index.html"]) {
+  if (!existsSync(join(PUBLIC, pagina))) { erro(`[idioma] ${pagina} não existe`); continue; }
+  const h = html(pagina);
+  if (/BlowfishLanguageRedirectConfig\s*=/.test(h)) erro(`[idioma] ${pagina}: configuração do redirecionamento em script inline (a CSP bloqueia); o override layouts/partials/language-redirect.html está em uso?`);
+  const tag = (h.match(/<script\s[^>]*data-config=[^>]*>/) || [])[0];
+  if (!tag) { erro(`[idioma] ${pagina}: sem o script do redirecionamento (data-config)`); continue; }
+  if (!attr(tag, "integrity")) erro(`[idioma] ${pagina}: script do redirecionamento sem integrity (SRI)`);
+  if (!caminhoSeguro(attr(tag, "src") || "")) erro(`[idioma] ${pagina}: src do script inválido`);
+  try {
+    const c = JSON.parse(decodificar(attr(tag, "data-config") || ""));
+    if (c.enabled !== true || !Array.isArray(c.translations) || c.translations.length < 2) erro(`[idioma] ${pagina}: data-config sem enabled/translations`);
+    for (const t of c.translations || []) if (!caminhoSeguro(t.url)) erro(`[idioma] ${pagina}: URL de tradução inválida ${t.url}`);
+  } catch (e) {
+    erro(`[idioma] ${pagina}: data-config não é JSON válido (${e.message})`);
+  }
+  if (!/hreflang="?x-default"?/.test(h)) erro(`[idioma] ${pagina}: sem <link hreflang="x-default">`);
 }
 
 if (erros.length) {
@@ -177,4 +207,4 @@ if (erros.length) {
   for (const e of erros.slice(0, 20)) console.error(`  - ${e}`);
   process.exit(1);
 }
-console.log(`check-home: OK (${itensHome.length} cards na home, ${porUrl.size} posts no JSON, ${comparados} comparados com o tema)`);
+console.log(`check-home: OK (${resumo.join("; ")})`);

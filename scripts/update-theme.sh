@@ -37,8 +37,13 @@ echo "  layouts/tags/terms.html (baseado em _default/terms.html do tema)"
 echo "  layouts/partials/recent-articles/cardview.html + assets/js/ordenar-home.js (home leve; extrai dados de article-link/card.html e article-meta/basic.html)"
 echo "  assets/js/busca.js (envolve a Fuse e escapa os resultados do assets/js/search.js do tema)"
 echo "  links externos em nova aba (layouts/_default/_markup/render-link.html, article.externalLinkForceNewTab)"
-echo "  Ver docs/MAINTENANCE.md, seção 8 (checklist); o make validate abaixo roda o check-home."
-git -C themes/blowfish diff --stat "$ANTIGA..$TAG" -- layouts/_default/terms.html layouts/partials/home/background.html layouts/partials/footer.html layouts/partials/recent-articles/ layouts/partials/article-link/card.html layouts/partials/article-meta/basic.html layouts/_default/_markup/render-link.html assets/js/search.js config/_default || true
+echo "  redirecionamento por idioma: layouts/partials/language-redirect.html + assets/js/idioma-config.js (override;"
+echo "    make check-i18n compara o hash dos arquivos do tema; depois rode make test-idioma)"
+echo "  versão em inglês: seletor de idioma do tema (header/components/translations.html), hreflang (head.html),"
+echo "    sitemap multilíngue (_default/sitemap.xml) e i18n/en.yaml do tema; sem override, só i18n/ e config do projeto."
+echo "  Ver docs/MAINTENANCE.md, seção 8 (checklist); o make validate abaixo roda o check-home (pt-BR e en)"
+echo "  e o check-i18n, que acusa chave de i18n nova do tema sem texto em pt-BR ou en (acrescente em i18n/)."
+git -C themes/blowfish diff --stat "$ANTIGA..$TAG" -- layouts/_default/terms.html layouts/partials/home/background.html layouts/partials/footer.html layouts/partials/recent-articles/ layouts/partials/article-link/card.html layouts/partials/article-meta/basic.html layouts/_default/_markup/render-link.html assets/js/search.js layouts/partials/header/components/translations.html layouts/partials/language-redirect.html assets/js/language-redirect.js layouts/partials/head.html layouts/_default/sitemap.xml config/_default || true
 echo
 bash scripts/skill-sync.sh
 make validate

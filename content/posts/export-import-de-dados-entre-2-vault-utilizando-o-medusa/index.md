@@ -2,7 +2,7 @@
 title: "Export/Import de dados entre 2 Vault utilizando o Medusa"
 slug: "export-import-de-dados-entre-2-vault-utilizando-o-medusa"
 date: 2024-09-28T03:46:51-03:00
-lastmod: 2026-11-20T12:00:00-03:00
+lastmod: 2026-11-21T13:10:47-03:00
 draft: false
 categories: ["devops", "gitops", "kubernetes", "tutoriais", "vault"]
 tags: ["docker", "kubernetes", "vault"]
@@ -11,7 +11,7 @@ wp_id: 2934
 ---
 
 {{< alert icon="circle-info" >}}
-**Atualizado em 20/11/2026:** testado com Medusa 0.7.3 (Linux amd64) e Vault 2.2.2: export de um Vault no Kubernetes (kind) e import num segundo Vault, além da seção de usuários e policies. Corrigido o endereço nos comandos do Medusa (os sinais `<` e `>` em volta da URL faziam o comando falhar), corrigida a explicação do limite de versões do KV e incluído o equivalente em linha de comando para criar o path. A partir do Vault 2.1.2, prefira nomes de usuários e policies em minúsculas ([mudanças importantes](https://developer.hashicorp.com/vault/docs/updates/important-changes)).
+**Atualizado em 21/11/2026:** o nome da policy dos usuários (`CHANGE_USER`) agora é o mesmo informado em `policies=` ao criar o usuário. Na revisão de 20/11/2026: testado com Medusa 0.7.3 (Linux amd64) e Vault 2.2.2: export de um Vault no Kubernetes (kind) e import num segundo Vault, além da seção de usuários e policies. Corrigido o endereço nos comandos do Medusa (os sinais `<` e `>` em volta da URL faziam o comando falhar), corrigida a explicação do limite de versões do KV e incluído o equivalente em linha de comando para criar o path. A partir do Vault 2.1.2, prefira nomes de usuários e policies em minúsculas ([mudanças importantes](https://developer.hashicorp.com/vault/docs/updates/important-changes)).
 {{< /alert >}}
 
 Este é o terceiro post da série sobre o Vault. Você pode ver os posts anteriores clicando nos links a seguir:
@@ -177,7 +177,7 @@ path "CHANGE_PATH_SECRET/data/*" {
 }
 EOF
 
-vault policy write CHANGE_USER_NAME vault_users_acl_policy.hcl
+vault policy write CHANGE_USER vault_users_acl_policy.hcl
 
 ```
 

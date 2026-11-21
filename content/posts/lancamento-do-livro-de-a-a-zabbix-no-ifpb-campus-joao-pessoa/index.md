@@ -5,9 +5,9 @@ date: 2015-03-04T18:45:03-03:00
 lastmod: 2024-09-29T09:21:37-03:00
 draft: false
 categories: ["tutoriais", "zabbix-2"]
-description: "Oi, pessoal!O lançamento será nesta sexta-feira (06/03/2015) às 11h.Quem for de João Pessoa e puder ir, vai ser ótimo ver você lá. Haverá um sorteio do…"
+description: "Oi, pessoal! O lançamento será nesta sexta-feira (06/03/2015) às 11h. Quem for de João Pessoa e puder ir, vai ser ótimo ver você lá. Haverá um sorteio do…"
 tags: ["zabbix"]
 wp_id: 620
 ---
 
-Oi, pessoal!O lançamento será nesta sexta-feira (06/03/2015) às 11h.Quem for de João Pessoa e puder ir, vai ser ótimo ver você lá. Haverá um sorteio do livro no final da palestra.  A palestra faz parte do evento preparado o início do semestre 2015.1.
+Oi, pessoal! O lançamento será nesta sexta-feira (06/03/2015) às 11h. Quem for de João Pessoa e puder ir, vai ser ótimo ver você lá. Haverá um sorteio do livro no final da palestra. A palestra faz parte do evento preparado para o início do semestre 2015.1.

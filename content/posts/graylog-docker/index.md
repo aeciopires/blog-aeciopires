@@ -14,7 +14,7 @@ wp_id: 1557
 **Atualizado em 20/11/2026:** testado com o compose oficial `open-core`, que agora usa o Graylog 7.2 (7.2.2), o Data Node 7.2 e o MongoDB 7.0: configuração inicial, login com a senha do `.env`, recebimento e busca de uma mensagem GELF, `stop` e `start`. Corrigido o nome do arquivo nos comandos `docker compose -f` (o arquivo baixado é `docker-compose.yml`, não `.yaml`).
 {{< /alert >}}
 
-Nesta página do [Graylog](https://go2docs.graylog.org/5-2/downloading_and_installing_graylog/docker_installation.htm) tem várias informações acerca da instalação do Graylog usando imagens Docker. O arquivo de exemplo usado neste tutorial (**open-core**) usa imagens Docker do Graylog, do Graylog Data Node e do MongoDB.
+Nesta página do [Graylog](https://go2docs.graylog.org/7-2/downloading_and_installing_graylog/docker_installation.htm) tem várias informações acerca da instalação do Graylog usando imagens Docker. O arquivo de exemplo usado neste tutorial (**open-core**) usa imagens Docker do Graylog, do Graylog Data Node e do MongoDB.
 
 Segundo este tutorial, o Graylog é executado usando um conteiner [Docker](https://www.docker.com/), o que deixa a instalação bem simples e rapidamente você tem o serviço funcionando.
 

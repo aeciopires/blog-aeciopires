@@ -48,11 +48,11 @@ SRE, cloud architect, platform engineer, desenvolvedor(a) de software, arquiteto
 
 ## Histórico
 
-- Jan/2025, aula exclusiva na [Ronald Bulbow](https://www.linkedin.com/in/ronald-bulbow-99a80b29/) (remoto);
+- Jan/2025, aula exclusiva com [Ronald Bulbow](https://www.linkedin.com/in/ronald-bulbow-99a80b29/) (remoto);
 - Jan/2024, turma realizada na [Unipe](http://unipe.br/pos-graduacao/desenvolvimento-de-aplicacoes-para-web/) (remoto);
 - Out/2023, aula exclusiva com [Caio César Junqueira Pezzi](https://www.linkedin.com/in/caio-c%C3%A9sar/) (remoto);
 - Ago/2023, aula exclusiva com [Edilmar Júnior](https://www.linkedin.com/in/edilmar-recife-pe/) (remoto);
-- Mar/2023, aula exclusiva com [Clayton Roberto](https://www.linkedin.com/in/claytonroberto/) (remoto)
+- Mar/2023, aula exclusiva com [Clayton Roberto](https://www.linkedin.com/in/claytonroberto/) (remoto);
 - Nov/2022, aula com [Wesley Silva](https://www.linkedin.com/in/wesley-silva/) e [Wilmar Freitas Oliveira Filho](https://www.linkedin.com/in/wilmarfreitasoliveirafilho/) (remoto);
 - Out/2022, aula exclusiva com [Barbara Oliveira Martins](https://www.linkedin.com/in/barbara-oliveira-martins-48b8b614a/) (remoto);
 - Jun/2022, aula com [Marcelo Primo](https://www.linkedin.com/in/marcelooprimo/) e [Michel Alves](https://www.linkedin.com/in/michel-henrique-alves-41600338/) (remoto);
@@ -68,7 +68,7 @@ SRE, cloud architect, platform engineer, desenvolvedor(a) de software, arquiteto
 
 ## Observações
 
-1. Posso emitir nota fiscal, mas não trabalho com Nota de empenho, usada em orgãos públicos.
+1. Posso emitir nota fiscal, mas não trabalho com Nota de empenho, usada em órgãos públicos.
 2. É necessário que cada aluno(a) utilize seu computador.
 3. Como não represento uma instituição de ensino, não poderei emitir um certificado de participação.
 

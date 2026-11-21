@@ -10,7 +10,9 @@ description: "Este é o primeiro post de uma série sobre o Hashicorp Vault. Con
 wp_id: 2929
 ---
 
-**Atualizado em: 8 de outubro de 2026**
+{{< alert icon="circle-info" >}}
+**Atualizado em 08/10/2026:** incluído o aviso sobre a licença do Vault, que a partir da versão 1.15.0 passou a ser a Business Source License (BSL) 1.1, e não mais uma licença de código aberto.
+{{< /alert >}}
 
 Este é o primeiro post de uma série sobre o [Hashicorp Vault](https://www.hashicorp.com/products/vault). Confira os próximos posts nos links abaixo.
 
@@ -26,9 +28,9 @@ Obrigado [Filipe Maia](https://www.linkedin.com/in/filipebsmaia/), [André Luis 
 
 O Vault é uma ferramenta de gerenciamento de segredos que permite armazenar, acessar e controlar informações confidenciais, como senhas, tokens de API, certificados e chaves criptográficas. Ele foi projetado para funcionar em ambientes dinâmicos, como nuvens públicas e privadas, e fornecer um nível elevado de segurança para todos os tipos de dados sensíveis.
 
-Ao invés de armazenar segredos em arquivos de configuração ou em variáveis de ambiente, o Vault oferece um repositório centralizado e seguro, com controles rígidos de acesso e auditoria.
+Em vez de armazenar segredos em arquivos de configuração ou em variáveis de ambiente, o Vault oferece um repositório centralizado e seguro, com controles rígidos de acesso e auditoria.
 
-Não é uma solução nova e existem vários softwares alternativos, inclusive serviços gerenciados nas principais clouds públicas. Mas o Vault tem a vantagem de ter o código fonte disponível publicamente, ser muito popular (tem muitas pessoas e empresas que usam e pode ajudar com suporte nas comunidades), ter uma edição gratuita e poder ser instalado em ambientes on-premisse, na cloud e também no [Kubernetes](https://kubernetes.io/).
+Não é uma solução nova e existem vários softwares alternativos, inclusive serviços gerenciados nas principais clouds públicas. Mas o Vault tem a vantagem de ter o código-fonte disponível publicamente, ser muito popular (tem muitas pessoas e empresas que usam e pode ajudar com suporte nas comunidades), ter uma edição gratuita e poder ser instalado em ambientes on-premises, na cloud e também no [Kubernetes](https://kubernetes.io/).
 
 > Atenção!!! A partir da versão 1.15.0, o Vault passou a ser distribuído sob a licença Business Source License (BSL) 1.1([https://github.com/hashicorp/vault/blob/main/LICENSE](https://github.com/hashicorp/vault/blob/main/LICENSE)), e não mais sob uma licença de código aberto. Ela permite o uso em produção, exceto para oferecer o Vault a terceiros como um produto concorrente das versões pagas. Leia o arquivo de licença antes de adotar a ferramenta na sua empresa.
 
@@ -62,7 +64,7 @@ O fluxo básico de uso do Vault é:
 
 ## **Conclusão**
 
-O HashiCorp Vault é uma ferramenta com muitas funcionalidades, capaz de atender as necessidades de ambientes com diferentes níveis de complexidade no que se refere ao gerenciamento de configuração e segredos. Sua ampla gama de recursos, como controle de acesso, criptografia como serviço e auditoria centralizada, fazem dele uma solução essencial para quem busca melhorar a segurança no compartilhamento e armazenamento de informações sensíveis com microsserviços em pequena ou larga escala.
+O HashiCorp Vault é uma ferramenta com muitas funcionalidades, capaz de atender às necessidades de ambientes com diferentes níveis de complexidade no que se refere ao gerenciamento de configuração e segredos. Sua ampla gama de recursos, como controle de acesso, criptografia como serviço e auditoria centralizada, fazem dele uma solução essencial para quem busca melhorar a segurança no compartilhamento e armazenamento de informações sensíveis com microsserviços em pequena ou larga escala.
 
 Este é o primeiro post de uma série sobre o [Hashicorp Vault](https://www.hashicorp.com/products/vault). Confira os próximos posts nos links abaixo.
 

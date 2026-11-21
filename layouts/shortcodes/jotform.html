@@ -8,7 +8,7 @@
   <div class="jotform not-prose my-6">
     <script src="https://form.jotformz.com/jsform/{{ . }}"></script>
     <noscript>
-      <p>O formulário precisa de JavaScript. <a href="https://form.jotformz.com/{{ . }}" rel="noopener noreferrer">Abrir o formulário em outra página</a>.</p>
+      <p>{{ i18n "blog.jotform_sem_js" }} <a href="https://form.jotformz.com/{{ . }}" rel="noopener noreferrer">{{ i18n "blog.jotform_abrir" }}</a>.</p>
     </noscript>
   </div>
 {{- else -}}

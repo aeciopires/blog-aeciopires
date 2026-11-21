@@ -16,11 +16,17 @@
   para acompanhar mudanças de configuração e de versão do Blowfish. Se a extração parar de funcionar
   depois de uma atualização do tema, o build avisa (WARN, que falha o pr-check).
 
+  Multilíngue: cada idioma tem a sua home e o seu JSON (site.RegularPages é do idioma atual); textos
+  em i18n "blog.*" (i18n/pt-BR.yaml e i18n/en.yaml).
+
   "Mais lidos"/"menos lidos" usam data/visualizacoes.json (gerado por scripts/visualizacoes.mjs
   a partir do Cloudflare Web Analytics). Sem esse arquivo, esses dois botões não aparecem.
 */ -}}
 {{- $visiveis := site.Params.homepage.showRecentItems | default 5 -}}
 {{- $posts := where site.RegularPages "Type" "in" site.Params.mainSections -}}
+{{- /* Como o index.json do tema (busca): no inglês, entram também os posts sem tradução (bilingue: true, já
+       bilíngues no original), apontando para a URL original. lang.Merge só acrescenta o que não tem tradução. */ -}}
+{{- with hugo.Sites.Default }}{{ $posts = $posts | lang.Merge (where .RegularPages "Type" "in" site.Params.mainSections) }}{{ end -}}
 {{- /* Mantém as páginas /page/N/ da home que o tema gera com .Paginate (evita 404). */ -}}
 {{- $paginacao := .Paginate $posts -}}
 {{- $paginas := index (hugo.Data.visualizacoes | default dict) "paginas" | default dict -}}
@@ -70,6 +76,9 @@
   {{- /* Molde: o card do tema de um post com imagem e chips (tem todas as partes). */ -}}
   {{- if and (not $molde) $imagem (gt (len $chips) 0) }}{{ $molde = $card }}{{ end -}}
 
+  {{- /* Visitas somadas de todas as versões do post (pt-BR + en): mesma ordem de leitura nos dois idiomas. */ -}}
+  {{- $visitas := 0 -}}
+  {{- range $p.AllTranslations }}{{ $visitas = add $visitas (index $paginas .RelPermalink | default 0) }}{{ end -}}
   {{- $item := dict
     "u" $p.RelPermalink
     "t" $p.Title
@@ -78,7 +87,7 @@
     "d" $p.Date.Unix
     "m" $textos
     "c" $chips
-    "v" (index $paginas $p.RelPermalink | default 0)
+    "v" $visitas
   -}}
   {{- if $mostrarResumo }}{{ $item = merge $item (dict "s" ($p.Summary | plainify | htmlUnescape | strings.TrimSpace)) }}{{ end -}}
   {{- $itens = $itens | append $item -}}
@@ -92,16 +101,17 @@
   {{- with $posts.ByDate.Reverse }}{{ $molde = partial "article-link/card.html" (index . 0) }}{{ end -}}
 {{- end -}}
 
-{{- $json := resources.FromString "js/posts-home.json" (jsonify (dict "versao" 1 "termos" $termos "posts" $itens))
+{{- /* Nome por idioma: o Hugo guarda recursos FromString pelo nome (o mesmo nome reusaria o JSON do outro idioma). */ -}}
+{{- $json := resources.FromString (printf "js/posts-home.%s.json" site.Language.Lang) (jsonify (dict "versao" 1 "termos" $termos "posts" $itens))
   | resources.Fingerprint (site.Params.fingerprintAlgorithm | default "sha512") -}}
 
-<div class="ordenar-home" role="group" aria-label="Ordenar posts" data-ordenar-home hidden>
-  <span class="ordenar-home__rotulo">Ordenar:</span>
-  <button type="button" class="ordenar-home__botao" data-ordem="recentes" aria-pressed="true">Mais recentes</button>
-  <button type="button" class="ordenar-home__botao" data-ordem="antigos" aria-pressed="false">Mais antigos</button>
+<div class="ordenar-home" role="group" aria-label="{{ i18n "blog.ordenar_grupo" }}" data-ordenar-home hidden>
+  <span class="ordenar-home__rotulo">{{ i18n "blog.ordenar" }}</span>
+  <button type="button" class="ordenar-home__botao" data-ordem="recentes" aria-pressed="true">{{ i18n "blog.ordem_recentes" }}</button>
+  <button type="button" class="ordenar-home__botao" data-ordem="antigos" aria-pressed="false">{{ i18n "blog.ordem_antigos" }}</button>
   {{- if $temVisitas }}
-  <button type="button" class="ordenar-home__botao" data-ordem="mais-lidos" aria-pressed="false">Mais lidos</button>
-  <button type="button" class="ordenar-home__botao" data-ordem="menos-lidos" aria-pressed="false">Menos lidos</button>
+  <button type="button" class="ordenar-home__botao" data-ordem="mais-lidos" aria-pressed="false">{{ i18n "blog.ordem_mais_lidos" }}</button>
+  <button type="button" class="ordenar-home__botao" data-ordem="menos-lidos" aria-pressed="false">{{ i18n "blog.ordem_menos_lidos" }}</button>
   {{- end }}
 </div>
 

@@ -29,7 +29,7 @@ Segundo a [documentação oficial](https://docs.k0sproject.io/latest/), as princ
 - Isolamento do Control Plane como padrão;
 - Escalável desde um único node até clusters grandes e com alta disponibilidade;
 - Variedade de backends de armazenamento: etcd (padrão para clusters com vários nodes), SQLite (padrão para clusters com um único node), MySQL e PostgreSQL;
-- Utiliza como container runtime (https://kubernetes.io/docs/setup/production-environment/container-runtimes/) padrão o [containerd](https://containerd.io/), mas permite usar outros plugins CRI ( _Container Runtime Interface_);
+- Utiliza como [container runtime](https://kubernetes.io/docs/setup/production-environment/container-runtimes/) padrão o [containerd](https://containerd.io/), mas permite usar outros plugins CRI ( _Container Runtime Interface_);
 - Suporte a diversos [Container Network Interface (CNI)](https://github.com/containernetworking/cni) (o padrão é o [Kube-Router](https://www.kube-router.io/) e o [Calico](https://www.tigera.io/project-calico/) é oferecido como alternativa pré-configurada);
 - Inclui o Konnectivity, o CoreDNS e o Metrics Server;
 - Suporta as arquiteturas de computadores x86-64, ARM64, ARMv7 e RISC-V.

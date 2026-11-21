@@ -1,0 +1,77 @@
+# Menus da versão em inglês (en-US): os mesmos itens de menus.pt-br.toml, com os nomes traduzidos.
+# pageRef aponta para a mesma página; o Hugo usa a tradução (/en/...). Ao mudar um item, mude nos DOIS.
+
+[[main]]
+  name = "Posts"
+  pageRef = "posts"
+  weight = 10
+
+[[main]]
+  name = "Categories"
+  pageRef = "categories"
+  weight = 20
+
+[[main]]
+  name = "Tags"
+  pageRef = "tags"
+  weight = 30
+
+[[main]]
+  name = "Courses"
+  pageRef = "cursos"
+  weight = 40
+
+[[main]]
+  name = "About"
+  url = "/sobre/"   # página bilíngue (bilingue: true): sem versão /en/
+  weight = 50
+
+[[main]]
+  name = "Contact"
+  pageRef = "contato"
+  weight = 60
+
+# Ícones dos perfis no cabeçalho. Única exceção à "fonte única" ([author] de params.toml),
+# porque menus do Hugo não leem params: ao mudar um perfil, alterar params.toml e os DOIS menus.
+[[main]]
+  identifier = "github"
+  pre = "github"
+  url = "https://github.com/aeciopires"
+  title = "GitHub"
+  weight = 70
+
+[[main]]
+  identifier = "linkedin"
+  pre = "linkedin"
+  url = "https://www.linkedin.com/in/aeciopires"
+  title = "LinkedIn"
+  weight = 80
+
+[[main]]
+  identifier = "linktree"
+  pre = "link"
+  url = "https://linktr.ee/aeciopires"
+  title = "Linktree"
+  weight = 90
+
+# -- Rodapé --
+
+[[footer]]
+  name = "About"
+  url = "/sobre/"   # página bilíngue (bilingue: true): sem versão /en/
+  weight = 10
+
+[[footer]]
+  name = "Contact"
+  pageRef = "contato"
+  weight = 20
+
+[[footer]]
+  name = "Privacy"
+  pageRef = "privacidade"
+  weight = 30
+
+[[footer]]
+  name = "Credits and licenses"
+  pageRef = "creditos"
+  weight = 40

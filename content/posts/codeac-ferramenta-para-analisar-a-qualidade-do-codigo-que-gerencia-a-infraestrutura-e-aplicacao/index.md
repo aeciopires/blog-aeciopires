@@ -6,11 +6,11 @@ lastmod: 2024-11-19T01:51:08-03:00
 draft: false
 categories: ["devops", "docker", "git", "tutoriais"]
 tags: ["cloud", "git", "iac", "terraform"]
-description: "Após uma postagem no Twitter de Rafael Gomes (Gomex) e Amaury Souza no Slack infraascode citando o Codeac.io, resolvi dedicar um tempo estudar e testar…"
+description: "Após uma postagem no Twitter de Rafael Gomes (Gomex) e Amaury Souza no Slack infraascode citando o Codeac.io, resolvi dedicar um tempo a estudar e testar…"
 wp_id: 2225
 ---
 
-Após uma postagem no Twitter de [Rafael Gomes (Gomex)](https://twitter.com/gomex/status/1210174746555506693) e Amaury Souza no [Slack infraascode](https://infraascode.slack.com) citando o [Codeac.io](https://www.codeac.io/infrastructure-as-code.html?utm_campaign=aecio), resolvi dedicar um tempo estudar e testar a ferramenta.
+Após uma postagem no Twitter de [Rafael Gomes (Gomex)](https://twitter.com/gomex/status/1210174746555506693) e Amaury Souza no [Slack infraascode](https://infraascode.slack.com) citando o [Codeac.io](https://www.codeac.io/infrastructure-as-code.html?utm_campaign=aecio), resolvi dedicar um tempo a estudar e testar a ferramenta.
 
 **[Codeac](https://www.codeac.io/infrastructure-as-code.html?utm_campaign=aecio)** faz a análise da qualidade, olhando não apenas o código da aplicação, mas também do código que gerencia a infraestrutura a ser usada pela aplicação (Exemplo: Dockerfile, Ansible, CloudFormation, Terraform, Shell Script, etc). Há suporte a várias linguagens de programação: [https://www.codeac.io/documentation/supported-languages.html](https://www.codeac.io/documentation/supported-languages.html?utm_campaign=aecio).
 
@@ -32,6 +32,6 @@ Os resultados da análise podem ser vistos nas imagens a seguir. Como você pode
 
 {{< figure src="/wp-content/uploads/2019/12/codeac5.png" alt="codeac5" >}}
 
-Após os testes iniciais, tive uma ótima surpresa... [Jiri Tichy](https://www.linkedin.com/in/jirkatichy/) (membro do time do [Codeac.io](https://www.codeac.io/infrastructure-as-code.html?utm_campaign=aecio)) entrou em contato via Linkedin. Conversamos sobre as primeiras impressõess sobre a ferramenta e pude entender um pouco mais sobre os objetivos da mesma. Durante a conversa recebi um pull request de [Michel Simon](https://www.linkedin.com/in/michal-simon/) (criado da ferramenta). Além da contribuição no código, as palavras de motivação para continuar ajudando com o código **open source** foram muito bem vindas.
+Após os testes iniciais, tive uma ótima surpresa... [Jiri Tichy](https://www.linkedin.com/in/jirkatichy/) (membro do time do [Codeac.io](https://www.codeac.io/infrastructure-as-code.html?utm_campaign=aecio)) entrou em contato via LinkedIn. Conversamos sobre as primeiras impressões sobre a ferramenta e pude entender um pouco mais sobre os objetivos da mesma. Durante a conversa recebi um pull request de [Michal Simon](https://www.linkedin.com/in/michal-simon/) (criador da ferramenta). Além da contribuição no código, as palavras de motivação para continuar ajudando com o código **open source** foram muito bem-vindas.
 
 Espero que o post tenha sido útil e que de alguma forma possa ajudar você e seu time a escrever códigos ainda melhores para manter a infraestrutura, seja ela na nuvem ou em ambiente local.

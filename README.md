@@ -7,6 +7,7 @@ Código-fonte do [blog.aeciopires.com](https://blog.aeciopires.com): compartilha
 - **Borda:** Cloudflare (DNS, proxy, cache, segurança e Web Analytics).
 - **Comentários:** [giscus](https://giscus.app) (GitHub Discussions deste repositório); os do blog antigo ficam somente leitura.
 - **Home:** o leitor ordena os posts por mais recentes, mais antigos, mais lidos ou menos lidos; os dois últimos usam as visualizações do Cloudflare Web Analytics dos últimos 180 dias, atualizadas no deploy semanal ([MAINTENANCE.md](docs/MAINTENANCE.md), seção 8). A nuvem de tags mostra a frequência pelo tamanho, sem número visível.
+- **Idiomas:** pt-BR (padrão, na raiz) e inglês en-US em [`/en/`](https://blog.aeciopires.com/en/), com o seletor de idioma do tema e redirecionamento da home pelo idioma do navegador (a escolha no seletor fica lembrada; sem script inline, CSP inalterada). A tradução é feita **localmente, antes do commit**, por IA local (skill `traduzir-conteudo`), em arquivos `index.en.md` ao lado do original; o pre-commit e a CI barram tradução ausente, desatualizada ou com comandos/links diferentes do pt-BR (`make check-i18n`). Nada é traduzido no build nem no navegador.
 - **Ferramentas:** versões exatas no [`mise.toml`](mise.toml), as mesmas na máquina local e na CI.
 
 ## Início rápido
@@ -18,7 +19,7 @@ git clone --recurse-submodules git@github.com:aeciopires/blog-aeciopires.git
 cd blog-aeciopires
 make check-deps      # diagnóstico, não altera nada
 make install-deps    # mise + ferramentas + submódulo do tema + skill do Blowfish
-make install-hooks   # pre-commit: atualiza data/github.json e barra segredos/e-mail
+make install-hooks   # pre-commit: atualiza data/github.json, barra segredos/e-mail e tradução em inglês pendente
 make serve           # http://localhost:1313
 ```
 
@@ -39,18 +40,24 @@ docker context use colima
 | `make github-repos` | Atualiza `data/github.json` (total de repositórios públicos no GitHub, cartão da home) pela API pública; o pre-commit já faz isso a cada commit |
 | `make visualizacoes` | Gera `data/visualizacoes.json` ("Mais/Menos lidos" da home); exige `CLOUDFLARE_ANALYTICS_TOKEN` e `CLOUDFLARE_ACCOUNT_ID` no ambiente |
 | `make new-post SLUG=meu-post TITLE="Meu post"` | Cria um post como rascunho |
-| `make publish-post SLUG=meu-post DATE=now` | Publica o post (sai no próximo push em `main`) |
+| `make i18n-status` | Situação da versão em inglês (falta, desatualizada, rascunho) |
+| `make i18n-diff SLUG=meu-post` / `make i18n-ok SLUG=meu-post` | O que mudou no pt-BR desde a tradução / valida e carimba a tradução |
+| `make publish-post SLUG=meu-post DATE=now` | Publica o post nos dois idiomas (exige a tradução em dia; sai no próximo push em `main`) |
 | `make unpublish-post SLUG=meu-post` | Volta o post para rascunho |
 | `make check-tags` | Valida tags e categorias contra `data/taxonomia.yaml` |
-| `make lint-md validate` | Mesma validação da CI (inclui `check-home`, que confere a home leve contra o card do tema) |
+| `make lint-md validate` | Mesma validação da CI (inclui `check-i18n` e o `check-home` dos dois idiomas) |
 | `make check-updates` | Mostra atualizações disponíveis (não altera nada) |
 | `make lighthouse` | Lighthouse em Docker no site publicado (`URL=` para outra página) |
+| `make test-idioma` | Testa o redirecionamento pelo idioma do navegador e o seletor com a CSP oficial (Docker) |
+| `make check-correcoes` | Correções feitas pela IA no conteúdo ainda não conferidas (`reports/correcoes-conteudo-*.md`) |
+| `make lighthouse-local` | Lighthouse em Docker no build local de produção (`PAGINAS="/ /en/"`), antes do commit |
 | `make update-theme TAG=vX.Y.Z` | Atualiza o Blowfish para uma release |
 
 ## Publicar
 
-1. `make lint-md validate`
-2. `git commit` e `git push` em `main` (publica em ~2 minutos) ou abra um PR para o `pr-check` validar sem publicar.
+1. Post novo ou alterado: versão em inglês em dia (skill `traduzir-conteudo`; `make i18n-status`).
+2. `make lint-md validate`
+3. `git commit` e `git push` em `main` (publica em ~2 minutos) ou abra um PR para o `pr-check` validar sem publicar.
 
 ## Documentação
 

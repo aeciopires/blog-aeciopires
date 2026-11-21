@@ -9,7 +9,7 @@ git clone --recurse-submodules git@github.com:aeciopires/blog-aeciopires.git
 cd blog-aeciopires
 make check-deps      # diagnóstico, não altera nada
 make install-deps    # mise + ferramentas + submódulo do tema + skill
-make install-hooks   # pre-commit: repositórios do GitHub (data/github.json) + segredos/chaves/e-mail (todo commit) + check-tags e lint-md nos .md alterados
+make install-hooks   # pre-commit: repositórios do GitHub (data/github.json) + segredos/chaves/e-mail (todo commit) + versão em inglês em dia + check-tags e lint-md nos .md alterados
 make serve           # http://localhost:1313
 ```
 
@@ -38,12 +38,18 @@ make serve           # http://localhost:1313
 | Tags | `check-tags` / `fix-tags` | `make fix-tags SLUG=meu-post CONFIRM=sim` |
 | | `new-tag` / `merge-tag` | `make new-tag NAME=opentofu DESC="OpenTofu"` · `make merge-tag FROM=tf TO=terraform CONFIRM=sim` |
 | | `tags-report` / `install-hooks` | `make tags-report` |
+| Inglês (en-US) | `i18n-status` / `check-i18n` | `make i18n-status` (falta, desatualizada, rascunho) · `make check-i18n` (bloqueia no pre-commit e na CI) |
+| | `i18n-diff` / `i18n-ok` | `make i18n-diff SLUG=meu-post` (o que mudou no pt-BR) · `make i18n-ok SLUG=meu-post` (valida e carimba) |
+| | `check-correcoes` | `make check-correcoes` (correções feitas pela IA no conteúdo, em `reports/correcoes-conteudo-*.md`, ainda não conferidas: bloqueia o commit daquele conteúdo) |
+| | `test-idioma` | `make test-idioma` (Docker: redirecionamento pelo idioma do navegador, seletor e CSP oficial; a cada versão do Hugo/Blowfish) |
+| | `i18n-sync-fm` / `prosa-en` | `make i18n-sync-fm SLUG=meu-post` (copia tags, datas e draft do pt-BR) · `make prosa-en SLUG=meu-post` |
 | Dados | `github-repos` | `make github-repos` (o pre-commit já roda) |
 | Imagens | `optimize-images` | `make optimize-images` |
 | Qualidade | `lint-md` / `lint-md-fix` | `make lint-md` |
-| | `validate` | `make validate` (check-secrets, lint-md, check-tags, build, validate-links, check-home, actionlint, shellcheck, compare-urls) |
-| | `check-home` | `make build check-home` (home leve: cards, JSON com SRI, URLs e fidelidade ao card do tema; seção 8) |
+| | `validate` | `make validate` (check-secrets, lint-md, check-tags, check-i18n, check-correcoes, build, validate-links, check-home, actionlint, shellcheck, compare-urls) |
+| | `check-home` | `make build check-home` (home leve de cada idioma: cards, JSON com SRI, URLs e fidelidade ao card do tema; seção 8) |
 | | `lighthouse` | `make lighthouse [URL=…]` (Docker; site publicado; seção 4) |
+| | `lighthouse-local` | `make lighthouse-local [PAGINAS="/ /en/ /slug/ /en/slug/"]` (Docker; build de produção local, antes do commit; seção 4) |
 | | `check-secrets` | `make check-secrets` (gitleaks no histórico do Git; exceções em `.gitleaks.toml`) |
 | | `validate-diagrams` | `make validate-diagrams` (Docker) |
 | | `check-links-online` | `make check-links-online` → `reports/links.md` |
@@ -56,9 +62,9 @@ make serve           # http://localhost:1313
 
 | Tarefa | Como |
 |---|---|
-| Novo post | `make new-post SLUG=… TITLE="…"` → escrever → `make serve` → `make lint-md validate` → `make publish-post SLUG=… DATE=now` → push/PR |
-| Nova página | `make new-page SLUG=… TITLE="…"` → menu em `config/_default/menus.pt-br.toml` (se aplicável) → mesmo fluxo |
-| Editar post | Editar → atualizar `lastmod` → se a mudança for relevante, nota "Atualizado em DD/MM/AAAA" no início |
+| Novo post | `make new-post SLUG=… TITLE="…"` → escrever → **traduzir** (skill `traduzir-conteudo`) → `make serve` → `make lint-md validate` → `make publish-post SLUG=… DATE=now` (publica os dois idiomas; recusa sem a tradução em dia) → push/PR |
+| Nova página | `make new-page SLUG=… TITLE="…"` → menu em `config/_default/menus.pt-br.toml` **e** `menus.en.toml` (se aplicável) → mesmo fluxo |
+| Editar post | Editar → atualizar `lastmod` → se a mudança for relevante, `make aviso-atualizacao SLUG=… RESUMO="…" RESUMO_EN="…"` → atualizar a tradução (`make i18n-diff SLUG=…`, skill `traduzir-conteudo`, `make i18n-ok SLUG=…`). O commit é bloqueado enquanto a tradução estiver desatualizada |
 | Despublicar (rascunho) | `make unpublish-post SLUG=…` / `make unpublish-page SLUG=…`. Some do site, continua no `make serve`. **O repositório é público**: para rascunho realmente privado, `PRIVATE=1` |
 | Republicar | `make publish-post SLUG=…` / `make publish-page SLUG=…` (traz de volta de `_privado/`, se for o caso) |
 | Remover de vez | `make rm-post SLUG=… REDIRECT=<outro-slug> CONFIRM=sim` (ou `rm-page`). Sempre preferir despublicar ou redirecionar a deixar 404 |
@@ -70,7 +76,8 @@ make serve           # http://localhost:1313
 | Novos embeds | Shortcodes do Blowfish. Se envolver um novo domínio, **atualizar a CSP** ([cloudflare.md](cloudflare.md)) antes |
 | Banner de tecnologias | `data/tecnologias.yaml` + logo oficial em `assets/img/logos/` + linha em `assets/img/logos/SOURCES.md`. No build, PNG/JPG viram WebP de no máximo 144×72 (2× a placa, `Fit`: proporção e cores mantidas) e SVG ganha hash no nome; o arquivo oficial fica intacto em `assets/`. Nome longo que quebra feio no celular: campo opcional `legenda` com hífen opcional, ex.: `legenda: "Victoria\u00ADMetrics"` (no celular estreito vira "Victoria-/Metrics"; o `nome` continua no `alt` e no `title`) |
 | Links nos posts | Externos (`http://`/`https://`) abrem **sozinhos** em nova aba: o Blowfish adiciona `target="_blank" rel="noreferrer"` (`article.externalLinkForceNewTab`, ligado por padrão; desligar num post: `externalLinkForceNewTab: false` no front matter). Links internos: caminho relativo (`/slug/`) ou `{{</* ref */>}}`, nunca `https://blog.aeciopires.com/...` (abriria em nova aba). Não escreva `target` à mão: HTML cru é omitido |
-| Páginas de lista (Categorias, Tags, Posts) | O título vem de `content/<seção ou taxonomia>/_index.md` (`title` em pt-BR). Sem esse arquivo, o Hugo usa o nome interno em inglês (era o caso de `/categories/`). Taxonomia nova: criar o `_index.md` junto |
+| Páginas de lista (Categorias, Tags, Posts) | O título vem de `content/<seção ou taxonomia>/_index.md` (`title` em pt-BR) e de `_index.en.md` (inglês). Sem esse arquivo, o Hugo usa o nome interno em inglês (era o caso de `/categories/`). Taxonomia nova: criar os dois. Página de termo criada por `make merge-tag`/`fix-tags` já ganha a versão `_index.en.md` |
+| Versão em inglês | Seção "Versão em inglês (en-US)" abaixo |
 
 Notas:
 
@@ -78,6 +85,71 @@ Notas:
 - **`PRIVATE=1`** move o *bundle* para `_privado/` (no `.gitignore`), visível só no `make serve` (mount em `config/development/module.toml`). **Faça backup próprio** dessa pasta. O que já foi commitado continua no histórico do git.
 - **`rm-*`** recusa se houver alterações não commitadas, lista os links que vão quebrar e lembra de travar a discussão do giscus.
 - **HTML cru** no Markdown é omitido (`unsafe = false`). Use os shortcodes do Blowfish.
+
+### Versão em inglês (en-US)
+
+O blog tem duas versões: **pt-BR** (padrão, na raiz, fonte do conteúdo; URLs do WordPress intactas) e **en-US** em `/en/` (`/en/<slug>/`, `/en/tag/<x>/`, `/en/posts/`). O seletor de idioma é o do próprio Blowfish (ícone de idioma no cabeçalho, no computador e no celular), sem override, e funciona nos modos claro e escuro. O **redirecionamento automático pelo idioma do navegador** está ligado (seção "Redirecionamento pelo idioma do navegador", abaixo): quem abre a home com o navegador em inglês vai para `/en/`; a escolha feita no seletor fica lembrada e vence o idioma do navegador.
+
+**A tradução é feita só localmente, antes do commit**, por IA local: a skill `traduzir-conteudo` (ou o agente `tradutor-en`, para lotes em paralelo). Nada é traduzido no build, no deploy nem no navegador; as traduções são arquivos versionados:
+
+| Original (pt-BR) | Tradução | Textos de interface |
+|---|---|---|
+| `content/posts/<slug>/index.md` | `content/posts/<slug>/index.en.md` | Layouts próprios: chaves `blog.*` em `i18n/pt-BR.yaml` e `i18n/en.yaml` |
+| `content/<pagina>/index.md` | `content/<pagina>/index.en.md` | Menus: `config/_default/menus.pt-br.toml` e `menus.en.toml` (mesmos itens) |
+| `content/**/_index.md` | `content/**/_index.en.md` | Site: `config/_default/languages.{pt-br,en}.toml` (título, descrição, bio) |
+
+Imagens do bundle são compartilhadas (não duplique). Nome, foto e perfis do autor ficam em `[author]` de `params.toml` (valem para os dois idiomas).
+
+**Garantia (`scripts/i18n.mjs`, `make check-i18n`)**, rodada no pre-commit (quando o commit mexe em `content/`, `i18n/` ou menus), no `make validate`, no `pr-check` e no deploy. Falha se:
+
+- uma página publicada não tem tradução, ou uma tradução não tem original;
+- a tradução está **desatualizada**: o `sourceHash` gravado no `index.en.md` não bate com o hash do pt-BR (título, descrição e corpo). Qualquer mudança no texto pt-BR exige atualizar e carimbar a tradução;
+- comandos e links divergem: blocos de código (só linhas que são inteiramente comentário podem ser traduzidas), código em linha, URLs externas, imagens, `src` de shortcodes e `ref` têm de ser **idênticos**; links internos `/slug/` têm de virar `/en/slug/`; mesma sequência de shortcodes e mesma estrutura de títulos;
+- o front matter difere nos campos não traduzíveis (slug, date, lastmod, draft, tags, categories, show*); `aliases` e `wp_id` são só do pt-BR;
+- `i18n/en.yaml` não tem as mesmas chaves `blog.*` de `i18n/pt-BR.yaml`, os menus divergem, ou um layout (do tema ou próprio) usa uma chave de i18n sem texto em pt-BR ou en (pega chave nova do Blowfish após atualizar).
+
+Rascunhos (`draft: true`) podem ficar sem tradução (aviso). **Conteúdo que já é bilíngue no original** (o mesmo arquivo traz pt-BR e inglês, como `sobre`, os helm charts do Zabbix e do watchdog, a imagem de troubleshooting e os resumos de incidentes da GCP e da AWS) leva `bilingue: true` no front matter e **não tem** `index.en.md` (o check recusa a duplicata): fica só em `/slug/`, links e menus em inglês apontam para lá (`menus.en.toml`: `url = "/sobre/"`). Na versão em inglês ele aparece na home, no total de posts e na busca (com a URL original; `lang.Merge` no `cardview.html` e no `blog-stats.html`, como o `index.json` do tema já faz), mas não em `/en/posts/` nem nas páginas de tag/categoria em inglês. Assim, quando um comando for testado e corrigido no pt-BR (skill `revisar-conteudo`), a versão em inglês **não passa** no check até receber a mesma correção.
+
+**Correções no original feitas pela IA:** ao traduzir ou revisar, a skill `traduzir-conteudo` (e o agente `tradutor-en`) corrige no pt-BR e na tradução erros de gramática, digitação, Markdown quebrado e comandos/textos que contradizem o próprio post, e registra **cada correção** (e o que deixou PENDENTE para você decidir) em `reports/correcoes-conteudo-AAAA-MM-DD.md` (ignorado pelo Git), uma linha `- [ ]` por item. Antes do commit, confira cada item (`git diff`), desfaça o que não concordar e marque `- [x]`. O pre-commit e o `make validate` rodam `make check-correcoes` e **bloqueiam** o commit de um conteúdo com item ainda `- [ ]`.
+
+**Fluxo:**
+
+1. `make i18n-status` → o que falta ou está desatualizado.
+2. Peça ao Claude Code: "Use a skill traduzir-conteudo no post X" (ou "traduza o que estiver pendente").
+3. Para uma página já traduzida, `make i18n-diff SLUG=…` mostra só o que mudou no pt-BR desde a última tradução.
+4. `make i18n-sync-fm SLUG=…` (campos mecânicos do front matter), `make i18n-ok SLUG=…` (confere e carimba), `make prosa-en SLUG=…` (gramática).
+5. `make lint-md validate`, `make serve` → `/en/<slug>/`.
+
+Ferramentas mecânicas já tratam os dois idiomas: `make publish-*`/`unpublish-*` mudam `draft`/`date`/`lastmod` nos dois arquivos (publicar recusa sem a tradução em dia), `make rm-* REDIRECT=` cria o alias nos dois (no `index.en.md`, `"/slug/"` vira `/en/slug/`), as tags (`fix-tags`, `merge-tag`, `rm-tag`) mudam os dois arquivos e `make aviso-atualizacao … RESUMO_EN="…"` põe o aviso "Updated on Month D, YYYY" com o mesmo `lastmod`.
+
+**SEO:** cada página traz `<link rel="alternate" hreflang="pt-BR|en-US">` para as duas versões (tema), `<html lang>` do idioma e canonical próprio. O `/sitemap.xml` vira um índice que aponta para `/pt-br/sitemap.xml` e `/en/sitemap.xml` (o Hugo também gera `/pt-br/`, que redireciona para `/`). Feeds: `/index.xml` (pt-BR) e `/en/index.xml` (inglês), além dos de seção e termo (`/en/posts/index.xml`, `/en/tag/<x>/index.xml`). Search Console: [cloudflare.md](cloudflare.md), seção 10.
+
+### Redirecionamento pelo idioma do navegador
+
+| Peça | Papel |
+|---|---|
+| `params.toml`, `[languageRedirect]` | `enabled = true`; `browserRedirectHomeOnly = true` (só a home redireciona pelo idioma do navegador); `storedLanguageRedirect = true` (a escolha no seletor fica no `localStorage` do leitor, chave `blowfish_preferred_language`, e vale em todas as páginas); sem `fallbackLanguage`: navegador em outro idioma (ex.: espanhol) fica no pt-BR |
+| `layouts/partials/language-redirect.html` | **Override** do partial do tema (v3.10.0). O tema escreve a configuração num `<script>` inline que muda em cada página: a CSP (sem `'unsafe-inline'`) bloquearia, e uma exceção por hash não é viável (um hash por página). O override passa a mesma configuração no atributo `data-config` |
+| `assets/js/idioma-config.js` | Concatenado **antes** do `assets/js/language-redirect.js` do tema num só arquivo (`js/idioma.<hash>.js`, SRI, `async`: síncrono, como no tema, bloqueava a renderização e o FCP no celular ia de 1,2 s para 1,4 s): lê o `data-config`, entrega ao código do tema e desliga o redirecionamento para robôs (Googlebot, Bingbot…), Lighthouse e navegadores automatizados, para a home `/` continuar indexada em pt-BR. Só aceita caminhos do próprio site |
+| `layouts/partials/extend-head-uncached.html` | `<link rel="alternate" hreflang="x-default">` para a versão pt-BR (recomendado pelo Google quando há redirecionamento por idioma) |
+| `scripts/check-home.mjs` (`make validate`) | Confere no build: nenhum script inline com a configuração, script com SRI, `data-config` JSON válido com caminhos do site, `x-default` |
+| `scripts/i18n.mjs` (`make check-i18n`) | Guarda o sha256 do `language-redirect.html` e do `language-redirect.js` do tema (`TEMA_IDIOMA`) e **falha** quando o Blowfish os muda |
+| `make test-idioma` (`scripts/test-idioma.sh` + `docker/lighthouse/idioma.mjs`) | Build de produção + Chromium (imagem do Lighthouse) com a **CSP oficial** desta documentação ([cloudflare.md](cloudflare.md), seção 5) aplicada: navegador en → `/en/`; pt, pt-PT e es ficam no pt-BR; só a home redireciona; Googlebot e Lighthouse não são redirecionados; a escolha no seletor vence e vale nas outras páginas; seletor presente; zero violações da CSP |
+
+**CSP e Cloudflare:** nada a mudar. Como a configuração deixou de ser inline e o script vem do próprio site com SRI, a CSP atual já permite (`script-src 'self'`); o `make test-idioma` prova isso. Nenhuma regra do Cloudflare depende do idioma. **Não** acrescente `'unsafe-inline'` em `script-src` para "resolver" o redirecionamento.
+
+**A cada versão nova do Blowfish ou do Hugo:**
+
+1. `make check-i18n`: se acusar "language-redirect … mudou no tema", compare o partial e o JS novos do tema com o override (`git -C themes/blowfish diff <tag antiga>..<tag nova> -- layouts/partials/language-redirect.html assets/js/language-redirect.js`; o `make update-theme` já mostra o resumo), traga as mudanças da configuração (`$config`) para `layouts/partials/language-redirect.html` e confira se o JS do tema ainda lê `window.BlowfishLanguageRedirectConfig` e o clique em `.translation a[href]`;
+2. `make test-idioma` e `make build check-home` verdes;
+3. atualize os dois sha256 em `TEMA_IDIOMA` (`scripts/i18n.mjs`) com `sha256sum themes/blowfish/layouts/partials/language-redirect.html themes/blowfish/assets/js/language-redirect.js`;
+4. se o tema passar a carregar a configuração sem script inline, apague o override e o `idioma-config.js` (e ajuste o `check-home`).
+
+**Comentários:** uma discussão do giscus por post, compartilhada pelos dois idiomas (mapping `specific` com o caminho do pt-BR, o mesmo termo que o mapping antigo usava). Os comentários arquivados aparecem nos dois idiomas, em português.
+
+**"Mais lidos":** a ordem soma as visitas das duas versões de cada post, então é a mesma nos dois idiomas.
+
+**Ao atualizar Hugo ou Blowfish**, quase nada muda por causa do inglês: não há override do seletor de idioma, do hreflang nem do sitemap. O `make update-theme` mostra o diff desses arquivos do tema e o `make validate` roda o `check-i18n` (chaves novas sem texto) e o `check-home` dos dois idiomas. Conferir no navegador o seletor de idioma (computador e celular, claro e escuro).
 
 **Checklist de qualidade por post:**
 
@@ -93,8 +165,10 @@ Notas:
 
 | Objetivo | Comando |
 |---|---|
-| Escrever com *live reload* (mostra rascunhos) | `make serve` |
+| Escrever com *live reload* (mostra rascunhos) | `make serve` (inglês em `http://localhost:1313/en/`) |
 | Ver exatamente como o leitor verá (sem rascunhos, modo produção, sem analytics) | `make serve-prod` |
+
+**Lighthouse antes do commit:** `make lighthouse-local PAGINAS="/ /en/ /<slug>/ /en/<slug>/"` gera o build de produção em `reports/lighthouse/site/` (sem o beacon do Cloudflare) e o mede dentro do container, servido com gzip e cache longo como no Cloudflare. Use para comparar pt-BR e en-US e para medir uma mudança antes de publicar. Medição de 21/11/2026 (Lighthouse 13.6.0, celular e computador), antes e depois da versão em inglês, em `/`, `/primeiros-passos-com-docker/`, `/posts/`, `/sobre/`, `/tags/` e nas versões `/en/` correspondentes (mais `/instalando-o-go/` e `/en/category/go/`): **antes** Performance 99–100, Acessibilidade 100, Boas práticas 100, SEO 100; **depois**, pt-BR e en-US, Performance 100, Acessibilidade 100, Boas práticas 100, SEO 100. Únicas exceções, iguais antes e depois e nos dois idiomas: Boas práticas 96 no `/sobre/` no celular ("imagem com baixa resolução", a foto do autor) e Agentic Browsing 50 no celular (menu do tema, ver abaixo). Cuidado próprio do inglês: o Lighthouse trata textos de link como "here", "more", "read more" e até "Go" como genéricos e tira 8 pontos do SEO; por isso a categoria Go aparece como "Golang" em inglês (`content/categories/go/_index.en.md` e `nome_en` em `data/tecnologias.yaml`) e o `make i18n-ok` recusa esses textos. Com o redirecionamento pelo idioma do navegador ligado (script `async`), as notas ficaram iguais (FCP 1,2 s, sem recurso bloqueante novo).
 
 **Lighthouse (21/11/2026, site publicado, Lighthouse 13.6.0):** Performance 100, Acessibilidade 93 (celular) / 96 (computador), Boas práticas 100, SEO 100. As falhas de acessibilidade (contraste de "Ordenar:" e do link no aviso "Atualizado em", botão do menu do celular sem nome) foram corrigidas no PR seguinte; medido no build local: **Acessibilidade 100** nos dois perfis. A categoria nova **Agentic Browsing** (Lighthouse 13) dá 50 no celular porque o tema usa `<label role="button">` no botão do menu (`role` não permitido em `label`); corrigir exige sobrescrever o cabeçalho e o `menu-a11y.js` do tema, então fica como sugestão para o Blowfish. Ganhos de desempenho que dependem de você no Cloudflare: regras C4 e C5 de cache ([cloudflare.md](cloudflare.md), seção 3).
 
@@ -121,7 +195,7 @@ O que olhar no navegador:
 3. Revisar o PR proposto: a tabela "antes, depois e fonte oficial", o `make serve` e o `make validate`.
 4. Links externos: `make check-links-online` mensal. Para link morto, trocar pela fonte oficial atual ou pela cópia do Internet Archive (marcada "(cópia arquivada)"); sem cópia útil, remover a linha.
 5. Ferramentas de apoio (também usadas pelas skills):
-   - `make aviso-atualizacao SLUG=… RESUMO="…"`: aviso "Atualizado em DD/MM/AAAA" no início do post + `lastmod` (substitui o aviso anterior);
+   - `make aviso-atualizacao SLUG=… RESUMO="…" [RESUMO_EN="…"]`: aviso "Atualizado em DD/MM/AAAA" no início do post + `lastmod` (e "Updated on Month D, YYYY" na tradução). O aviso novo entra **acima** dos anteriores, que ficam como histórico; no mesmo dia, substitui o do dia;
    - `make verificar-texto [SLUG="…"]`: restos da migração (`<http://…>`, pontuação dentro de links, `**` soltos, HTML cru, heredoc sem aspas com `$` de template) e erros de escrita recorrentes. Nem todo aviso é erro: confira cada um;
    - `make prosa SLUG="…"`: só o texto corrido, para revisar a gramática.
 6. Para testar os comandos dos posts, a skill `revisar-conteudo` usa Docker e clusters kind com nomes `revisao-*`, portas alternativas e nenhuma credencial real, e remove tudo ao final. Seus containers e clusters não são tocados.
@@ -134,6 +208,7 @@ O que olhar no navegador:
 | `revisar-conteudo` | Atualizar e testar posts com base em fontes oficiais | "Revise o post X com a skill revisar-conteudo" ou "Teste com Docker e kind os posts com comandos" |
 | `escrever-post` | Escrever um post novo (fica como rascunho) | "Escreva um post sobre o repositório github.com/aeciopires/X" |
 | `atualizar-site` | Atualizar Hugo, Blowfish, ferramentas e imagens | "Use a skill atualizar-site e proponha as atualizações disponíveis" |
+| `traduzir-conteudo` | Criar ou atualizar a versão em inglês de posts e páginas (antes do commit) | "Use a skill traduzir-conteudo no post X" ou "Traduza o que estiver pendente (make i18n-status)". Muitos posts: ela divide em lotes para o agente `tradutor-en` (`.claude/agents/`) |
 
 - As skills nunca publicam sozinhas: entregam uma branch ou PR para você revisar.
 - O [CLAUDE.md](../CLAUDE.md) vale para todas.
@@ -179,10 +254,11 @@ O que olhar no navegador:
 | Cores, vidro, banner, nuvem | `assets/css/custom.css` (cores do esquema nativo `blowfish` via `--color-*`; não criar esquema próprio sem necessidade) |
 | Parâmetros do tema | `config/_default/params.toml`, conferindo a documentação da versão fixada |
 | Comportamento de layout | Override em `layouts/partials/` ou shortcode em `layouts/shortcodes/`; **nunca** editar `themes/blowfish/` |
-| Textos do tema | `i18n/pt-BR.yaml` (só as chaves que mudam). Hoje: rodapé, título "Mais recentes" da home (`shortcode.recent_articles`), nome do botão de busca (`search.open_button_title`: "Pesquisar: Ctrl K ou /", precisa conter o texto visível "Ctrl K") e os nomes acessíveis que o Blowfish não traduz |
+| Textos do tema | `i18n/pt-BR.yaml` e `i18n/en.yaml` (só as chaves que mudam, mais as `blog.*` dos layouts próprios, iguais nos dois arquivos). Hoje: rodapé, título "Mais recentes" da home (`shortcode.recent_articles`), nome do botão de busca (`search.open_button_title`: "Pesquisar: Ctrl K ou /", precisa conter o texto visível "Ctrl K") e os nomes acessíveis que o Blowfish não traduz |
+| Links dentro de citações (`> …`) | `assets/css/custom.css`, bloco "Links dentro de citações": sublinhados, porque o tema tira o sublinhado e a cor do link fica parecida com a do texto da citação (o Lighthouse reprovava a acessibilidade, "Links rely on color", em 30 posts) |
 | Links dentro de avisos (`alert`) | `assets/css/custom.css`, bloco "Links dentro do shortcode alert": `primary-800` no claro e `primary-200` no escuro (contraste ≥ 7). Depende da classe `bg-primary-100` do alert do tema: conferir a cada atualização |
-| Foto do autor | `imageQuality` em `config/_default/languages.pt-br.toml` (85; com 96 a imagem da home tinha o dobro do tamanho sem diferença visível) |
-| Acessibilidade do cabeçalho (nomes para leitores de tela) | Os botões de tema e busca usam `footer.dark_appearance`/`footer.light_appearance` e `search.open_button_title`, já traduzidos pelo tema. O botão do menu do celular, o fechar menu e as áreas de navegação usam `nav.main_menu`, `nav.mobile_menu`, `nav.close_menu`, `nav.footer_menu` e `nav.toggle_submenu`, que o Blowfish v3.10.0 **não traduz** para pt-BR (sem elas, o hambúrguer fica sem nome e o Lighthouse reprova). Estão em `i18n/pt-BR.yaml`. A cada atualização do tema, comparar as chaves usadas nos layouts com as de `themes/blowfish/i18n/pt-BR.yaml` e `i18n/pt-BR.yaml`, e conferir no celular (DevTools → Elements → Accessibility) que os botões do cabeçalho têm nome |
+| Foto do autor | `imageQuality` em `[author]` de `config/_default/params.toml` (85; com 96 a imagem da home tinha o dobro do tamanho sem diferença visível) |
+| Acessibilidade do cabeçalho (nomes para leitores de tela) | Os botões de tema e busca usam `footer.dark_appearance`/`footer.light_appearance` e `search.open_button_title`, já traduzidos pelo tema. O botão do menu do celular, o fechar menu e as áreas de navegação usam `nav.main_menu`, `nav.mobile_menu`, `nav.close_menu`, `nav.footer_menu` e `nav.toggle_submenu`, que o Blowfish v3.10.0 **não traduz** para pt-BR (sem elas, o hambúrguer fica sem nome e o Lighthouse reprova). Estão em `i18n/pt-BR.yaml` (e `nav.toggle_submenu` em `i18n/en.yaml`). O `make check-i18n` compara as chaves usadas nos layouts com as do tema e do projeto, nos dois idiomas, e falha se faltar alguma; conferir também no celular (DevTools → Elements → Accessibility) que os botões do cabeçalho têm nome |
 | Novo serviço de terceiros | Avaliar privacidade e segurança → CSP → [cloudflare.md](cloudflare.md) → página Privacidade → `CLAUDE.md` se virar regra |
 | Mudança de arquitetura | [ARCHITECTURE.md](ARCHITECTURE.md) (diagramas) + registro da decisão em `PLANS/<nome>/` |
 
@@ -241,7 +317,10 @@ Peças próprias do site:
 | `layouts/partials/comments.html` + `assets/js/giscus.js` + `static/giscus/` | Comentários (giscus + arquivados) |
 | `layouts/partials/extend-head.html` | Cloudflare Web Analytics (só build de produção) |
 | `layouts/partials/extend-head-uncached.html` + `assets/js/legacy-redirect.js` | `/?p=ID` e `/?s=termo` do WordPress. Script `async` (não bloqueia a renderização); só redireciona para caminhos do próprio site |
-| `layouts/partials/extend-footer.html` + `i18n/pt-BR.yaml` | Aviso de licença no rodapé |
+| `layouts/partials/extend-footer.html` + `i18n/*.yaml` | Aviso de licença no rodapé |
+| `scripts/i18n.mjs` + `make check-i18n`/`i18n-*` + `.claude/skills/traduzir-conteudo` + `.claude/agents/tradutor-en.md` | Versão em inglês: garantia de tradução completa, em dia e com os mesmos comandos/links (seção 3, "Versão em inglês") |
+| `layouts/partials/language-redirect.html` + `assets/js/idioma-config.js` + `make test-idioma` | Redirecionamento pelo idioma do navegador sem script inline (seção 3) |
+| `docker/lighthouse/local.mjs` + `make lighthouse-local` | Lighthouse no build local de produção, servido dentro do container (seção 4) |
 
 ## 9. Segurança (para você e para o leitor)
 
@@ -381,8 +460,9 @@ Alternativa sem CLI: o configurador em <https://giscus.app> mostra os mesmos IDs
 | Semanal | Moderar comentários do giscus (e-mails de Discussions); olhar falhas de workflow |
 | A cada PR do Dependabot | Ler o changelog da action, deixar o `pr-check` rodar e fazer merge |
 | Mensal | `make lighthouse` (anotar as notas na seção 4); `make check-updates` (só **ver**); alertas de segurança do GitHub; `make check-links-online`; SSL Labs e securityheaders.com (seção 9, "Checagens externas"), anotando nota e data |
+| Mensal | `make i18n-status` (deve dizer "tudo traduzido e em dia"; rascunhos aparecem como aviso); `make lighthouse URL=https://blog.aeciopires.com/en/` |
 | Trimestral | `make tags-report` + `make merge-tag` nas tags fracas; `make audit-content` + skill `revisar-conteudo` nos 5 posts mais lidos e nos 5 mais antigos; eventos do WAF, cache e relatórios da CSP; limites do plano Free |
-| Quando sair versão do Hugo ou do Blowfish | Skill `atualizar-site` ou `make update-theme`; notas de migração; `hugo --logLevel info`; conferir os overrides (incluindo a ordenação da home, seção 8); `make serve` (claro/escuro/celular) e `make validate` antes do PR |
+| Quando sair versão do Hugo ou do Blowfish | Skill `atualizar-site` ou `make update-theme`; notas de migração; `hugo --logLevel info`; conferir os overrides (incluindo a ordenação da home, seção 8, e o redirecionamento por idioma, seção 3); `make test-idioma`; `make serve` (claro/escuro/celular) e `make validate` antes do PR |
 | Toda segunda (automático) | O `deploy.yml` republica o site às 09:15 UTC para atualizar "Mais lidos"/"Menos lidos" da home. Se o passo "Visualizações por página" falhar, ver seção 8 ("Janela de dados" e "Se a API do Cloudflare mudar") |
 | 1º de janeiro (automático) | O `deploy.yml` republica o site às 03:05 UTC para atualizar os anos calculados na home ("há N anos" na chamada da home). Conferir em Actions que rodou; se o repositório ficou 60 dias sem atividade, o GitHub desativa o agendamento: reative em Actions → Deploy → *Enable workflow* ou rode *Run workflow* |
 | Anual | Rotacionar os tokens do Cloudflare (purge e analytics); revisar permissões do app giscus; revisar `CLAUDE.md`, `README.md`, `docs/*.md`, página Créditos e `assets/img/logos/SOURCES.md` |
@@ -400,6 +480,13 @@ Alternativa sem CLI: o configurador em <https://giscus.app> mostra os mesmos IDs
 | Skill `blowfish` não aparece | Link simbólico não foi seguido | `make skill-sync` (ou `COPY=1`) |
 | `mise` não encontrado | Shell não ativado | Ativar o mise no shell |
 | `mise.toml` não confiável | Primeira vez no clone | `mise trust` |
+| Commit bloqueado: "versão em inglês ausente, desatualizada…" | O pt-BR mudou e a tradução não acompanhou (ou um comando/link ficou diferente) | `make i18n-diff SLUG=…`, skill `traduzir-conteudo`, `make i18n-ok SLUG=…`. Nunca contornar com `--no-verify`: a CI roda o mesmo check |
+| Commit bloqueado: "correções da IA não conferidas" | Itens `- [ ]` em `reports/correcoes-conteudo-*.md` para o conteúdo do commit | Confira cada correção (`git diff`), desfaça o que não concordar e marque `- [x]` |
+| `make check-i18n`: "language-redirect … mudou no tema" | Atualização do Blowfish mexeu no redirecionamento por idioma | Seção 3, "Redirecionamento pelo idioma do navegador" (revisar o override, `make test-idioma`, atualizar `TEMA_IDIOMA`) |
+| Leitor diz que "caiu no inglês" | Navegador em inglês, na home | Comportamento esperado; o seletor de idioma volta e a escolha fica lembrada |
+| `make publish-post` recusa | Falta `index.en.md` ou ele está desatualizado | Traduza (skill `traduzir-conteudo`) e rode de novo |
+| `/en/<slug>/` dá 404 | Tradução é rascunho, ou falta o `index.en.md` | `make i18n-status`; o `check-i18n` impede publicar assim |
+| `make build` local gerava `robots.txt` com `Disallow: /` | O `[env]` do `mise.toml` (`HUGO_ENVIRONMENT=development`) vencia o `HUGO_ENVIRONMENT=production` de fora do `mise exec` | Corrigido: o Makefile e o `lighthouse.sh` usam `mise exec -- env HUGO_ENVIRONMENT=production hugo …`. O deploy (CI) não era afetado |
 | *Live reload* não funciona no macOS | Eventos de arquivo não atravessam o Colima | Usar `make serve-docker` (já usa `--poll`) ou `make serve` nativo |
 | Porta 1313 ocupada | Outro processo usando a porta | Liberar a porta |
 | `check-tags` falha | Tag fora do registro ou sinônimo | `make fix-tags` ou `make new-tag` |

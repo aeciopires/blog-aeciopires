@@ -1,5 +1,6 @@
 # Partiu do menus.en.toml do Blowfish v3.10.0.
-# Menu principal (cabeçalho) e rodapé (PLAN.md 3.4).
+# Menu principal (cabeçalho) e rodapé (PLAN.md 3.4). A versão em inglês (menus.en.toml) tem os mesmos
+# itens, com os nomes traduzidos: ao mudar um item aqui, mude lá também (make check-i18n não cobre menus).
 
 [[main]]
   name = "Posts"
@@ -31,8 +32,8 @@
   pageRef = "contato"
   weight = 60
 
-# Ícones dos perfis no cabeçalho. Única exceção à "fonte única" de languages.pt-br.toml,
-# porque menus do Hugo não leem params: ao mudar um perfil, alterar os DOIS arquivos.
+# Ícones dos perfis no cabeçalho. Única exceção à "fonte única" ([author] de params.toml),
+# porque menus do Hugo não leem params: ao mudar um perfil, alterar params.toml e os DOIS menus.
 [[main]]
   identifier = "github"
   pre = "github"

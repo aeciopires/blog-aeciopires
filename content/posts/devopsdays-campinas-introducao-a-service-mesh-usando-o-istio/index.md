@@ -22,6 +22,6 @@ Repositório com o home lab de estudo sobre Istio: [https://github.com/aeciopire
 
 Mais materiais de aprendizado sobre Docker, Kubernetes e Istio estão disponíveis em: [/primeiros-passos-com-docker/](/primeiros-passos-com-docker/)
 
-Foi um excelente evento. Salas cheias com palestras excelentes e temas variados. Muito bem organizado e com vários coffe breaks gostosos e ótimas oportunidades de conhecer pessoas e fazer networking. Foi pra ficar na memória. Parabéns aos organizadores e voluntários.
+Foi um excelente evento. Salas cheias com palestras excelentes e temas variados. Muito bem organizado e com vários coffee breaks gostosos e ótimas oportunidades de conhecer pessoas e fazer networking. Foi pra ficar na memória. Parabéns aos organizadores e voluntários.
 
-Obrigado [Daniel Requena](https://www.linkedin.com/in/danielrequena/) por durante 4 meses ter me ajudando na revisão dos slides e compartilhando conhecimento.
+Obrigado [Daniel Requena](https://www.linkedin.com/in/danielrequena/) por ter me ajudado durante 4 meses na revisão dos slides e compartilhado conhecimento.

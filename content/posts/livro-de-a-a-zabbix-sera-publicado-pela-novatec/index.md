@@ -20,4 +20,4 @@ O livro tem o apoio de [Alexei Vladishev](https://twitter.com/avladishev), criad
 
 Ainda não é possível comprar o livro através da pré-venda e também não sei a estimativa de preço, mas logo logo você saberá. Aguarde e acompanhe as novidades no site do livro [http://zabbixone.com](http://zabbixone.com).
 
-Se você é aluno ou professor na área de Redes de Computadores, saiba que o livro dá para ser usado na disciplina de gerenciamento e monitoramento de redes de computadores. O conteúdo do livro também vai de encontro ao assunto ensinado na certificação Zabbix.
+Se você é aluno ou professor na área de Redes de Computadores, saiba que o livro dá para ser usado na disciplina de gerenciamento e monitoramento de redes de computadores. O conteúdo do livro também vai ao encontro do assunto ensinado na certificação Zabbix.

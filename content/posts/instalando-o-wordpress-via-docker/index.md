@@ -90,7 +90,7 @@ Para mais informações sobre o WordPress e sobre como configurá-lo, acesse os 
 
 [https://hub.docker.com/\_/wordpress/](https://hub.docker.com/_/wordpress/)
 
-8) Se precisar fazer o dump de todos os bancos de dados do conteiner MySQL criado anteriormente, use o comando abaixo.
+8) Se precisar fazer o dump do banco de dados wordpress do conteiner MySQL criado anteriormente, use o comando abaixo.
 
 ```bash
 docker exec mysql-wordpress sh -c 'exec mysqldump wordpress -uroot -p"secret"' > /home/wordpress.sql

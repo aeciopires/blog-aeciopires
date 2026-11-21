@@ -10,11 +10,11 @@ description: "Não foi dessa vez que o Brasil conquistou o hexa, mas estou tão 
 wp_id: 3494
 ---
 
-Não foi dessa vez que o Brasil conquistou o hexa, mas estou tão empolgado assistindo aos jogos dessa copa, que entre jogos emocionantes (proporcionados por Cabo Verde, Egito, Congo, Curaçao, Croácia, Portugal, Ira, Argentina :-P ) e decisões polêmicas de arbitragem, eu criei um aplicativo web para mostrar os resultados dos jogos. Essa foi a minha versão nerd da tabela de jogos impressas que tinha na infância.
+Não foi dessa vez que o Brasil conquistou o hexa, mas estou tão empolgado assistindo aos jogos dessa copa, que entre jogos emocionantes (proporcionados por Cabo Verde, Egito, Congo, Curaçao, Croácia, Portugal, Irã, Argentina :-P ) e decisões polêmicas de arbitragem, eu criei um aplicativo web para mostrar os resultados dos jogos. Essa foi a minha versão nerd da tabela de jogos impressa que tinha na infância.
 
 Espero que goste. Mais detalhes em: [https://github.com/aeciopires/my-world-cup-app](https://github.com/aeciopires/my-world-cup-app)
 
-A copa esta perto do fim, mas o conhecimento adquirido no desenvolvimento dessa aplicação vai continuar por bastante tempo
+A copa está perto do fim, mas o conhecimento adquirido no desenvolvimento dessa aplicação vai continuar por bastante tempo.
 
 Algumas imagens:
 

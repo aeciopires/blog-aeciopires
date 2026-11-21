@@ -6,13 +6,13 @@ lastmod: 2026-10-03T19:56:20-03:00
 draft: false
 categories: ["tutoriais"]
 tags: ["python"]
-description: "Depois de 10 anos sem fazer um \"Helllo World\" em Python, estou reaprendendo esta linguagem (a última vez tinha sido entre 2008 e 2009 quando fazia…"
+description: "Depois de 10 anos sem fazer um \"Hello World\" em Python, estou reaprendendo esta linguagem (a última vez tinha sido entre 2008 e 2009 quando fazia…"
 wp_id: 1771
 ---
 
-Depois de 10 anos sem fazer um "Helllo World" em **[Python](https://www.python.org/)**, estou reaprendendo esta linguagem (a última vez tinha sido entre 2008 e 2009 quando fazia parte do [Núcleo Comunicação Digital no IFPB](https://sites.google.com/site/aeciopires/projetos-1/comunicao-digital)).
+Depois de 10 anos sem fazer um "Hello World" em **[Python](https://www.python.org/)**, estou reaprendendo esta linguagem (a última vez tinha sido entre 2008 e 2009 quando fazia parte do [Núcleo Comunicação Digital no IFPB](https://sites.google.com/site/aeciopires/projetos-1/comunicao-digital)).
 
-Neste post quero compartilhar os links de estudo que estou lendo ou pretendo ler. Assim espero contribuir de alguma forma com que deseja aprender também.
+Neste post quero compartilhar os links de estudo que estou lendo ou pretendo ler. Assim espero contribuir de alguma forma com quem deseja aprender também.
 
 **Sites e Blogs:**
 

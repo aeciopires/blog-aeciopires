@@ -24,7 +24,7 @@ Obrigado [Filipe Maia](https://www.linkedin.com/in/filipebsmaia/), [André Lui
 
 ## Introdução
 
-Considerando que o Vault está instalado e configurado no Kubernetes (veja os tutoriais anteriores desta série), mostrarei como gerenciar os segredos no Vault e compartilhá-los com duas aplicações que serão executadas no mesmo cluster. Vou mostrar cada etapa, desde a criação de um path no Vault para armazenar segredos até a configuração de um sidecar do Vault Agent em um arquivo de deployment, para que ele injete automaticamente os segredos no container de cada aplicação.
+Considerando que o Vault está instalado e configurado no Kubernetes (veja os tutoriais anteriores desta série), mostrarei como gerenciar os segredos no Vault e compartilhá-los com duas aplicações que serão executadas no mesmo cluster. Vou mostrar cada etapa, desde a criação de um path no Vault para armazenar segredos até a configuração de um sidecar do Vault Agent em um arquivo de deployment, para que ele injete automaticamente os segredos no contêiner de cada aplicação.
 
 ## Etapa 1: Criando o path KV no Vault
 
@@ -148,9 +148,9 @@ vault write "auth/kubernetes/role/role-my-app-2" \
   token_policies="policy-my-group-secrets"
 ```
 
-### Etapa 3: Configurando o Sidecar do Vault Agent no Deployment
+## Etapa 3: Configurando o Sidecar do Vault Agent no Deployment
 
-Para que cada aplicação obtenha os segredos diretamente do Vault, adicione o Vault Agent como um container sidecar no deployment. Os arquivos de deployment completos serão mostrados adiante.
+Para que cada aplicação obtenha os segredos diretamente do Vault, adicione o Vault Agent como um contêiner sidecar no deployment. Os arquivos de deployment completos serão mostrados adiante.
 
 Perceba que na seção de annotations é correlacionada a role criada anteriormente para cada aplicação para conseguir ler os segredos no path específico.
 
@@ -330,15 +330,15 @@ kubectl describe pod/NAME_POD1 -n $MY_NAMESPACE
 kubectl describe pod/NAME_POD2 -n $MY_NAMESPACE
 ```
 
-Se tudo estiver configurado corretamente, dentro de cada conteiner principal será criado o arquivo `/vault/secrets/config` contendo todos os segredos cadastrados no path **kv** de cada aplicação no Vault.
+Se tudo estiver configurado corretamente, dentro de cada contêiner principal será criado o arquivo `/vault/secrets/config` contendo todos os segredos cadastrados no path **kv** de cada aplicação no Vault.
 
-Apesar de não aparecer na lista de variáveis de ambiente do container principal, esses segredos são carregados automaticamente com o comando `source /vault/secrets/config` no conteiner principal. Dessa forma, a aplicação conseguirá acessar os segredos corretamente.
+Apesar de não aparecer na lista de variáveis de ambiente do contêiner principal, esses segredos são carregados automaticamente com o comando `source /vault/secrets/config` no contêiner principal. Dessa forma, a aplicação conseguirá acessar os segredos corretamente.
 
-Atenção!!! O Vault precisa estar configurado para injetar os conteineres sidecar no namespace que você está fazendo o deploy das aplicações. Isso é definido no arquivo `values.yaml` da instalação do Vault usando helm chart, conforme mostrado no segundo tutorial desta série: [/instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento/](/instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento/)
+Atenção!!! O Vault precisa estar configurado para injetar os contêineres sidecar no namespace que você está fazendo o deploy das aplicações. Isso é definido no arquivo `values.yaml` da instalação do Vault usando helm chart, conforme mostrado no segundo tutorial desta série: [/instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento/](/instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento/)
 
 ## Conclusão
 
-O Vault Agent atua como intermediário, buscando e injetando segredos no container principal da aplicação. Com as etapas mostradas neste tutorial, você tem condições de configurar uma solução segura para gerenciar segredos no Kubernetes com o HashiCorp Vault, garantindo que cada aplicação receba apenas os segredos necessários.
+O Vault Agent atua como intermediário, buscando e injetando segredos no contêiner principal da aplicação. Com as etapas mostradas neste tutorial, você tem condições de configurar uma solução segura para gerenciar segredos no Kubernetes com o HashiCorp Vault, garantindo que cada aplicação receba apenas os segredos necessários.
 
 ## Referências
 

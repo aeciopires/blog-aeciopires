@@ -17,16 +17,16 @@
     {{- if .botoes }}
       <div class="tag-cloud__topo">
         <div>
-          <p class="eyebrow">Explorar</p>
-          <p class="tag-cloud__titulo">Tags mais usadas</p>
+          <p class="eyebrow">{{ i18n "blog.explorar" }}</p>
+          <p class="tag-cloud__titulo">{{ i18n "blog.tags_mais_usadas" }}</p>
         </div>
         <div class="tag-cloud__botoes">
-          <a class="tag-cloud__botao" href="{{ "tags/" | relLangURL }}">Ver todas as tags →</a>
-          <a class="tag-cloud__botao" href="{{ "categories/" | relLangURL }}">Categorias</a>
+          <a class="tag-cloud__botao" href="{{ "tags/" | relLangURL }}">{{ i18n "blog.ver_todas_tags" }}</a>
+          <a class="tag-cloud__botao" href="{{ "categories/" | relLangURL }}">{{ i18n "blog.categorias" }}</a>
         </div>
       </div>
     {{- end }}
-    <ul class="tag-cloud__lista" aria-label="Nuvem de tags">
+    <ul class="tag-cloud__lista" aria-label="{{ i18n "blog.nuvem_tags" }}">
       {{- range $ordenados }}
         {{- $peso := 0.0 -}}
         {{- if gt $faixa 0.0 }}{{ $peso = div (sub (math.Log (float .Count)) $min) $faixa }}{{ end -}}
@@ -34,8 +34,8 @@
         {{- $nivel := cond (ge $peso 0.66) "alto" (cond (ge $peso 0.33) "medio" "baixo") -}}
         <li>
           <a class="tag-cloud__tag tag-cloud__tag--{{ $nivel }}" style="font-size: {{ $px }}px"
-            href="{{ .Page.RelPermalink }}" title="{{ .Page.Title }}: {{ .Count }} {{ cond (eq .Count 1) "post" "posts" }}">
-            {{- .Page.Title -}}<span class="tag-cloud__contagem"> ({{ .Count }} {{ cond (eq .Count 1) "post" "posts" }})</span>
+            href="{{ .Page.RelPermalink }}" title="{{ .Page.Title }}: {{ i18n "blog.posts_contagem" .Count }}">
+            {{- .Page.Title -}}<span class="tag-cloud__contagem"> ({{ i18n "blog.posts_contagem" .Count }})</span>
           </a>
         </li>
       {{- end }}

@@ -331,3 +331,15 @@ Propriedade do tipo **Domínio** (`aeciopires.com`): cobre `blog`, `www`, a raiz
 De fora, com qualquer user-agent (inclusive `Googlebot` e `Google-InspectionTool`), o site responde 200; um bloqueio só para o Google vem dos IPs/verificação de bot, e só aparece em *Security → Events*.
 
 O `robots.txt` (gerenciado pelo Cloudflare + o do Hugo) já declara `Sitemap: https://blog.aeciopires.com/sitemap.xml`.
+
+### Versão em inglês (`/en/`) no Search Console
+
+Nada muda na propriedade nem no DNS: a propriedade **Domínio** já cobre `https://blog.aeciopires.com/en/`. Com a versão em inglês, o Hugo passa a gerar `/sitemap.xml` como **índice de sitemaps** que aponta para `/pt-br/sitemap.xml` (páginas pt-BR) e `/en/sitemap.xml` (inglês), cada URL com as alternativas `hreflang` (`pt-BR`/`en-US`). Cada página também traz `<link rel="alternate" hreflang>` e canonical próprio. Depois do primeiro deploy com o inglês:
+
+1. [ ] **Indexação → Sitemaps** → `sitemap.xml` (já cadastrado) → ⋮ → **Reenviar**, só para o Google ler o índice novo já. O status deve continuar "Processado" e mostrar os dois sitemaps filhos.
+2. [ ] Opcional, para acompanhar o inglês separado: **Adicionar sitemap** → `https://blog.aeciopires.com/en/sitemap.xml` → **Enviar**.
+3. [ ] **Inspeção de URL** → `https://blog.aeciopires.com/en/` → **Testar URL publicada** → **Solicitar indexação** (repetir em 1–2 posts em inglês, por exemplo `/en/primeiros-passos-com-docker/`).
+4. [ ] Em 1–2 semanas: **Indexação → Páginas**. Esperado: as páginas `/en/...` indexadas; `/pt-br/` em "Página com redirecionamento" (o Hugo gera esse endereço como redirecionamento para `/`). Se aparecer "Cópia sem página canônica selecionada pelo usuário" ou "O Google escolheu uma canônica diferente" para `/en/...`, conferir no HTML publicado o `<link rel="canonical">` e os `hreflang` (devem apontar para a própria página e para a outra versão) e abrir um issue com o exemplo.
+5. [ ] **Desempenho → Pesquisa** → filtro **Página** contendo `/en/` para acompanhar o tráfego em inglês. (O relatório de segmentação internacional/hreflang foi descontinuado pelo Google; não há nada a configurar para idioma ou país.)
+
+No Cloudflare nada muda: nenhuma regra de WAF, cache ou redirect depende do idioma; R2 já leva `/en/feed/` para `/en/index.xml`. O redirecionamento automático pelo idioma do navegador (home `/` → `/en/` para navegador em inglês) é feito no navegador, não no Cloudflare: robôs (inclusive o Googlebot) não são redirecionados, e cada página declara `hreflang` pt-BR, en-US e `x-default` (pt-BR). **Não** crie regra de redirect por `Accept-Language` no Cloudflare: o Googlebot rastreia sem esse cabeçalho e a home pt-BR poderia sumir do índice.

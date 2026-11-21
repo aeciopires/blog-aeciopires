@@ -5,7 +5,10 @@
 
 theme = "blowfish"
 baseURL = "https://blog.aeciopires.com/"   # a CI sobrescreve com --baseURL (staging/produção)
+# Idiomas: pt-BR é o padrão e a fonte (na raiz, URLs do WordPress intactas); en-US fica em /en/
+# (languages.en.toml). Traduções em content/**/index.en.md, feitas antes do commit (make check-i18n).
 defaultContentLanguage = "pt-br"
+defaultContentLanguageInSubdir = false
 title = "Blog do Aécio Pires"
 
 # Datas do front matter já trazem o fuso (-03:00); este é o padrão para datas sem fuso.

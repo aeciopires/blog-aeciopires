@@ -17,6 +17,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 
 const RAIZ = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..");
 const CONTEUDO = path.join(RAIZ, "content");
@@ -167,7 +168,17 @@ function adicionarAlias(arquivoIndice, titulo, alias, gravar) {
   const linha = `aliases: [${atuais.map((a) => `"${a}"`).join(", ")}]`;
   texto = m ? texto.replace(m[0], linha) : texto.replace(/^---\n/, `---\n${linha}\n`);
   console.log(`alias ${alias} -> ${rel(p)}`);
-  if (gravar) { fs.mkdirSync(path.dirname(p), { recursive: true }); fs.writeFileSync(p, texto); }
+  if (gravar) {
+    const novo = !fs.existsSync(p);
+    fs.mkdirSync(path.dirname(p), { recursive: true });
+    fs.writeFileSync(p, texto);
+    // Página de termo nova: cria também a versão em inglês (o nome da tag é o mesmo) e a carimba.
+    const en = p.replace(/\.md$/, ".en.md");
+    if (novo && !fs.existsSync(en)) {
+      fs.writeFileSync(en, `---\ntitle: "${titulo}"\n---\n`);
+      execFileSync(process.execPath, [path.join(RAIZ, "scripts", "i18n.mjs"), "ok", p], { stdio: "inherit" });
+    }
+  }
 }
 
 // ---------- comandos ----------
@@ -303,9 +314,12 @@ function cmdRemove(args) {
   } else console.log(`rm-tag: simulação (${n} arquivo(s)). Para gravar: CONFIRM=sim`);
 }
 
+// Traduções (index.en.md) têm as mesmas tags do original: contam uma vez só (scripts/i18n.mjs).
+const soOriginais = (lista) => lista.filter((f) => !f.endsWith(".en.md"));
+
 function contagens() {
   const cont = {}, ultimo = {};
-  for (const f of arquivosMd(path.join(CONTEUDO, "posts"))) {
+  for (const f of soOriginais(arquivosMd(path.join(CONTEUDO, "posts")))) {
     const fm = lerFrontMatter(f);
     if (!fm || fm.draft) continue;
     for (const t of fm.tags || []) {

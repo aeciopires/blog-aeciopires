@@ -54,6 +54,9 @@ jobs:
       - name: Validar tags e categorias
         run: make check-tags
 
+      - name: Versão em inglês completa e em dia (traduzida localmente, antes do commit)
+        run: make check-i18n
+
       - name: Validar links internos e imagens
         # build com o baseURL padrão (caminhos a partir de /) só para o lychee
         run: make build validate-links

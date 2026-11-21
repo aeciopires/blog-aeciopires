@@ -20,7 +20,7 @@ Neste [repositório do GitHub](https://github.com/sonatype/docker-nexus3) tem um
 
 > A partir da versão 3.77.0, a edição gratuita do Nexus Repository passou a se chamar **Sonatype Nexus Repository Community Edition**, que tem algumas limitações de uso. Mais detalhes em: [https://help.sonatype.com/en/ce-onboarding.html](https://help.sonatype.com/en/ce-onboarding.html)
 
-Segundo o tutorial, o Nexus é executado usando um conteiner [Docker](https://www.docker.com/), o que deixa a configuração bem simples e rapidamente você tem o serviço funcionando.
+Segundo o tutorial, o Nexus é executado usando um contêiner [Docker](https://www.docker.com/), o que deixa a configuração bem simples e rapidamente você tem o serviço funcionando.
 
 Se você não sabe o que é Docker, recomendo começar lendo os links desta página. É um longo caminho, mas vale a pena conhecer essa tecnologia.
 
@@ -28,7 +28,7 @@ Se você não sabe o que é Docker, recomendo começar lendo os links desta pág
 
 Também dou curso de Docker: [/curso-docker](/curso-docker)
 
-Abaixo tem o tutorial customizado para iniciar o conteiner Nexus persistindo os dados.
+Abaixo tem o tutorial customizado para iniciar o contêiner Nexus persistindo os dados.
 
 1) Crie o diretório de dados do Nexus.
 
@@ -37,7 +37,7 @@ sudo mkdir -p /docker/nexus/data;
 sudo chown -R 200 /docker/nexus/data;
 ```
 
-2) Inicie o conteiner docker do Nexus.
+2) Inicie o contêiner docker do Nexus.
 
 ```bash
 docker run -d -p 8081:8081 --name nexus -v /docker/nexus/data:/nexus-data sonatype/nexus3
@@ -67,7 +67,7 @@ sudo cat /docker/nexus/data/admin.password
 
 6) Acesse o Nexus na URL **http://IP-Servidor:8081**. O login é **admin** e a senha padrão é o resultado do comando anterior.
 
-7) Se quiser parar o conteiner, é só executar o comando abaixo.
+7) Se quiser parar o contêiner, é só executar o comando abaixo.
 
 ```bash
 docker stop nexus
