@@ -1,6 +1,6 @@
 # Implementação do plano de migração — status e desvios
 
-Acompanha o [PLAN.md](PLAN.md) (registro histórico, não reescrito). Atualizado em 20/11/2026.
+Acompanha o [PLAN.md](PLAN.md) (registro histórico, não reescrito; as decisões posteriores estão na seção 19 dele). Atualizado em 21/11/2026.
 
 ## Status por fase
 
@@ -114,3 +114,50 @@ Passo a passo com caixas de seleção em [docs/cloudflare.md](../../docs/cloudfl
 ### Adiado
 
 1. Testar `make check-deps && make install-deps && make serve` no macOS (amd64/arm64) e no Ubuntu 24.04/26.04 (só há acesso ao Ubuntu 22.04, onde tudo foi testado). Atenção ao padrão do lychee para macOS no `mise.toml`.
+
+## Depois da migração (PRs #6 a #10, registro retroativo)
+
+Registrado em 21/11/2026. Resumo das decisões na seção 19 do [PLAN.md](PLAN.md).
+
+| PR | Data | O que mudou | Validação |
+|---|---|---|---|
+| #6 | 20/11/2026 | Linktree como terceiro perfil do autor; registros do Search Console e do Cloudflare | `make validate` |
+| #7 | 20/11/2026 | Ordenação da home (override de `recent-articles/cardview.html` + `assets/js/ordenar-home.js`; `scripts/visualizacoes.mjs` com o Web Analytics); nuvem de tags sem número visível; `make aviso-atualizacao`, `prosa` e `verificar-texto`; skill `escrever-post`; posts de Docker/Kubernetes revisados e testados em Docker/kind; novos posts `docker-hub-image-statistics` e `myhealthcheck`; post do ArgoCD na AWS removido (alias na home) | `make validate`; testes em Docker/kind (skill `revisar-conteudo`) |
+| #8 | 21/11/2026 | Home leve (HTML de ~298 KB para ~83 KB; JSON com SRI e molde do tema; `make check-home` no validate, pr-check e deploy); cartões da home como links e total de repositórios (`data/github.json` no pre-commit); banner de tecnologias fluido no celular; CSP aplicada e corrigida; escape dos resultados da busca (`busca.js`) e redirecionamentos legados só para caminhos do site; taxonomia `series` desligada | `make validate`; teste da CSP no site publicado (0 violações) |
+| #9 | 21/11/2026 | Acessibilidade 100 (contraste de "Ordenar:" e dos links em avisos, chaves `nav.*` em pt-BR, nome do botão de busca); logos em WebP no build e foto do autor menor; `legacy-redirect.js` async; `make lighthouse` | Lighthouse publicado: Performance 100, Boas práticas 100, SEO 100; Acessibilidade 100 no build local |
+| #10 | 21/11/2026 | Versão en-US (detalhes abaixo) | Ver "Testes do PR #10" |
+
+### PR #10 — versão em inglês (en-US)
+
+- **Conteúdo:** 75 posts e páginas traduzidos (`index.en.md` ao lado do original) e 41 páginas de seção, categoria e tag (`_index.en.md`). Feito por 9 agentes `tradutor-en` em paralelo, seguindo a skill `traduzir-conteudo`, com revisão gramatical (`make prosa-en`). Sete conteúdos que já eram bilíngues no original (`sobre`, `helm-chart-zabbix-7-0-0`, `helm-chart-zabbix-8-0-0`, `helm-chart-kubernetes-watchdog-pod-restart-delete`, `imagem-docker-para-troubleshooting` e os dois resumos de incidente, GCP e AWS) receberam `bilingue: true` e não têm tradução (decisão do autor); em inglês aparecem na home, no total de posts e na busca, com a URL original.
+- **Garantia:** `scripts/i18n.mjs` (`make check-i18n`, `i18n-status`, `i18n-diff`, `i18n-ok`, `i18n-sync-fm`, `prosa-en`) no pre-commit, no `make validate`, no `pr-check.yml` e no `deploy.yml`.
+- **Interface:** `config/_default/languages.en.toml` e `menus.en.toml`; textos dos layouts próprios em `i18n/pt-BR.yaml` e `i18n/en.yaml` (chaves `blog.*`); `[author]` em `params.toml`; grupos do banner com `nome_en`; comentários do giscus com uma discussão por post para os dois idiomas (mapping `specific` com o caminho pt-BR, mantendo as discussões existentes).
+- **Redirecionamento pelo idioma do navegador:** ligado com override de `layouts/partials/language-redirect.html` + `assets/js/idioma-config.js` (async, SRI). O tema usa script inline que muda em cada página; uma exceção na CSP não era viável (hash por página) nem segura (`'unsafe-inline'`). Robôs e Lighthouse não são redirecionados; `hreflang` x-default = pt-BR; o `check-i18n` guarda o hash dos arquivos do tema para revisar o override a cada versão do Blowfish.
+- **Correções de conteúdo:** os agentes acharam erros nos originais pt-BR e os corrigiram nos dois idiomas, com registro em `reports/correcoes-conteudo-2026-11-21.md` (130 itens; os 20 pendentes foram decididos pelo autor, como Gateway API 1.7, `Michal Simon`, RFC 2818, `saltproject.io`, RabbitMQ 4.4.1, remoção do vídeo repetido e do link duplicado). Todos conferidos pelo autor antes do commit (`make check-correcoes`).
+- **Outras correções:** `make aviso-atualizacao` apagava o aviso anterior (agora o novo entra acima; os avisos de 20/11 do Flux CD e do Zabbix com Docker foram restaurados); `make build` local gerava `robots.txt` com `Disallow: /` porque o `[env]` do `mise.toml` vencia o ambiente de produção (o deploy não era afetado); links em citações sublinhados (o Lighthouse reprovava a acessibilidade em 30 posts); "Go" vira "Golang" em inglês (o Lighthouse trata "Go" como texto de link genérico).
+
+### Testes do PR #10
+
+- `make validate` verde, `make validate-diagrams` OK, `hugo --logLevel info` sem avisos.
+- `make test-idioma`: 12 cenários num Chromium com a CSP oficial aplicada, zero violações.
+- Seletor de idioma nos modos claro e escuro, no computador e no celular, sem rolagem horizontal de 320 px em diante.
+- `make lighthouse-local`, 13 páginas pt-BR e en, celular e computador: Performance 99–100, Acessibilidade 100, Boas práticas 100 e SEO 100, iguais à linha de base de antes da mudança. Exceção que já existia: Boas práticas 96 no `/sobre/` no celular, por causa da foto do autor.
+
+### Desvios em relação ao plano (pós-migração)
+
+| Plano | Implementado | Motivo |
+|---|---|---|
+| Blog só em pt-BR | pt-BR + en-US em `/en/` | Pedido do autor (21/11/2026) |
+| Perfis do autor em `languages.pt-br.toml` | `[author]` em `params.toml` | Valer para os dois idiomas sem duplicar (o Hugo mescla com o `[params.author]` de cada idioma) |
+| Customizar o tema só por override, o mínimo possível | Novo override: `layouts/partials/language-redirect.html` | Única forma de ligar o redirecionamento por idioma sem afrouxar a CSP; protegido pelo hash no `check-i18n` e pelo `make test-idioma` |
+| Lighthouse só no site publicado | Também `make lighthouse-local` (build de produção servido no container) | Medir antes do commit e comparar pt-BR com en-US |
+
+### Pendências do autor (PR #10)
+
+1. Revisar e fazer o merge do PR #10.
+2. Search Console, depois do deploy ([cloudflare.md](../../docs/cloudflare.md), seção 10):
+   - reenviar o `sitemap.xml`, que agora é um índice de `/pt-br/sitemap.xml` e `/en/sitemap.xml`;
+   - opcional: adicionar `/en/sitemap.xml`;
+   - inspecionar `/en/` e solicitar a indexação;
+   - testar a `/` publicada e confirmar que ela não redireciona para `/en/`.
+3. Formulário de contato em inglês (Jotform): fica a cargo do autor; a página `/en/contato/` usa o mesmo formulário por enquanto.

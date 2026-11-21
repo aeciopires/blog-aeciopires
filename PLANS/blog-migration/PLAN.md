@@ -2375,3 +2375,26 @@ Nenhuma. Todas as decisões foram tomadas; o plano está pronto para a implement
 | [banner/banner-v2-computador-escuro.png](images/banner/banner-v2-computador-escuro.png) | **Banner v2 aprovado**, computador, modo escuro |
 | [banner/banner-v2-computador-claro.png](images/banner/banner-v2-computador-claro.png) | **Banner v2 aprovado**, computador, modo claro |
 | [banner/banner-v2-celular.png](images/banner/banner-v2-celular.png) | **Banner v2 aprovado**, celular, escuro e claro |
+
+---
+
+## 19. Evolução depois da migração (registro retroativo)
+
+> Acréscimo de 21/11/2026. O plano acima continua como registro histórico e **não foi alterado**; esta seção só registra, em ordem, as decisões tomadas depois da migração, para que o plano e o site publicado não divirjam sem explicação. Status, desvios e detalhes de implementação: [IMPLEMENTACAO.md](IMPLEMENTACAO.md), seção "Depois da migração".
+
+| Data | PR | Decisão | Onde está documentado |
+|---|---|---|---|
+| 20/11/2026 | #6 | Linktree do autor como terceiro perfil (ícone genérico "link"); registros do Search Console e do Cloudflare | `docs/cloudflare.md`, seção 10 |
+| 20/11/2026 | #7 | Home com ordenação escolhida pelo leitor (mais recentes, mais antigos, mais lidos, menos lidos), com leituras do Cloudflare Web Analytics (180 dias, gerado no deploy e toda segunda); nuvem de tags sem número visível; revisão dos posts de Docker/Kubernetes testada em Docker/kind; post do ArgoCD na AWS removido com redirecionamento | `docs/MAINTENANCE.md`, seção 8 |
+| 21/11/2026 | #8 | **Home leve** (6 cards no HTML, o resto por JSON com SRI montado a partir de um molde do tema; `make check-home`); cartões da home como links e total de repositórios do GitHub (`data/github.json`, pre-commit); CSP **aplicada** (não mais *Report-Only*); escape dos resultados da busca; taxonomia `series` desligada | `docs/MAINTENANCE.md`, seção 8; `docs/cloudflare.md`, seção 5 |
+| 21/11/2026 | #9 | Acessibilidade **100** no Lighthouse (contrastes, nomes acessíveis `nav.*`, botão de busca); logos raster em WebP no build; `make lighthouse` (Docker) | `docs/MAINTENANCE.md`, seção 4 |
+| 21/11/2026 | #10 | **Versão em inglês (en-US) em `/en/`**, mantendo o pt-BR como idioma padrão e fonte (na raiz, URLs do WordPress intactas). Tradução feita **localmente, antes do commit**, por IA (skill `traduzir-conteudo`, agente `tradutor-en`), nunca no build ou no navegador; garantia por `make check-i18n` (pre-commit, validate, CI): tradução completa, em dia e com comandos, código e links idênticos ao pt-BR. Conteúdo já bilíngue no original (`bilingue: true`) não tem tradução. Seletor de idioma, hreflang e sitemap do Blowfish; **redirecionamento da home pelo idioma do navegador ligado**, sem script inline (CSP inalterada; robôs não são redirecionados; `make test-idioma`). Correções de conteúdo feitas pela IA ao traduzir são registradas em `reports/` e conferidas pelo autor antes do commit (`make check-correcoes`) | `docs/MAINTENANCE.md`, seção 3 ("Versão em inglês" e "Redirecionamento pelo idioma do navegador"); `docs/cloudflare.md`, seção 10; skill `traduzir-conteudo` |
+
+Decisões da seção 18 que mudaram por causa disso:
+
+| Tema (seção 18) | Antes | Agora |
+|---|---|---|
+| Idioma do blog | Só pt-BR | pt-BR (padrão e fonte) + en-US em `/en/`, traduzido antes do commit |
+| Perfis do autor | `params.author.links` em `languages.pt-br.toml` | `[author]` em `params.toml`, válido para os dois idiomas (fonte única mantida); os ícones dos dois menus repetem as URLs |
+| Skills | `blowfish`, `revisar-conteudo`, `atualizar-site` | + `escrever-post` (#7) e `traduzir-conteudo` (#10), agente `tradutor-en` |
+| Lista de posts na home | Mais recentes, fixa | Ordenação escolhida pelo leitor, home leve (#7, #8) |
