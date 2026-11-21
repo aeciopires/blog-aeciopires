@@ -72,6 +72,8 @@ flowchart LR
 | `data/github.json` | Total de repositórios públicos no GitHub (cartão da home); versionado; atualizado por `scripts/github-repos.mjs` no pre-commit, que inclui o arquivo no commit se o número mudar (à mão: `make github-repos`) |
 | `data/visualizacoes.json` | Visualizações por página dos últimos 180 dias (gerado no deploy por `scripts/visualizacoes.mjs` a partir do Cloudflare Web Analytics; localmente, `make visualizacoes`; ignorado pelo Git) |
 | `layouts/` | Só partials, shortcodes e overrides próprios |
+| `docker/lighthouse/Dockerfile` + `scripts/lighthouse.sh` | `make lighthouse`: Lighthouse em Docker contra o site publicado (relatórios em `reports/lighthouse/`) |
+| `i18n/pt-BR.yaml` | Só as chaves que mudam: rodapé, "Mais recentes", nome do botão de busca e nomes acessíveis (`nav.*`) que o Blowfish não traduz |
 | `.claude/skills/` | Skills do Claude Code (`blowfish` é link para o submódulo) |
 
 ## 3. Fluxo de publicação
@@ -194,6 +196,8 @@ flowchart TD
 | Total de repositórios do GitHub atualizado no pre-commit (`data/github.json` versionado) | `security.http.urls` do Hugo fica restrito a `/repos/`; o deploy não depende da API do GitHub | O número só muda no site quando há commit; sem rede, fica o último valor |
 | Só as taxonomias `tags` e `categories` | Nenhum post usava `series`; evita página vazia | Séries precisam ser reativadas na configuração |
 | Home leve: só 6 cards no HTML, o resto por JSON + molde do tema | HTML da home de ~298 KB para ~83 KB (minificado) e DOM menor no celular; o JSON (~7 KB comprimido) só é baixado ao trocar a ordem | Depende do HTML do card do tema: protegido pelo `check-home` na CI |
+| Logos raster convertidos no build (WebP 144×72, `Fit`) e SVG com hash | Logos de 60 KB viram ~1 KB; nomes com hash permitem cache de 1 ano (regra C4) | Arquivo oficial intocado em `assets/`; só a cópia publicada muda |
+| Traduzir no projeto as chaves de acessibilidade do tema (`nav.*`) em vez de sobrescrever o cabeçalho | Botão do menu do celular com nome sem copiar layouts do tema | O `<label role="button">` do tema continua (Lighthouse "Agentic Browsing" 50 no celular); sugestão para o Blowfish |
 | Escape dos resultados da busca no `busca.js` | O `search.js` do tema usa `innerHTML` com dados do índice | Envoltório a revisar a cada atualização do Blowfish |
 | Rascunhos versionados (`draft: true`) | Simples e com histórico | Repositório público: rascunho legível no GitHub (privado só com `PRIVATE=1`) |
 

@@ -44,6 +44,7 @@ docker context use colima
 | `make check-tags` | Valida tags e categorias contra `data/taxonomia.yaml` |
 | `make lint-md validate` | Mesma validação da CI (inclui `check-home`, que confere a home leve contra o card do tema) |
 | `make check-updates` | Mostra atualizações disponíveis (não altera nada) |
+| `make lighthouse` | Lighthouse em Docker no site publicado (`URL=` para outra página) |
 | `make update-theme TAG=vX.Y.Z` | Atualiza o Blowfish para uma release |
 
 ## Publicar

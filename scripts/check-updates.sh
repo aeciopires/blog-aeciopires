@@ -45,6 +45,13 @@ estavel() { grep -Ev -- '-(alpha|beta|rc|pre|dev|nightly)|[0-9](a|b|rc)[0-9]' ; 
   echo "- Hugo: \`ghcr.io/gohugoio/hugo:v$EM_USO\` (segue o mise.toml automaticamente)"
   MTAG="$(curl -fsS 'https://hub.docker.com/v2/repositories/minlag/mermaid-cli/tags?page_size=50' 2>/dev/null | grep -o '"name":"[0-9][0-9.]*"' | cut -d'"' -f4 | sort -V | tail -1)"
   echo "- mermaid-cli: em uso \`$MERMAID_IMAGE\` · mais nova no Docker Hub: \`${MTAG:-?}\`"
+  # make lighthouse: versões padrão ficam em scripts/lighthouse.sh (e nos ARG de docker/lighthouse/Dockerfile).
+  # shellcheck disable=SC2016 # o ${...} é texto literal procurado no arquivo, não expansão
+  LH_USO="$(sed -n 's/^LIGHTHOUSE_VERSION="\${LIGHTHOUSE_VERSION:-\([0-9.]*\)}"$/\1/p' scripts/lighthouse.sh)"
+  # shellcheck disable=SC2016
+  LH_NODE="$(sed -n 's/^NODE_IMAGE="\${NODE_IMAGE:-\([^}]*\)}"$/\1/p' scripts/lighthouse.sh)"
+  LH_NOVA="$(curl -fsS https://registry.npmjs.org/lighthouse/latest 2>/dev/null | grep -o '"version":"[0-9.]*"' | head -1 | cut -d'"' -f4)"
+  echo "- Lighthouse (\`make lighthouse\`): em uso \`lighthouse@${LH_USO:-?}\` sobre \`${LH_NODE:-?}\` · mais nova no npm: \`${LH_NOVA:-?}\` (Node da imagem = LTS do mise.toml)"
   echo
   echo "## GitHub Actions"
   echo

@@ -1,6 +1,7 @@
 {{- /*
   Banner de tecnologias (PLAN.md 3.7.1). Uso: {{< tecnologias >}}
   Lê data/tecnologias.yaml. Logos oficiais, sem recolorir, em placas brancas (iguais nos dois modos).
+  PNG/JPG são só redimensionados (WebP, proporção mantida); SVG é servido como está, com hash no nome.
   A marca do GitHub do cabeçalho usa a cor do texto (preta no claro, branca no escuro).
   O perfil do GitHub vem de site.Params.author.links (fonte única).
 */ -}}
@@ -25,7 +26,13 @@
       <ul class="tecnologias__placas" aria-label="{{ .nome }}">
         {{- range .itens }}
           {{- $logo := "" -}}
-          {{- with .logo }}{{ $logo = resources.Get (printf "img/logos/%s" .) }}{{ end }}
+          {{- with .logo }}{{ $logo = resources.Get (printf "img/logos/%s" .) }}{{ end -}}
+          {{- /* Desempenho: PNG/JPG cabem em 144x72 (2x da placa) como WebP, sem distorcer (Fit mantém a
+                 proporção e as cores); SVG só ganha hash no nome. Os dois mudam de nome quando o arquivo
+                 muda, o que permite cache longo no navegador (docs/cloudflare.md, regra C4). */ -}}
+          {{- with $logo -}}
+            {{- if eq .MediaType.SubType "svg" }}{{ $logo = . | resources.Fingerprint "md5" }}{{ else }}{{ $logo = .Fit "144x72 webp q90" }}{{ end -}}
+          {{- end }}
           <li>
             <a class="tecnologias__placa" href="{{ .url }}" rel="noopener noreferrer" target="_blank" title="{{ .nome }}">
               {{- if $logo }}

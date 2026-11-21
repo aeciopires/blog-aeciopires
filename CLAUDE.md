@@ -19,7 +19,8 @@
 - Conteúdo: `make new-post|new-page SLUG=`, `make publish-post|publish-page SLUG= [DATE=now]`,
   `make unpublish-post|unpublish-page SLUG= [PRIVATE=1]`, `make rm-post|rm-page SLUG= [REDIRECT=] CONFIRM=sim`
 - Tags: `make check-tags`, `make fix-tags`, `make new-tag NAME= DESC=`, `make merge-tag FROM= TO=`, `make tags-report`
-- Qualidade: `make audit-content [SLUG=]`, `make check-links-online`, `make validate-diagrams`
+- Qualidade: `make audit-content [SLUG=]`, `make check-links-online`, `make validate-diagrams`, `make lighthouse [URL=]`
+  (Docker, site publicado; relatórios em `reports/lighthouse/`)
 - Atualizações: `make check-updates`, `make update-theme TAG=vX.Y.Z`, `make skill-sync`
 - Sem mise ativado no shell, prefixe com `mise exec --` (o Makefile já faz isso).
 
@@ -83,6 +84,7 @@
 - Actions fixadas por SHA, `permissions` mínimas; não ampliar permissões de workflows.
 - Não alterar regras que tocam `/.well-known/acme-challenge/` (renovação do certificado).
 - Não alterar DNS/Cloudflare/GitHub settings pelo Claude; propor a mudança e documentar em `docs/cloudflare.md`.
+  Pendente (21/11/2026): regras de cache C4 (imagens com hash, 1 ano) e C5 (`/wp-content/uploads/`, 1 mês), seção 3.
 - Logos de tecnologias: só arquivos oficiais, sem recolorir/distorcer; registrar em `assets/img/logos/SOURCES.md`.
 - Manter os avisos de licença (rodapé, `/creditos/`, LICENSE do tema).
 
@@ -112,13 +114,20 @@
   `article-meta/basic.html` e é montado por `assets/js/ordenar-home.js` clonando um molde do tema; ordenação +
   `scripts/visualizacoes.mjs`). `make check-home` (no `validate` e na CI) compara o JSON com o card do tema em
   `/posts/`: se falhar após atualizar o Blowfish, seguir o checklist de `docs/MAINTENANCE.md`, seção 8.
-  O CSS de leitura no computador sobrescreve as classes `.max-w-prose` e `.lg:px-32` do tema, e o dos blocos de código
-  (quebra visual de linhas longas) sobrescreve `.chroma .line` e `.chroma > code`: conferir a cada atualização.
+  O CSS de leitura no computador sobrescreve as classes `.max-w-prose` e `.lg:px-32` do tema, o dos blocos de código
+  (quebra visual de linhas longas) sobrescreve `.chroma .line` e `.chroma > code`, e o dos links em avisos usa
+  `.article-content div.bg-primary-100 a` (contraste): conferir a cada atualização.
   A busca é ajustada por `assets/js/busca.js` (envolve `window.Fuse` com opções extras e entrega ao `search.js` do
   tema resultados com escape, porque ele usa `innerHTML`; não copiar o `search.js` do tema).
   Links externos em nova aba dependem de `render-link.html` do tema (`article.externalLinkForceNewTab`).
   O `make update-theme` lista o diff do tema em todos esses arquivos.
-- Lighthouse: medir no site publicado; `make serve`/`serve-prod` não minificam nem comprimem.
+- Lighthouse: `make lighthouse` (site publicado; em 21/11/2026: Performance/Boas práticas/SEO 100, Acessibilidade 100
+  após as correções); `make serve`/`serve-prod` não minificam nem comprimem. Contraste mínimo 4.5 (texto normal) nos
+  modos claro e escuro; imagens raster novas do layout: redimensionar no build (`Fit`/`Resize`, WebP); scripts próprios
+  no `<head>` com `async`/`defer`; todo botão/link precisa de nome acessível (texto visível contido no `aria-label`).
+  Versões do Lighthouse: `scripts/lighthouse.sh` e `docker/lighthouse/Dockerfile` (o `make check-updates` avisa).
+- Acessibilidade: o Blowfish v3.10.0 não traduz as chaves `nav.*` para pt-BR (nome do botão do menu do celular e das
+  áreas de navegação); ficam em `i18n/pt-BR.yaml`. Conferir chaves novas sem tradução a cada atualização do tema.
 - Corrigir avisos de `hugo --logLevel info`; não usar funções deprecated (ex.: `hugo.Data`, não `site.Data`).
 - Ao mudar comportamento, atualizar `README.md`, `docs/ARCHITECTURE.md`, `docs/MAINTENANCE.md`, `docs/cloudflare.md` e este arquivo.
 

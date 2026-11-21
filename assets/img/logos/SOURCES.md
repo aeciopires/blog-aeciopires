@@ -4,6 +4,8 @@ Regras (PLAN.md 3.7.1): só arquivos **oficiais**, sem alterar cor, proporção,
 Sem o arquivo oficial, a placa mostra o **nome em texto** (comportamento automático do shortcode).
 Ao adicionar um logo: baixar da fonte oficial, conferir que o SVG não tem `<script>`/eventos,
 salvar com o nome usado em `data/tecnologias.yaml` e registrar abaixo. Revisão anual das diretrizes.
+No build, PNG/JPG são só redimensionados para WebP (máx. 144×72, proporção e cores mantidas) e SVG é servido
+sem mudanças, com hash no nome; o arquivo oficial desta pasta não é alterado.
 
 ## Presentes
 
