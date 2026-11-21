@@ -52,6 +52,10 @@ O deploy limpa o cache (`deploy.yml`), então é seguro guardar HTML na borda.
 | C1 | Não cachear ACME | `starts_with(http.request.uri.path, "/.well-known/acme-challenge/")` | Bypass |
 | C2 | Cachear o blog | `http.host eq "blog.aeciopires.com"` | Eligible · Edge TTL 1 dia · Browser TTL: respeitar origem |
 | C3 | Assets com fingerprint | `http.host eq "blog.aeciopires.com" and (starts_with(http.request.uri.path, "/css/") or starts_with(http.request.uri.path, "/js/") or starts_with(http.request.uri.path, "/fonts/"))` | Browser TTL 1 ano |
+| C4 | Imagens com hash no nome (**proposta, pendente**) | `http.host eq "blog.aeciopires.com" and (contains(http.request.uri.path, "_hu_") or starts_with(http.request.uri.path, "/img/logos/") or starts_with(http.request.uri.path, "/lib/"))` | Browser TTL 1 ano |
+| C5 | Mídias antigas do WordPress (**proposta, pendente**) | `http.host eq "blog.aeciopires.com" and starts_with(http.request.uri.path, "/wp-content/uploads/")` | Browser TTL 1 mês |
+
+**C4 e C5 (propostas em 21/11/2026, Lighthouse "Use efficient cache lifetimes"):** o GitHub Pages manda `max-age=600` (10 min), então o navegador baixa de novo as imagens a cada visita. É seguro cachear por 1 ano o que muda de nome quando o conteúdo muda: imagens processadas pelo Hugo (`_hu_` no nome: capas dos posts, foto do autor, logos PNG/JPG), logos SVG do banner (agora com hash no nome, `layouts/shortcodes/tecnologias.html`) e `/lib/` (arquivos do tema com hash). As mídias de `/wp-content/uploads/` nunca mudam (CLAUDE.md), mas não têm hash: 1 mês. `img/background.webp` fica de fora (sem hash). Ordem: C4 e C5 **depois** de C2 (a última regra que define Browser TTL vence). Conferir: `curl -sI https://blog.aeciopires.com/img/autor_hu_….jpg | grep -i cache-control` deve mostrar `max-age=31536000`.
 
 ## 4. WAF, rate limiting e redirects
 

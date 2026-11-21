@@ -472,6 +472,19 @@ html.dark .tag-cloud__tag--baixo {
   }
 }
 
+/* ---------- Links dentro do shortcode alert (ex.: "Atualizado em …") ----------
+   O alert do tema usa fundo bg-primary-100 (claro) / dark:bg-primary-900 (escuro); o azul padrão dos
+   links (primary-400 no escuro) dava contraste 4.07 sobre o primary-900 (mínimo 4.5, Lighthouse).
+   Revisar se o Blowfish mudar as classes do alert. */
+.article-content div.bg-primary-100 a {
+  color: rgb(var(--color-primary-800));
+  text-decoration: underline;
+}
+
+html.dark .article-content div.bg-primary-100 a {
+  color: rgb(var(--color-primary-200));
+}
+
 /* ---------- Mídia/arquivo removido na origem (shortcode removido) ---------- */
 .midia-removida {
   color: var(--t9-texto-sec);
@@ -572,7 +585,12 @@ figure.logo-post img {
 }
 .ordenar-home__rotulo {
   font-size: 0.875rem;
-  color: rgb(var(--color-neutral-500));
+  font-weight: 600;
+  color: #000; /* contraste máximo no modo claro */
+}
+
+html.dark .ordenar-home__rotulo {
+  color: #fff; /* contraste máximo no modo escuro */
 }
 .ordenar-home__botao {
   font-size: 0.875rem;

@@ -21,11 +21,14 @@ Atualiza os softwares do blog com segurança, **uma coisa por vez**, sempre numa
 3. Atualize **um item por vez**, numa branch (`atualiza/<item>-<versao>`):
    - ferramenta do mise: editar a versão exata no `mise.toml` → `mise install`;
    - Blowfish: `make update-theme TAG=vX.Y.Z` (mostra changelog, diff da skill e faixa de Hugo). Se a faixa mudou, ajuste o Hugo **no mesmo PR**. Revise o diff da skill do Blowfish como código (sem hooks/comandos inesperados) e os overrides listados pelo alvo (inclusive `layouts/partials/recent-articles/cardview.html` da ordenação da home: siga o checklist de `docs/MAINTENANCE.md`, seção 8);
-   - imagem do mermaid-cli: `MERMAID_IMAGE` no `Makefile` (e a tabela da política em `docs/MAINTENANCE.md`).
+   - imagem do mermaid-cli: `MERMAID_IMAGE` no `Makefile` (e a tabela da política em `docs/MAINTENANCE.md`);
+   - Lighthouse: `LIGHTHOUSE_VERSION`/`NODE_IMAGE` em `scripts/lighthouse.sh` e os `ARG` de `docker/lighthouse/Dockerfile` (Node = LTS do `mise.toml`); apagar a imagem local antiga (`docker rmi blog-lighthouse:<versão antiga>`) e rodar `make lighthouse`.
 4. **Depois de atualizar o Blowfish, confira também** (checklist completo em `docs/MAINTENANCE.md`, seção 8):
    - `make check-home` verde (home leve: o JSON tem de bater com o card do tema; se falhar, ajustar `$separador`/`$reLinhaMeta`/`$reTermo` no `cardview.html` e os seletores do molde em `assets/js/ordenar-home.js`) e nenhum WARN do `cardview.html` no `hugo --logLevel info`;
    - a busca: o `search.js` do tema ainda usa `new Fuse(...)`, `fuse.search(...)` e os campos `title`/`summary`/`permalink`/`section`/`date`/`externalUrl` (o `busca.js` escapa os resultados); testar uma busca e `/?s=termo`;
    - no navegador, cada ordenação da home com cards iguais aos do tema e o Console sem erros de CSP;
+   - `make lighthouse` depois do deploy: Performance, Acessibilidade, Boas práticas e SEO devem continuar em 100 (comparar com `docs/MAINTENANCE.md`, seção 4); o CSS que usa classes do tema (`bg-primary-100` dos avisos, `.max-w-prose`, `.chroma`) ainda se aplica;
+   - chaves de i18n usadas pelos layouts do tema sem tradução em `themes/blowfish/i18n/pt-BR.yaml` nem em `i18n/pt-BR.yaml` (viram `aria-label` vazio): traduzir em `i18n/pt-BR.yaml`. No celular, os botões do cabeçalho (tema, busca e menu) precisam ter nome;
    - `themes/blowfish/layouts/_default/_markup/render-link.html` ainda lê `article.externalLinkForceNewTab` com padrão `true` (links externos em nova aba);
    - títulos de `/categories/` e `/tags/` em pt-BR (vêm de `content/<taxonomia>/_index.md`);
    - o banner de tecnologias e os números da home no celular (320, 360, 412 px), sem nada saindo da borda;

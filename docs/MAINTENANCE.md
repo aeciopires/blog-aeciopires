@@ -43,6 +43,7 @@ make serve           # http://localhost:1313
 | Qualidade | `lint-md` / `lint-md-fix` | `make lint-md` |
 | | `validate` | `make validate` (check-secrets, lint-md, check-tags, build, validate-links, check-home, actionlint, shellcheck, compare-urls) |
 | | `check-home` | `make build check-home` (home leve: cards, JSON com SRI, URLs e fidelidade ao card do tema; seção 8) |
+| | `lighthouse` | `make lighthouse [URL=…]` (Docker; site publicado; seção 4) |
 | | `check-secrets` | `make check-secrets` (gitleaks no histórico do Git; exceções em `.gitleaks.toml`) |
 | | `validate-diagrams` | `make validate-diagrams` (Docker) |
 | | `check-links-online` | `make check-links-online` → `reports/links.md` |
@@ -67,7 +68,7 @@ make serve           # http://localhost:1313
 | Categorias e tags | Só as registradas em `data/taxonomia.yaml` (1 a 5 tags por post). Tag nova: `make new-tag`; sinônimo: `make fix-tags`; unir: `make merge-tag`. O `make check-tags` bloqueia o que estiver fora do padrão |
 | Diagramas em posts | Shortcode `{{</* mermaid */>}}` do Blowfish |
 | Novos embeds | Shortcodes do Blowfish. Se envolver um novo domínio, **atualizar a CSP** ([cloudflare.md](cloudflare.md)) antes |
-| Banner de tecnologias | `data/tecnologias.yaml` + logo oficial em `assets/img/logos/` + linha em `assets/img/logos/SOURCES.md`. Nome longo que quebra feio no celular: campo opcional `legenda` com hífen opcional, ex.: `legenda: "Victoria\u00ADMetrics"` (no celular estreito vira "Victoria-/Metrics"; o `nome` continua no `alt` e no `title`) |
+| Banner de tecnologias | `data/tecnologias.yaml` + logo oficial em `assets/img/logos/` + linha em `assets/img/logos/SOURCES.md`. No build, PNG/JPG viram WebP de no máximo 144×72 (2× a placa, `Fit`: proporção e cores mantidas) e SVG ganha hash no nome; o arquivo oficial fica intacto em `assets/`. Nome longo que quebra feio no celular: campo opcional `legenda` com hífen opcional, ex.: `legenda: "Victoria\u00ADMetrics"` (no celular estreito vira "Victoria-/Metrics"; o `nome` continua no `alt` e no `title`) |
 | Links nos posts | Externos (`http://`/`https://`) abrem **sozinhos** em nova aba: o Blowfish adiciona `target="_blank" rel="noreferrer"` (`article.externalLinkForceNewTab`, ligado por padrão; desligar num post: `externalLinkForceNewTab: false` no front matter). Links internos: caminho relativo (`/slug/`) ou `{{</* ref */>}}`, nunca `https://blog.aeciopires.com/...` (abriria em nova aba). Não escreva `target` à mão: HTML cru é omitido |
 | Páginas de lista (Categorias, Tags, Posts) | O título vem de `content/<seção ou taxonomia>/_index.md` (`title` em pt-BR). Sem esse arquivo, o Hugo usa o nome interno em inglês (era o caso de `/categories/`). Taxonomia nova: criar o `_index.md` junto |
 
@@ -95,10 +96,12 @@ Notas:
 | Escrever com *live reload* (mostra rascunhos) | `make serve` |
 | Ver exatamente como o leitor verá (sem rascunhos, modo produção, sem analytics) | `make serve-prod` |
 
+**Lighthouse (21/11/2026, site publicado, Lighthouse 13.6.0):** Performance 100, Acessibilidade 93 (celular) / 96 (computador), Boas práticas 100, SEO 100. As falhas de acessibilidade (contraste de "Ordenar:" e do link no aviso "Atualizado em", botão do menu do celular sem nome) foram corrigidas no PR seguinte; medido no build local: **Acessibilidade 100** nos dois perfis. A categoria nova **Agentic Browsing** (Lighthouse 13) dá 50 no celular porque o tema usa `<label role="button">` no botão do menu (`role` não permitido em `label`); corrigir exige sobrescrever o cabeçalho e o `menu-a11y.js` do tema, então fica como sugestão para o Blowfish. Ganhos de desempenho que dependem de você no Cloudflare: regras C4 e C5 de cache ([cloudflare.md](cloudflare.md), seção 3).
+
 Um post novo continua rascunho (`draft: true`) até o `make publish-post`: aparece no `make serve`, mas **não** no `make serve-prod` (nem a página, nem o card na home). Isso é esperado; veja a seção 11 ("Post não aparece").
 | Ambiente isolado / sem mise | `make serve-docker` |
 | Mesma validação da CI | `make lint-md validate` |
-| Desempenho (Lighthouse) | No site publicado ou no PageSpeed Insights. **Não** meça no `make serve`/`serve-prod`: o servidor do Hugo não minifica, não comprime (sem Brotli/gzip), não manda cache e injeta o *live reload* (a home chegava a 454 KB contra 22 KB publicados) |
+| Desempenho e acessibilidade (Lighthouse) | `make lighthouse` (Docker; padrão: a home publicada; outra página: `URL=https://blog.aeciopires.com/<slug>/`) → notas e falhas no terminal, relatórios em `reports/lighthouse/`. Ou o PageSpeed Insights. **Não** meça no `make serve`/`serve-prod`: o servidor do Hugo não minifica, não comprime (sem Brotli/gzip), não manda cache e injeta o *live reload* (a home chegava a 454 KB contra 22 KB publicados) |
 | Diagramas da documentação | `make validate-diagrams` |
 
 O que olhar no navegador:
@@ -149,6 +152,7 @@ O que olhar no navegador:
 | markdownlint-cli2 | 0.24.1 | — |
 | Imagem do Hugo | `ghcr.io/gohugoio/hugo:v<versão do mise.toml>` | Segue o `mise.toml` |
 | mermaid-cli | `minlag/mermaid-cli:12.0.1` | Imagem mais nova publicada no Docker Hub |
+| Lighthouse (`make lighthouse`) | `lighthouse@13.6.0` sobre `node:26-bookworm-slim` | `LIGHTHOUSE_VERSION`/`NODE_IMAGE` em `scripts/lighthouse.sh` e nos `ARG` de `docker/lighthouse/Dockerfile`; ao mudar, apagar a imagem local `blog-lighthouse:<versão antiga>` |
 | GitHub Actions | ver `.github/workflows/` (SHA + versão) | Dependabot |
 
 - **Ver o que há de novo:** `make check-updates` (versão atual, a mais nova e a mais nova *permitida*).
@@ -175,7 +179,10 @@ O que olhar no navegador:
 | Cores, vidro, banner, nuvem | `assets/css/custom.css` (cores do esquema nativo `blowfish` via `--color-*`; não criar esquema próprio sem necessidade) |
 | Parâmetros do tema | `config/_default/params.toml`, conferindo a documentação da versão fixada |
 | Comportamento de layout | Override em `layouts/partials/` ou shortcode em `layouts/shortcodes/`; **nunca** editar `themes/blowfish/` |
-| Textos do tema | `i18n/pt-BR.yaml` (só as chaves que mudam) |
+| Textos do tema | `i18n/pt-BR.yaml` (só as chaves que mudam). Hoje: rodapé, título "Mais recentes" da home (`shortcode.recent_articles`), nome do botão de busca (`search.open_button_title`: "Pesquisar: Ctrl K ou /", precisa conter o texto visível "Ctrl K") e os nomes acessíveis que o Blowfish não traduz |
+| Links dentro de avisos (`alert`) | `assets/css/custom.css`, bloco "Links dentro do shortcode alert": `primary-800` no claro e `primary-200` no escuro (contraste ≥ 7). Depende da classe `bg-primary-100` do alert do tema: conferir a cada atualização |
+| Foto do autor | `imageQuality` em `config/_default/languages.pt-br.toml` (85; com 96 a imagem da home tinha o dobro do tamanho sem diferença visível) |
+| Acessibilidade do cabeçalho (nomes para leitores de tela) | Os botões de tema e busca usam `footer.dark_appearance`/`footer.light_appearance` e `search.open_button_title`, já traduzidos pelo tema. O botão do menu do celular, o fechar menu e as áreas de navegação usam `nav.main_menu`, `nav.mobile_menu`, `nav.close_menu`, `nav.footer_menu` e `nav.toggle_submenu`, que o Blowfish v3.10.0 **não traduz** para pt-BR (sem elas, o hambúrguer fica sem nome e o Lighthouse reprova). Estão em `i18n/pt-BR.yaml`. A cada atualização do tema, comparar as chaves usadas nos layouts com as de `themes/blowfish/i18n/pt-BR.yaml` e `i18n/pt-BR.yaml`, e conferir no celular (DevTools → Elements → Accessibility) que os botões do cabeçalho têm nome |
 | Novo serviço de terceiros | Avaliar privacidade e segurança → CSP → [cloudflare.md](cloudflare.md) → página Privacidade → `CLAUDE.md` se virar regra |
 | Mudança de arquitetura | [ARCHITECTURE.md](ARCHITECTURE.md) (diagramas) + registro da decisão em `PLANS/<nome>/` |
 
@@ -188,7 +195,7 @@ O Blowfish não tem ordenação escolhida pelo leitor: só `list.orderByWeight`,
 | `layouts/partials/recent-articles/cardview.html` | **Override** do tema (v3.10.0). **Home leve:** o HTML traz só os `homepage.showRecentItems` posts mais recentes (cards do tema), os botões e um `<template data-card-molde>` com um card renderizado pelo tema. Os dados de todos os posts vão para `js/posts-home.<hash>.json` (fingerprint + integridade nos atributos `data-json`/`data-json-integridade`). O JSON é extraído da **saída dos partials do tema** (`article-link/card.html` para a imagem, `article-meta/basic.html` para metadados e chips), então acompanha a configuração e as versões do Blowfish; se a extração falhar, o build emite WARN. Mantém o `.Paginate` do tema para não sumir com `/page/N/` |
 | `assets/js/ordenar-home.js` | Na ordem padrão não baixa nada. Ao escolher outra ordem, baixa o JSON uma vez (`fetch` com `integrity`), valida e monta os cards que faltam **clonando o molde** e preenchendo só com `textContent` e URLs validadas. Ativa um botão por vez (`aria-pressed`), troca o título da seção e lembra a escolha (`localStorage`). Falha no JSON (rede, integridade, dados inválidos) → volta para "Mais recentes". Sem JavaScript, os botões não aparecem e a home fica como no tema |
 | `scripts/check-home.mjs` + `make check-home` | Roda no `make validate`, no `pr-check` e no deploy: confere os cards da home, o molde, o SRI do JSON, as URLs e compara título, imagem, metadados e chips do JSON com o card do tema em `/posts/` (todos os posts). É o alarme para mudanças do Blowfish |
-| `assets/css/custom.css` (bloco "Ordenação dos posts da home") | Visual dos botões nos modos claro e escuro |
+| `assets/css/custom.css` (bloco "Ordenação dos posts da home") | Visual dos botões nos modos claro e escuro; o rótulo "Ordenar:" é preto no claro e branco no escuro (contraste máximo, exigido pelo Lighthouse). O título da seção ("Mais recentes") vem de `shortcode.recent_articles` em `i18n/pt-BR.yaml` e acompanha o botão escolhido |
 | `scripts/visualizacoes.mjs` + `make visualizacoes` | Gera `data/visualizacoes.json` (ignorado pelo Git) com as visualizações por caminho dos últimos 180 dias, pela API GraphQL do Cloudflare Web Analytics (`rumPageloadEventsAdaptiveGroups`). A API só responde até 26 semanas e 2 dias (184 dias) atrás; pedir mais dá o erro *cannot request data older than 26w2d*. Os números são aproximados (a API usa amostragem) |
 | `.github/workflows/deploy.yml` | Passo "Visualizações por página" antes do build e republicação toda segunda (09:15 UTC) para atualizar os números |
 
@@ -223,6 +230,7 @@ Peças próprias do site:
 |---|---|
 | `layouts/shortcodes/blog-chamada.html` | Chamada da home (eyebrow, título, botões) |
 | `layouts/shortcodes/blog-stats.html` | Números da home, cada um é um link: posts publicados (→ `/posts/`) e categorias (→ `/categories/`), calculados no build, e repositórios públicos no GitHub (→ aba de repositórios do perfil, nova aba), lidos de `data/github.json` |
+| `scripts/lighthouse.sh` + `docker/lighthouse/Dockerfile` + `make lighthouse` | Lighthouse em Docker (imagem local `blog-lighthouse:<versão>`, criada na primeira execução a partir da imagem oficial do Node + Chromium do Debian + `lighthouse` do npm, versões fixas). Mede o site publicado nos perfis celular e computador; notas e falhas no terminal, relatórios HTML/JSON em `reports/lighthouse/` (ignorado pelo Git). O `make check-updates` mostra se há versão nova |
 | `scripts/github-repos.mjs` + `make github-repos` | Atualiza `data/github.json` pela API REST pública do GitHub (`GET /users/{usuario}`, campo `public_repos`). Roda no pre-commit (`.githooks/pre-commit`, ativado por `make install-hooks`): se o número mudou, o hook inclui `data/github.json` no commit. Sem rede, com timeout de 5 s ou erro da API, mantém o arquivo como está e não bloqueia o commit; para pular, `GITHUB_REPOS_SKIP=1 git commit …`. O deploy não consulta a API: publica o número versionado. O Hugo não consulta a API direto porque `security.http.urls` só libera `/repos/` |
 | `layouts/shortcodes/tecnologias.html` | Banner "Stacks que uso no dia a dia" |
 | `layouts/shortcodes/nuvem-tags.html` + `layouts/partials/tag-cloud.html` | Nuvem de tags (home e `/tags/`): o tamanho mostra a frequência; o número de posts fica só no `title` e num texto para leitor de tela (classe `tag-cloud__contagem`). A lista "Todas as tags de A a Z" de `/tags/` mantém o número visível (todas têm o mesmo tamanho) |
@@ -232,7 +240,7 @@ Peças próprias do site:
 | `layouts/shortcodes/licenca-blowfish.html` | Texto MIT integral em `/creditos/` |
 | `layouts/partials/comments.html` + `assets/js/giscus.js` + `static/giscus/` | Comentários (giscus + arquivados) |
 | `layouts/partials/extend-head.html` | Cloudflare Web Analytics (só build de produção) |
-| `layouts/partials/extend-head-uncached.html` + `assets/js/legacy-redirect.js` | `/?p=ID` e `/?s=termo` do WordPress |
+| `layouts/partials/extend-head-uncached.html` + `assets/js/legacy-redirect.js` | `/?p=ID` e `/?s=termo` do WordPress. Script `async` (não bloqueia a renderização); só redireciona para caminhos do próprio site |
 | `layouts/partials/extend-footer.html` + `i18n/pt-BR.yaml` | Aviso de licença no rodapé |
 
 ## 9. Segurança (para você e para o leitor)
@@ -372,7 +380,7 @@ Alternativa sem CLI: o configurador em <https://giscus.app> mostra os mesmos IDs
 |---|---|
 | Semanal | Moderar comentários do giscus (e-mails de Discussions); olhar falhas de workflow |
 | A cada PR do Dependabot | Ler o changelog da action, deixar o `pr-check` rodar e fazer merge |
-| Mensal | `make check-updates` (só **ver**); alertas de segurança do GitHub; `make check-links-online`; SSL Labs e securityheaders.com (seção 9, "Checagens externas"), anotando nota e data |
+| Mensal | `make lighthouse` (anotar as notas na seção 4); `make check-updates` (só **ver**); alertas de segurança do GitHub; `make check-links-online`; SSL Labs e securityheaders.com (seção 9, "Checagens externas"), anotando nota e data |
 | Trimestral | `make tags-report` + `make merge-tag` nas tags fracas; `make audit-content` + skill `revisar-conteudo` nos 5 posts mais lidos e nos 5 mais antigos; eventos do WAF, cache e relatórios da CSP; limites do plano Free |
 | Quando sair versão do Hugo ou do Blowfish | Skill `atualizar-site` ou `make update-theme`; notas de migração; `hugo --logLevel info`; conferir os overrides (incluindo a ordenação da home, seção 8); `make serve` (claro/escuro/celular) e `make validate` antes do PR |
 | Toda segunda (automático) | O `deploy.yml` republica o site às 09:15 UTC para atualizar "Mais lidos"/"Menos lidos" da home. Se o passo "Visualizações por página" falhar, ver seção 8 ("Janela de dados" e "Se a API do Cloudflare mudar") |

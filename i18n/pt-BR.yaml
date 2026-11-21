@@ -1,3 +1,27 @@
 # Sobrescreve só as chaves do i18n/pt-BR.yaml do Blowfish que o projeto muda (PLAN.md 3.8).
 footer:
   powered_by: "Feito com {{ .Hugo }} e {{ .Theme }}"
+
+# Título da seção de posts da home (e padrão do shortcode list), igual ao botão "Mais recentes".
+shortcode:
+  recent_articles: "Mais recentes"
+
+# Nomes acessíveis (leitores de tela) que o Blowfish v3.10.0 não traduz para pt-BR: sem eles, o botão
+# do menu do celular e as áreas de navegação ficam com aria-label vazio. Conferir a cada atualização do
+# tema (docs/MAINTENANCE.md, seção 8, "Acessibilidade do cabeçalho").
+nav:
+  main_menu: "Menu principal"
+  mobile_menu: "Menu do celular"
+  close_menu: "Fechar menu"
+  footer_menu: "Menu do rodapé"
+  toggle_submenu: "Abrir ou fechar submenu"
+
+article:
+  zen_mode_title:
+    enable: "Ativar modo zen"
+    disable: "Desativar modo zen"
+
+# Nome do botão de busca: precisa conter o texto visível ("Ctrl K", como palavras soltas, sem parêntese
+# grudado), senão o Lighthouse aponta label-content-name-mismatch. Os dois atalhos funcionam (search.js do tema: "/" e Ctrl/Cmd+K).
+search:
+  open_button_title: "Pesquisar: Ctrl K ou /"

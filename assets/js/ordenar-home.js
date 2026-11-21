@@ -30,7 +30,7 @@
   var MAX_TEXTO = 500;
   var visiveis = parseInt(lista.getAttribute("data-visiveis"), 10) || 6;
   var botoes = Array.prototype.slice.call(grupo.querySelectorAll("[data-ordem]"));
-  // Título da seção ("Recente", do tema): acompanha a ordem escolhida.
+  // Título da seção ("Mais recentes": chave shortcode.recent_articles em i18n/pt-BR.yaml): acompanha a ordem escolhida.
   var titulo = grupo.previousElementSibling && grupo.previousElementSibling.tagName === "H2" ? grupo.previousElementSibling : null;
   var tituloOriginal = titulo ? titulo.textContent : "";
 

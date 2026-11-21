@@ -1,6 +1,8 @@
 {{- /*
   Por página (não cacheado). Na home: redirecionamentos de /?p=ID e /?s=termo (PLAN.md 7.2).
   O mapa wp_id -> URL vem do front matter `wp_id` dos posts e páginas migrados.
+  async: não bloqueia a renderização (Lighthouse); document.currentScript funciona em scripts async
+  e o evento load espera os scripts async, então /?s= continua funcionando.
 */ -}}
 {{- if .IsHome }}
   {{- $mapa := dict -}}
@@ -9,5 +11,5 @@
     {{- with .Params.wp_id }}{{ $mapa = merge $mapa (dict (string .) $p.RelPermalink) }}{{ end -}}
   {{- end }}
   {{- $js := resources.Get "js/legacy-redirect.js" | resources.Minify | resources.Fingerprint (site.Params.fingerprintAlgorithm | default "sha512") }}
-  <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" data-map="{{ $mapa | jsonify }}"></script>
+  <script async src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" data-map="{{ $mapa | jsonify }}"></script>
 {{- end }}

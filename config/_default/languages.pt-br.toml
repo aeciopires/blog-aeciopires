@@ -20,7 +20,7 @@ title = "Blog do Aécio Pires"
 [params.author]
   name = "Aécio Pires"
   image = "img/autor.jpg"
-  imageQuality = 96
+  imageQuality = 85   # 288x288 na home: 96 gerava ~38 KB; 85 fica visualmente igual e bem menor (Lighthouse)
   headline = "DevOps · SRE · Platform Engineer · Cloud Architect"
   bio = "Compartilho o que aprendo no dia a dia com DevOps, SRE, Kubernetes, cloud e observabilidade. Autor e instrutor de cursos."
   links = [

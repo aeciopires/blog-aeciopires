@@ -27,7 +27,7 @@ COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compos
 	new new-post new-page publish-post publish-page unpublish-post unpublish-page rm-post rm-page list-drafts \
 	check-tags fix-tags new-tag merge-tag rm-tag tags-report install-hooks normalize-tags optimize-images \
 	lint-md lint-md-fix validate validate-links actionlint shellcheck compare-urls validate-diagrams \
-	check-links-online audit-content check-updates update-theme skill-sync outdated migrate-install github-repos check-home
+	check-links-online audit-content check-updates update-theme skill-sync outdated migrate-install github-repos check-home lighthouse
 
 help: ## Lista os alvos
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / { printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2 } /^## / { printf "\n%s\n", substr($$0, 4) }' $(MAKEFILE_LIST)
@@ -132,6 +132,9 @@ validate-links: ## Links internos e imagens (lychee offline sobre public/)
 
 check-home: ## Home leve: cards, JSON (SRI, URLs) e fidelidade ao card do tema (sobre public/)
 	@$(NODE) scripts/check-home.mjs
+
+lighthouse: ## Lighthouse em Docker no site publicado [URL=https://blog.aeciopires.com/] → reports/lighthouse/
+	@bash scripts/lighthouse.sh "$(URL)"
 
 check-secrets: ## Segredos, tokens e chaves no histórico do Git (gitleaks + .gitleaks.toml)
 	$(RUN) gitleaks git --no-banner --redact .
