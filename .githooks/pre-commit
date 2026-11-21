@@ -23,7 +23,8 @@ bloquear() {
 # Fica antes do gitleaks para o arquivo atualizado também ser verificado.
 if [ "${GITHUB_REPOS_SKIP:-}" != "1" ]; then
   $RUN node scripts/github-repos.mjs || true
-  if [ -n "$(git status --porcelain -- data/github.json)" ]; then
+  # Só se o script mudou o arquivo (diferente do stage) ou se ele ainda não está no Git.
+  if ! git diff --quiet -- data/github.json || [ -n "$(git ls-files --others --exclude-standard -- data/github.json)" ]; then
     git add data/github.json
     echo "pre-commit: data/github.json atualizado e incluído no commit."
   fi
