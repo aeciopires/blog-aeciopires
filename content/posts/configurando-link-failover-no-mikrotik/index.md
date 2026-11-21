@@ -16,6 +16,6 @@ wp_id: 888
 
 ### Estou compartilhando um documento elaborado por **Victor Igor**, que trabalha comigo na Dynavideo.
 
-Este documento ensina como configurar o mikrotik para verificar se um link está funcionando e, em caso de falha, redirecionar o tráfego da rede interna por outro link de redundância ou backup.O documento também explica como implementar regras de NAT nos links de acesso a Internet. O texto está bem objetivo, mostra os comandos a serem usados e explica o que cada comando faz, de forma que uma pessoa iniciante possa entender e implementar esta solução sem muitas dificuldades.
+Este documento ensina como configurar o mikrotik para verificar se um link está funcionando e, em caso de falha, redirecionar o tráfego da rede interna por outro link de redundância ou backup. O documento também explica como implementar regras de NAT nos links de acesso a Internet. O texto está bem objetivo, mostra os comandos a serem usados e explica o que cada comando faz, de forma que uma pessoa iniciante possa entender e implementar esta solução sem muitas dificuldades.
 
 ### **[Link para download do Tutorial de Failover Mikrotik](/wp-content/uploads/2016/01/LinkFailover-Mikrotik.pdf)**

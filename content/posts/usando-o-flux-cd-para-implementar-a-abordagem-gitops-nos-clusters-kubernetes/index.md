@@ -2,13 +2,17 @@
 title: "Usando o Flux CD para implementar a abordagem GitOps nos clusters Kubernetes"
 slug: "usando-o-flux-cd-para-implementar-a-abordagem-gitops-nos-clusters-kubernetes"
 date: 2022-03-12T11:24:33-03:00
-lastmod: 2026-11-20T12:00:00-03:00
+lastmod: 2026-11-21T13:11:13-03:00
 draft: false
 categories: ["cluster", "devops", "docker", "git", "gitops", "tutoriais"]
 tags: ["docker", "fluxcd", "git", "kubernetes", "linux"]
 description: "Em outro tutorial, eu falei sobre a abordagem GitOps e uso do ArgoCD... Recomendo a leitura para entender alguns conceitos antes de partir para o uso…"
 wp_id: 2740
 ---
+
+{{< alert icon="circle-info" >}}
+**Atualizado em 21/11/2026:** corrigido o exemplo da variável `GITHUB_REPO` (o `flux bootstrap github --repository` recebe o nome do repositório, não a URL) e o Flux passou a ser descrito como projeto graduado pela CNCF (desde novembro de 2022).
+{{< /alert >}}
 
 {{< alert icon="circle-info" >}}
 **Atualizado em 20/11/2026:** testado com Flux 2.10.1 num cluster kind (Kubernetes 1.37), com o repositório de exemplo oficial: cert-manager 1.21.3, Envoy Gateway e podinfo 6.17.0 instalados, e o `curl` pelo Gateway respondendo. O bootstrap no GitHub não foi testado porque exige token e repositório reais. Atualizado o requisito de versão do Kubernetes (o Flux 2.10 suporta 1.35 a 1.37), os links passaram a apontar para o repositório oficial de exemplo (o fork do autor não existe mais) e a remoção agora apaga o Gateway antes dos namespaces.
@@ -18,7 +22,7 @@ Em outro [tutorial](/usando-o-argo-cd-para-implementar-a-abordagem-gitops-nos-cl
 
 Neste tutorial você aprenderá a instalar o [Flux](https://fluxcd.io/), que é um conjunto de soluções de entrega contínua e progressiva para Kubernetes. Fonte: [https://fluxcd.io](https://fluxcd.io/).
 
-O Flux pode se conectar a repositórios git públicos e privados, é gratuito, tem o código-fonte aberto e é um projeto [incubado pela CNCF](https://landscape.cncf.io/?project=incubating&selected=flux) (foi aceito em julho de 2019, passou para o nível _Incubating_ em março de 2021 e para o nível _Graduated_ em novembro de 2022). Quando este tutorial foi escrito (março/2022), o Flux não possuía uma interface web e era configurado via linha de comando.
+O Flux pode se conectar a repositórios git públicos e privados, é gratuito, tem o código-fonte aberto e é um projeto [graduado pela CNCF](https://landscape.cncf.io/?project=incubating&selected=flux) (foi aceito em julho de 2019, passou para o nível _Incubating_ em março de 2021 e para o nível _Graduated_ em novembro de 2022). Quando este tutorial foi escrito (março/2022), o Flux não possuía uma interface web e era configurado via linha de comando.
 
 ## **Requisitos**
 
@@ -63,7 +67,7 @@ Exporte o seu PAT, o seu usuário e o nome do repositório (o nome do **fork**, 
 ```bash
 export GITHUB_TOKEN=<your-token>
 export GITHUB_USER=<your-username>
-export GITHUB_REPO=<repository-url>
+export GITHUB_REPO=<repository-name>
 ```
 
 Estando conectado em um cluster Kubernetes, verifique se ele atende aos pré-requisitos do Flux:

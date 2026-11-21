@@ -472,6 +472,15 @@ html.dark .tag-cloud__tag--baixo {
   }
 }
 
+/* ---------- Links dentro de citações (Markdown "> …") ----------
+   O tema tira o sublinhado dos links e a citação usa cor de texto parecida com a do link: o Lighthouse aponta
+   "Links rely on color to be distinguishable" (link-in-text-block). Sublinhar distingue sem depender da cor,
+   nos modos claro e escuro. */
+.article-content blockquote a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 /* ---------- Links dentro do shortcode alert (ex.: "Atualizado em …") ----------
    O alert do tema usa fundo bg-primary-100 (claro) / dark:bg-primary-900 (escuro); o azul padrão dos
    links (primary-400 no escuro) dava contraste 4.07 sobre o primary-900 (mínimo 4.5, Lighthouse).

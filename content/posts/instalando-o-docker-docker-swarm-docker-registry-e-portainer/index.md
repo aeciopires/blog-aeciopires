@@ -5,7 +5,7 @@ date: 2017-08-16T18:25:06-03:00
 lastmod: 2026-11-20T12:00:00-03:00
 draft: false
 categories: ["docker", "tutoriais"]
-tags: ["containers", "docker", "portainer", "swarm"]
+tags: ["containers", "docker", "portainer"]
 description: "O Docker pode ser instalado no Ubuntu seguindo o seguinte tutorial:"
 wp_id: 1507
 ---

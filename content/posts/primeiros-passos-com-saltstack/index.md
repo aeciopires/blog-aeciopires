@@ -6,7 +6,7 @@ lastmod: 2024-11-19T01:36:19-03:00
 draft: false
 categories: ["saltstack", "tutoriais"]
 tags: ["saltstack", "zabbix"]
-description: "O SaltStack é uma ferramenta de código fonte aberto que realiza a gerência de configuração de servidores, serviços, conteineres e equipamentos de rede.…"
+description: "O SaltStack é uma ferramenta de código-fonte aberto que realiza a gerência de configuração de servidores, serviços, contêineres e equipamentos de rede.…"
 wp_id: 1896
 ---
 
@@ -14,10 +14,10 @@ wp_id: 1896
 
 Olá!
 
-O **[SaltStack](https://saltproject.io/)** é uma ferramenta de código fonte aberto que realiza a gerência de configuração de servidores, serviços, conteineres e equipamentos de rede.
+O **[SaltStack](https://saltproject.io/)** é uma ferramenta de código-fonte aberto que realiza a gerência de configuração de servidores, serviços, contêineres e equipamentos de rede.
 Ela é uma alternativa a ferramentas como: Ansible ([https://www.ansible.com](https://www.ansible.com)), Puppet ([https://puppet.com](https://puppet.com)) e Chef ([https://www.chef.io/chef](https://www.chef.io/chef)).
 
-**Update:** [O SaltStack foi adquirido pela VmWare em Outubro/2020](https://blogs.vmware.com/management/2020/10/vmware-completes-saltstack-acquisition-to-bolster-software-configuration-management-and-infrastructure-automation.html), mas parte do projeto continuará opensource no site [saltstack.io](http://saltstack.io)
+**Update:** [O SaltStack foi adquirido pela VMware em outubro de 2020](https://blogs.vmware.com/management/2020/10/vmware-completes-saltstack-acquisition-to-bolster-software-configuration-management-and-infrastructure-automation.html), mas parte do projeto continuará opensource no site [saltproject.io](https://saltproject.io/)
 
 Estou começando a dar os primeiros passos com o SaltStack e quero compartilhar no fim desta página os links que já estudei até aqui e que servem de bússola para quem quer começar a usá-lo também. Esta página será atualizada à medida que eu encontrar mais documentos relevantes.
 
@@ -29,7 +29,7 @@ No link a seguir você encontra uma análise comparativa sobre SaltStack, Ansibl
 
 Mais links para estudos comparativos entre SaltStack, Puppet, Ansible e Chef, você pode encontrar no fim desta página.
 
-Para agilizar a criação do ambiente de teste, siga as recomendações da seguinte página. Serão criadas 3 máquinas virtuais (1 master e 2 slaves) usando o Vagrant e Virtualbox. É recomendado ter acesso a um computador/notebook com 6 GB de memória RAM.
+Para agilizar a criação do ambiente de teste, siga as recomendações da seguinte página. Serão criadas 3 máquinas virtuais (1 master e 2 slaves) usando o Vagrant e VirtualBox. É recomendado ter acesso a um computador/notebook com 6 GB de memória RAM.
 
 [https://docs.saltstack.com/en/getstarted/fundamentals/index.html](https://docs.saltstack.com/en/getstarted/fundamentals/index.html)
 

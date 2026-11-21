@@ -12,6 +12,7 @@ showReadingTime: false
 showWordCount: false
 showAuthor: false
 showTableOfContents: false
+bilingue: true
 ---
 
 {{< figure src="/wp-content/uploads/2019/10/aecio-pires_zabbix_conference2.png" alt="Aécio Pires palestrando na Zabbix Conference" >}}

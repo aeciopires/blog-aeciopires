@@ -14,7 +14,7 @@ Nesta manhã foi publicado um novo livro pela editora [Novatec](https://novatec.
 
 O objetivo do livro é ensinar como integrar essas ferramentas para construir um processo automatizado de integração, entrega e deploy contínuo de uma ou mais aplicações.
 
-O livro também possui um site dedidado e acessível em: [https://jenkins.aeciopires.com](https://jenkins.aeciopires.com)
+O livro também possui um site dedicado e acessível em: [https://jenkins.aeciopires.com](https://jenkins.aeciopires.com)
 
 Desejo uma boa leitura e torço para que o livro lhe ajude no dia a dia.
 

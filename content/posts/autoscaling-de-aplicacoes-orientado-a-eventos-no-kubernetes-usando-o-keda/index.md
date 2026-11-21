@@ -27,7 +27,7 @@ Os detalhes sobre o funcionamento do Keda estão na doc: [https://keda.sh/docs/c
 
 Exemplo de mensagem de erro ao aplicar uma configuração de scaledObject (do Keda) para uma aplicação que tem o HPA nativo do Kubernetes.
 
-`Error from server (Forbidden): error when creating "cronScaledObject.yaml": admission webhook "vscaledobject.kb.io" denied the request: the workload 'kube-pires' of type 'apps/v1.Deployment' is already managed by the hpa 'kube-pires`
+`Error from server (Forbidden): error when creating "cronScaledObject.yaml": admission webhook "vscaledobject.kb.io" denied the request: the workload 'kube-pires' of type 'apps/v1.Deployment' is already managed by the hpa 'kube-pires'`
 
 ## Requisitos
 
@@ -143,7 +143,7 @@ kubectl delete pod POD_NAME -n keda
 
 ```
 
-## Crie o cronScaleObject para cada aplicações alvo do teste
+## Crie o ScaledObject para cada aplicação alvo do teste
 
 Como dito antes, neste tutorial serão usados os scalers do tipo Cron, CPU e Memory. Mais detalhes sobre a configuração destes scalers podem ser encontrados nas docs:
 
@@ -185,7 +185,7 @@ spec:
 
 O KEDA irá avaliar quando cada um desses eventos ocorrer: o período de agendamento, o consumo de CPU e memória. Em cada tipo de ocorrência, os pods serão escalados de acordo com a configuração realizada para cada evento:
 
-- 8 pods de forma constante durante todo o período de agendamento;
+- 30 pods de forma constante durante todo o período de agendamento;
 - De 2 até 30 pods quando o uso de CPU e/ou memória atingir 50% fora do período de agendamento;
 
 Esse conteúdo foi aplicado com os seguintes comandos:

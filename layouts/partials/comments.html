@@ -2,12 +2,14 @@
   Comentários (PLAN.md 6.5 e 6.6), chamado pelo Blowfish quando showComments = true.
   1) Novos: giscus (GitHub Discussions). O script é criado por assets/js/giscus.js (sem JS inline),
      que também acompanha o modo claro/escuro. Só aparece com repoId e categoryId definidos.
-  2) Arquivados: data/comments/<slug>.yaml, somente leitura. Texto puro, SEMPRE com escape:
+     Uma discussão por post, compartilhada pelos dois idiomas: mapping "specific" com o caminho da
+     versão pt-BR (o mesmo termo que o mapping "pathname" usava, então as discussões existentes continuam).
+  2) Arquivados: data/comments/<slug>.yaml, somente leitura (aparecem nos dois idiomas). Texto puro, SEMPRE com escape:
      nunca usar safeHTML, markdownify ou htmlUnescape neste conteúdo.
 */ -}}
 {{- $g := site.Params.giscus -}}
 <section id="comentarios" aria-labelledby="comentarios-titulo">
-  <h2 id="comentarios-titulo" class="text-2xl font-bold text-neutral-900 dark:text-neutral">Comentários</h2>
+  <h2 id="comentarios-titulo" class="text-2xl font-bold text-neutral-900 dark:text-neutral">{{ i18n "blog.comentarios" }}</h2>
 
   {{- if and $g.repoId $g.categoryId }}
     {{- $js := resources.Get "js/giscus.js" | resources.Minify | resources.Fingerprint (site.Params.fingerprintAlgorithm | default "sha512") }}
@@ -16,6 +18,11 @@
       data-repo-id="{{ $g.repoId }}"
       data-category="{{ $g.category }}"
       data-category-id="{{ $g.categoryId }}"
+      {{- /* termo = caminho da versão no idioma padrão, sem a "/" inicial (como o giscus faz no mapping pathname) */}}
+      {{- $original := . -}}
+      {{- range .AllTranslations }}{{ if eq .Language.Lang hugo.Sites.Default.Language.Lang }}{{ $original = . }}{{ end }}{{ end }}
+      data-term="{{ strings.TrimPrefix "/" $original.RelPermalink }}"
+      data-lang="{{ cond (eq .Language.Lang "en") "en" "pt" }}"
       data-theme-dark="{{ "giscus/t9-dark.css" | absURL }}"
       data-theme-light="{{ "giscus/t9-light.css" | absURL }}"></div>
     <script src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" defer></script>
@@ -27,7 +34,7 @@
   {{- with $arquivados }}
     <div class="comentarios-arquivados mt-8">
       <p class="comentarios-arquivados__rotulo">
-        <span aria-hidden="true">🔒</span> Comentários arquivados do blog antigo (somente leitura)
+        <span aria-hidden="true">🔒</span> {{ i18n "blog.comentarios_arquivados" }}
       </p>
       <ol class="comentarios-arquivados__lista">
         {{- range . }}

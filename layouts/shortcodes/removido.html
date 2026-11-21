@@ -5,5 +5,5 @@
 */ -}}
 {{- $nome := .Get "nome" | default "arquivo" -}}
 {{- $tipo := .Get "tipo" | default "arquivo" -}}
-{{- $dica := printf "%s removido: \"%s\" não está mais disponível no site de origem." (cond (eq $tipo "imagem") "Imagem" "Arquivo") $nome -}}
+{{- $dica := i18n (cond (eq $tipo "imagem") "blog.removido_imagem" "blog.removido_arquivo") (dict "Nome" $nome) -}}
 <span class="midia-removida" title="{{ $dica }}" aria-label="{{ $dica }}" tabindex="0">{{ $nome }}</span>

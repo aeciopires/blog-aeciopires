@@ -8,6 +8,7 @@ categories: ["devops"]
 tags: ["aws", "cloud"]
 description: "🇧🇷 pt-BR Resumo da causa raiz do incidente global ocorrido em 19 e 20/10/2025 na aws"
 wp_id: 3445
+bilingue: true
 ---
 
 🇧🇷 pt-BR Resumo da causa raiz do incidente global ocorrido em 19 e 20/10/2025 na [aws](https://aws.amazon.com/)

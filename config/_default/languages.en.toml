@@ -1,0 +1,22 @@
+# Versão em inglês (en-US), em /en/. Mesmos campos de languages.pt-br.toml, traduzidos.
+# O conteúdo é traduzido ANTES do commit (skill traduzir-conteudo; docs/MAINTENANCE.md, "Versão em inglês"):
+# content/**/index.en.md e _index.en.md ao lado do original. Nada é traduzido no build nem no navegador.
+# Nome, foto e perfis do autor vêm de [author] em params.toml (fonte única, iguais nos dois idiomas).
+
+disabled = false
+locale = "en-US"
+label = "English"
+weight = 2
+title = "Aécio Pires' Blog"
+
+[params]
+  displayName = "English"
+  isoCode = "en-US"
+  rtl = false
+  dateFormat = "Jan 2, 2006"
+  description = "Sharing knowledge about DevOps, SRE, Platform Engineering, Cloud, Kubernetes and observability."
+  copyright = "© { year } Aécio Pires · All rights reserved"
+
+[params.author]
+  headline = "DevOps · SRE · Platform Engineer · Cloud Architect"
+  bio = "I share what I learn day to day with DevOps, SRE, Kubernetes, cloud and observability. Course author and instructor."

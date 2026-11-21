@@ -8,6 +8,7 @@ categories: ["cluster", "devops", "docker", "git", "gitops", "kubernetes"]
 tags: ["docker", "kubernetes", "linux"]
 description: "🇧🇷 pt-BR Resumo da causa raiz do incidente global ocorrido em 12/06/2025 na GCP"
 wp_id: 3427
+bilingue: true
 ---
 
 🇧🇷 pt-BR Resumo da causa raiz do incidente global ocorrido em 12/06/2025 na **GCP**

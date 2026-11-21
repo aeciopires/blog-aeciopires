@@ -32,7 +32,7 @@ Se você não sabe o que é Docker, recomendo começar lendo os links abaixo. É
 
 Também ministro curso de Docker: [/curso-docker](/curso-docker)
 
-1) Crie o diretório abaixo para persistir os dados fora do conteiner.
+1) Crie o diretório abaixo para persistir os dados fora do contêiner.
 
 ```bash
 sudo mkdir -p /docker/rabbitmq/data
@@ -51,7 +51,7 @@ Use o comando abaixo para listar as imagens obtidas.
 docker images
 ```
 
-3) Execute o conteiner do RabbitMQ.
+3) Execute o contêiner do RabbitMQ.
 
 ```bash
 docker run -d --name rabbitmq \
@@ -67,7 +67,7 @@ Fonte: [https://hub.docker.com/\_/rabbitmq/](https://hub.docker.com/_/rabbitmq/)
 
 4) Acesse o RabbitMQ na URL http://IP-Servidor:15672. O login padrão é **guest** e a senha é **guest**.
 
-5) Se quiser parar o conteiner, é só executar o comando abaixo.
+5) Se quiser parar o contêiner, é só executar o comando abaixo.
 
 ```bash
 docker stop rabbitmq
@@ -92,9 +92,9 @@ Mais informações sobre o RabbitMQ e como configurá-lo podem ser encontradas n
 
 Caso não consiga acessar o RabbitMQ via interface Web, você pode gerenciá-lo pela linha de comando.
 
-> Atenção!!! A imagem `rabbitmq:4-management` passou a trazer a versão 2 do `rabbitmqadmin` (na revisão de outubro de 2026, a imagem trazia o RabbitMQ 4.3.6 e o `rabbitmqadmin` 2.35.0). Essa nova versão tem uma sintaxe diferente da versão 1, que era usada na versão original deste post. Os comandos abaixo foram atualizados e testados com a versão 2. A documentação está disponível em: [https://www.rabbitmq.com/docs/management-cli](https://www.rabbitmq.com/docs/management-cli)
+> Atenção!!! A imagem `rabbitmq:4-management` passou a trazer a versão 2 do `rabbitmqadmin` (na revisão de 20/11/2026, a imagem trazia o RabbitMQ 4.4.1 e o `rabbitmqadmin` 2.35.0). Essa nova versão tem uma sintaxe diferente da versão 1, que era usada na versão original deste post. Os comandos abaixo foram atualizados e testados com a versão 2. A documentação está disponível em: [https://www.rabbitmq.com/docs/management-cli](https://www.rabbitmq.com/docs/management-cli)
 
-Acessando o prompt de comandos do conteiner do RabbitMQ:
+Acessando o prompt de comandos do contêiner do RabbitMQ:
 
 ```bash
 docker exec -it rabbitmq /bin/bash
@@ -178,19 +178,19 @@ Definindo o nome do cluster RabbitMQ para 'rabbit@rabbitmq-master':
 rabbitmqctl set_cluster_name rabbit@rabbitmq-master
 ```
 
-Exportando a configuração (lembre-se de salvar em um diretório ou volume comum ao conteiner e ao host)
+Exportando a configuração (lembre-se de salvar em um diretório ou volume comum ao contêiner e ao host)
 
 ```text
 rabbitmqadmin --username guest --password NOVA-SENHA definitions export --file /tmp/rabbit.json
 ```
 
-Importando a configuração (lembre-se de montar um diretório ou volume comum ao conteiner e ao host):
+Importando a configuração (lembre-se de montar um diretório ou volume comum ao contêiner e ao host):
 
 ```text
 rabbitmqadmin --username guest --password NOVA-SENHA definitions import --file /tmp/rabbit.json
 ```
 
-Visualizando a quantidade de mensagens numa fila:
+Lendo até 10 mensagens de uma fila:
 
 ```text
 rabbitmqadmin --username guest --password NOVA-SENHA get messages --queue logs_app1 --count 10

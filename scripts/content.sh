@@ -7,6 +7,10 @@
 #   content.sh rm         post|page SLUG [REDIRECT] [sim]
 #   content.sh list-drafts
 #
+# Versão em inglês: cada bundle pode ter index.en.md (tradução, scripts/i18n.mjs). publish exige a
+# tradução em dia (make check-i18n do par); publish/unpublish mudam draft/date/lastmod nos DOIS arquivos;
+# rm remove o bundle inteiro e, com REDIRECT, cria o alias nos dois idiomas.
+#
 # Portabilidade (PLAN.md 9.7): bash 3.2, utilitários BSD e GNU. Sem sed -i, date -d,
 # readlink -f, grep -P, arrays associativos ou mapfile. Front matter editado com awk.
 set -euo pipefail
@@ -72,6 +76,22 @@ fm_get() {
   ' "$1"
 }
 
+# Tradução em inglês ao lado do original (index.md -> index.en.md).
+arquivo_en() { printf '%s' "${1%.md}.en.md"; }
+
+# Acrescenta um alias ao front matter (cria a chave se não existir).
+add_alias() {
+  local arq="$1" alias="$2" atual
+  [ -f "$arq" ] || return 0
+  atual="$(fm_get "$arq" aliases)"
+  if [ -z "$atual" ] || [ "$atual" = "[]" ]; then
+    fm_set "$arq" aliases "[\"$alias\"]"
+  else
+    fm_set "$arq" aliases "$(printf '%s' "$atual" | sed "s#]\$#, \"$alias\"]#")"
+  fi
+  info "alias $alias adicionado em $arq"
+}
+
 no_menu() {
   grep -Eq "pageRef[[:space:]]*=[[:space:]]*\"/?$1\"" config/_default/menus.pt-br.toml 2>/dev/null
 }
@@ -113,12 +133,26 @@ cmd_publish() {
   arquivo="$dir/index.md"
   [ -f "$arquivo" ] || erro "$arquivo não existe"
   node scripts/tags.mjs check "$arquivo" || erro "corrija as tags antes de publicar (make fix-tags / make new-tag)"
-  fm_set "$arquivo" draft false
-  if [ "$quando" = "now" ]; then
-    fm_set "$arquivo" date "$(agora)"
-    fm_set "$arquivo" lastmod "$(agora)"
+  local data arquivos
+  arquivos="$arquivo"
+  # Conteúdo já bilíngue no original (bilingue: true) não tem tradução; os demais precisam de index.en.md.
+  if [ "$(fm_get "$arquivo" bilingue)" != "true" ]; then
+    [ -f "$(arquivo_en "$arquivo")" ] || erro "falta a versão em inglês $(arquivo_en "$arquivo"): traduza antes de publicar (skill traduzir-conteudo), ou marque bilingue: true se o texto já tem pt-BR e inglês"
+    arquivos="$arquivo $(arquivo_en "$arquivo")"
   fi
-  info "publicado: $arquivo (draft: false). Sai no próximo deploy (push em main)."
+  data="$(agora)"
+  for f in $arquivos; do
+    fm_set "$f" draft false
+    if [ "$quando" = "now" ]; then
+      fm_set "$f" date "$data"
+      fm_set "$f" lastmod "$data"
+    fi
+  done
+  if ! node scripts/i18n.mjs check "$arquivo"; then
+    for f in $arquivos; do fm_set "$f" draft true; done
+    erro "a tradução não está em dia (acima); nada foi publicado (draft voltou a true). Atualize e rode make i18n-ok SLUG=$slug"
+  fi
+  info "publicado: $arquivos (draft: false). Sai no próximo deploy (push em main)."
 }
 
 cmd_unpublish() {
@@ -128,6 +162,7 @@ cmd_unpublish() {
   arquivo="$dir/index.md"
   [ -f "$arquivo" ] || erro "$arquivo não existe"
   fm_set "$arquivo" draft true
+  [ ! -f "$(arquivo_en "$arquivo")" ] || fm_set "$(arquivo_en "$arquivo")" draft true
   if [ "$tipo" = "page" ] && no_menu "$slug"; then aviso "a página '$slug' está no menu (config/_default/menus.pt-br.toml)"; fi
   if [ "$privado" = "1" ]; then
     destino="$(dir_bundle "$tipo" "$slug" _privado)"
@@ -151,7 +186,7 @@ cmd_rm() {
   [ -d "$dir" ] || erro "$dir não existe"
   if [ -n "$(git status --porcelain -- "$dir")" ]; then erro "$dir tem alterações não commitadas; commite ou descarte antes"; fi
   info "Conteúdo que aponta para /$slug/ (links que vão quebrar):"
-  grep -rlE "(\(|\")/$slug/|relref \"[^\"]*$slug\"" content --include='*.md' | grep -v "^$dir/" | sed 's/^/  /' || info "  nenhum"
+  grep -rlE "(\(|\")(/en)?/$slug/|relref \"[^\"]*$slug\"" content --include='*.md' | grep -v "^$dir/" | sed 's/^/  /' || info "  nenhum"
   if [ "$tipo" = "page" ] && no_menu "$slug"; then aviso "a página está no menu: remova de config/_default/menus.pt-br.toml"; fi
   if [ -n "$redirect" ]; then
     validar_slug "$redirect"
@@ -167,14 +202,9 @@ cmd_rm() {
     return 0
   fi
   if [ -n "$redirect" ]; then
-    local atual
-    atual="$(fm_get "$destino_arq" aliases)"
-    if [ -z "$atual" ] || [ "$atual" = "[]" ]; then
-      fm_set "$destino_arq" aliases "[\"/$slug/\"]"
-    else
-      fm_set "$destino_arq" aliases "$(printf '%s' "$atual" | sed "s#]\$#, \"/$slug/\"]#")"
-    fi
-    info "alias /$slug/ adicionado em $destino_arq"
+    add_alias "$destino_arq" "/$slug/"
+    # Na tradução, o alias também é relativo ao idioma: "/slug/" no index.en.md gera /en/slug/.
+    add_alias "$(arquivo_en "$destino_arq")" "/$slug/"
   fi
   git rm -r -q "$dir"
   info "removido: $dir"

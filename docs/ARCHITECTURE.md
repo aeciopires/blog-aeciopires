@@ -6,11 +6,15 @@ Visão do sistema que publica o [blog.aeciopires.com](https://blog.aeciopires.co
 
 O blog é um **site estático**: o Hugo gera HTML, CSS e JS a partir de Markdown; o GitHub Pages hospeda; o Cloudflare fica na frente como proxy. Não há servidor de aplicação, banco de dados, login nem formulário próprio.
 
+O site tem dois idiomas: **pt-BR** (padrão e fonte, na raiz) e **en-US** (em `/en/`). A versão em inglês é traduzida **na máquina do autor, antes do commit**, por IA local (skill `traduzir-conteudo` / agente `tradutor-en`), e versionada como `index.en.md` ao lado do original. O build e o navegador não traduzem nada.
+
 ```mermaid
 flowchart LR
   subgraph DEV["Máquina do autor (Ubuntu / macOS)"]
     A["Autor"] --> E["Editor<br/>Markdown"]
     E --> L["make serve<br/>Hugo + Blowfish<br/>(mise ou Docker)"]
+    E --> TR["IA local<br/>skill traduzir-conteudo<br/>index.en.md"]
+    TR --> L
   end
   subgraph GH["GitHub"]
     R[("Repositório<br/>aeciopires/blog-aeciopires")]
@@ -46,9 +50,10 @@ flowchart LR
 | Hugo *extended* | Gera o site | `mise.toml` (versão), `config/_default/` |
 | Tema Blowfish | Layouts, CSS, busca (Fuse.js), modo claro/escuro | submódulo `themes/blowfish` (tag fixada) |
 | Customizações | Visual T9, banner, nuvem de tags, comentários, analytics | `assets/`, `layouts/`, `data/`, `i18n/` |
+| Versão em inglês | Idioma en-US em `/en/` (seletor de idioma, hreflang e sitemap do tema; redirecionamento da home pelo idioma do navegador); garantia de tradução completa, em dia e com os mesmos comandos/links | `config/_default/languages.en.toml`, `menus.en.toml`, `i18n/en.yaml`, `content/**/index.en.md`, `scripts/i18n.mjs`, skill `traduzir-conteudo` |
 | mise | Versões exatas das ferramentas (local e CI) | `mise.toml` |
 | Make + scripts | Interface única de operação | `Makefile`, `scripts/` |
-| pre-commit | Atualiza `data/github.json` e barra segredos, arquivos sensíveis e o e-mail do autor; lint dos `.md` alterados | `.githooks/pre-commit` (`make install-hooks`) |
+| pre-commit | Atualiza `data/github.json` e barra segredos, arquivos sensíveis, o e-mail do autor e tradução em inglês ausente/desatualizada; lint dos `.md` alterados | `.githooks/pre-commit` (`make install-hooks`) |
 | GitHub Actions | Validação (`pr-check.yml`), publicação (`deploy.yml`: push na `main`, manual, todo 1º de janeiro e toda segunda), certificado (`origin-cert.yml`) | `.github/workflows/` |
 | GitHub Pages | Origem: serve os arquivos estáticos | Settings → Pages (fonte: GitHub Actions) |
 | Cloudflare Free | DNS, TLS de borda, WAF, rate limit, redirects, cache, headers, Web Analytics | painel; documentado em [cloudflare.md](cloudflare.md) |
@@ -60,7 +65,8 @@ flowchart LR
 | Caminho | Conteúdo |
 |---|---|
 | `content/posts/<slug>/index.md` | Posts (*page bundles*, imagem destacada `feature.*`) |
-| `content/<slug>/index.md` | Páginas (Sobre, Cursos, Contato, Privacidade, Créditos) |
+| `content/posts/<slug>/index.en.md` | Tradução en-US do post (mesmo bundle e imagens; `sourceHash` = hash do pt-BR traduzido) |
+| `content/<slug>/index.md` (+ `index.en.md`) | Páginas (Sobre, Cursos, Contato, Privacidade, Créditos) e suas traduções |
 | `static/wp-content/uploads/` | Mídias antigas no mesmo caminho do WordPress |
 | `data/taxonomia.yaml` | Registro de tags, sinônimos e categorias |
 | `data/comments/<slug>.yaml` | Comentários arquivados (somente leitura, sanitizados) |
@@ -73,7 +79,8 @@ flowchart LR
 | `data/visualizacoes.json` | Visualizações por página dos últimos 180 dias (gerado no deploy por `scripts/visualizacoes.mjs` a partir do Cloudflare Web Analytics; localmente, `make visualizacoes`; ignorado pelo Git) |
 | `layouts/` | Só partials, shortcodes e overrides próprios |
 | `docker/lighthouse/Dockerfile` + `scripts/lighthouse.sh` | `make lighthouse`: Lighthouse em Docker contra o site publicado (relatórios em `reports/lighthouse/`) |
-| `i18n/pt-BR.yaml` | Só as chaves que mudam: rodapé, "Mais recentes", nome do botão de busca e nomes acessíveis (`nav.*`) que o Blowfish não traduz |
+| `i18n/pt-BR.yaml` + `i18n/en.yaml` | Só as chaves do tema que mudam (rodapé, "Mais recentes", botão de busca, nomes acessíveis `nav.*` que o Blowfish não traduz) e os textos dos layouts próprios (`blog.*`, mesmas chaves nos dois) |
+| `scripts/i18n.mjs` | `make check-i18n`/`i18n-*`: tradução completa, em dia (`sourceHash`) e com comandos, código e links idênticos ao pt-BR |
 | `.claude/skills/` | Skills do Claude Code (`blowfish` é link para o submódulo) |
 
 ## 3. Fluxo de publicação
@@ -89,13 +96,14 @@ sequenceDiagram
   participant Pages as GitHub Pages
   participant CF as Cloudflare
   actor Leitor
+  Autor->>Autor: IA local traduz (skill traduzir-conteudo)
   Autor->>Autor: make validate (local)
-  Autor->>Autor: pre-commit: data/github.json + gitleaks
+  Autor->>Autor: pre-commit: data/github.json + gitleaks + check-i18n
   Autor->>Repo: git push / merge do PR
   Repo->>CI: dispara deploy.yml
   CI->>CI: mise install (versões do mise.toml)
-  CI->>CI: make check-tags
-  CI->>CI: hugo --gc --minify
+  CI->>CI: make check-tags + check-i18n
+  CI->>CI: hugo --gc --minify (pt-BR e /en/)
   CI->>CI: lychee (links e imagens)
   alt validação falhou
     CI-->>Autor: e-mail de falha, nada é publicado
@@ -142,7 +150,8 @@ flowchart LR
   ID --> CD
   OK -- "sim" --> N["make new-post SLUG=meu-post"]
   N --> W["Escrever<br/>content/posts/slug/index.md"]
-  W --> SV{"Como rodar?"}
+  W --> T["Traduzir: skill traduzir-conteudo<br/>index.en.md + make i18n-ok"]
+  T --> SV{"Como rodar?"}
   SV -- "nativo" --> S1["make serve<br/>(mise)"]
   SV -- "container" --> S2["make serve-docker<br/>(Docker / Colima)"]
   S1 --> V["localhost:1313<br/>revisão com live reload"]
@@ -167,7 +176,7 @@ flowchart TD
   end
   D1 --> BR["Branch + Pull request"]
   D2 --> UP["skill atualizar-site<br/>mise.toml ou make update-theme"] --> BR
-  D4 --> ED["Editar posts<br/>com fontes oficiais"] --> BR
+  D4 --> ED["Editar posts<br/>com fontes oficiais"] --> TE["Mesma correção na tradução<br/>make i18n-diff + i18n-ok"] --> BR
   D3 --> FIX["Ajuste no código<br/>ou em docs/cloudflare.md"] --> BR
   BR --> CL["Ler changelog e notas de migração"]
   CL --> LV["make lint-md + validate + serve<br/>(Ubuntu e macOS se mudou Makefile/scripts)"]
@@ -199,6 +208,11 @@ flowchart TD
 | Logos raster convertidos no build (WebP 144×72, `Fit`) e SVG com hash | Logos de 60 KB viram ~1 KB; nomes com hash permitem cache de 1 ano (regra C4) | Arquivo oficial intocado em `assets/`; só a cópia publicada muda |
 | Traduzir no projeto as chaves de acessibilidade do tema (`nav.*`) em vez de sobrescrever o cabeçalho | Botão do menu do celular com nome sem copiar layouts do tema | O `<label role="button">` do tema continua (Lighthouse "Agentic Browsing" 50 no celular); sugestão para o Blowfish |
 | Escape dos resultados da busca no `busca.js` | O `search.js` do tema usa `innerHTML` com dados do índice | Envoltório a revisar a cada atualização do Blowfish |
+| Versão em inglês traduzida localmente, antes do commit, por IA, e versionada | Conteúdo revisado e testável como o pt-BR; sem custo, latência nem serviço de terceiros no build/navegador; o check garante comandos e links iguais | Cada mudança no pt-BR exige atualizar a tradução antes do commit (bloqueado pelo pre-commit e pela CI) |
+| Seletor de idioma, hreflang e sitemap do próprio Blowfish, sem override | Menos trabalho a cada atualização do tema | — |
+| Redirecionamento pelo idioma do navegador com override mínimo (`language-redirect.html` + `idioma-config.js`) em vez de exceção na CSP | O tema usa script inline que muda a cada página (hash inviável); `'unsafe-inline'` enfraqueceria a CSP; o JS do tema é reaproveitado | Um override a revisar a cada versão do Blowfish (o `check-i18n` acusa pelo hash; `make test-idioma`) |
+| IA corrige erros do original ao traduzir e registra em `reports/` | Erros não ficam esperando outra revisão | O autor confere cada item antes do commit (`check-correcoes` bloqueia) |
+| Mesmo slug nos dois idiomas (`/slug/` e `/en/slug/`) | Par de arquivos óbvio, links internos mecânicos (`/en/` + slug) | URL em inglês com palavras em português |
 | Rascunhos versionados (`draft: true`) | Simples e com histórico | Repositório público: rascunho legível no GitHub (privado só com `PRIVATE=1`) |
 
 ## 8. Limites conhecidos

@@ -12,14 +12,14 @@ wp_id: 3505
 
 GoFipe é uma aplicação web que oferece uma interface intuitiva para consultar a tabela de preços de veículos FIPE.
 
-A Tabela Fipe (Fundação Instituto de Pesquisas Econômicas) é o principal indicador de preços médios de veículos novos, seminovos e usados no Brasil. Ela serve como um guia de referência para negociações de compra e venda, definição de apólices de seguro e base de cálculo para o IPVA
+A Tabela Fipe (Fundação Instituto de Pesquisas Econômicas) é o principal indicador de preços médios de veículos novos, seminovos e usados no Brasil. Ela serve como um guia de referência para negociações de compra e venda, definição de apólices de seguro e base de cálculo para o IPVA.
 
 Referências:
 
 - [https://www.fipe.org.br](https://www.fipe.org.br)
 - [https://fipe.online/docs/comece-aqui](https://fipe.online/docs/comece-aqui)
 
-Criei essa aplicação como um passa tempo e para fortelecer meu aprendizado com Golang.
+Criei essa aplicação como um passatempo e para fortalecer meu aprendizado com Golang.
 
 Ela implementa um backend em Go (atuando como proxy para a fonte de dados da FIPE e servindo o frontend), um frontend simples utilizando Go HTML Templates, métricas do Prometheus e configurações do Docker.
 

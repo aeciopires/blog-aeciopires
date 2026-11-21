@@ -46,7 +46,7 @@ SRE, cloud architect, desenvolvedor(a) de software, arquiteto(a) de software, ge
 
 - Dez/2025, turma realizada na [Unipe](http://unipe.br/pos-graduacao/desenvolvimento-de-aplicacoes-para-web/) (remoto);
 - Jan/2025, turma realizada na [Unipe](http://unipe.br/pos-graduacao/desenvolvimento-de-aplicacoes-para-web/) (remoto);
-- Dez/2024, aula exclusiva na [Ronald Bulbow](https://www.linkedin.com/in/ronald-bulbow-99a80b29/) (remoto);
+- Dez/2024, aula exclusiva com [Ronald Bulbow](https://www.linkedin.com/in/ronald-bulbow-99a80b29/) (remoto);
 - Set/2024, turma realizada na [Unipe](http://unipe.br/pos-graduacao/desenvolvimento-de-aplicacoes-para-web/) (remoto);
 - Ago/2024, turma realizada na [Unipe](http://unipe.br/pos-graduacao/desenvolvimento-de-aplicacoes-para-web/) (remoto);
 - Dez/2023, turma realizada na [Unipe](http://unipe.br/pos-graduacao/desenvolvimento-de-aplicacoes-para-web/) (remoto);
@@ -57,11 +57,11 @@ SRE, cloud architect, desenvolvedor(a) de software, arquiteto(a) de software, ge
 - Jun/2019, aula exclusiva com [Márcio Araújo](https://www.linkedin.com/in/marcioxmarcio/) (remoto);
 - Mai/2019, turma realizada na [Unirede](https://www.unirede.net) (presencial em Porto Alegre-RS);
 - Nov/2017, turma realizada na [Unipe](http://unipe.br/pos-graduacao/desenvolvimento-de-aplicacoes-para-web/) (presencial em João Pessoa-PB);
-- Mai/2017,  duas turmas realizadas na [Dynavideo](https://www.dynavideo.com.br/) (presencial em João Pessoa-PB).
+- Mai/2017, duas turmas realizadas na [Dynavideo](https://www.dynavideo.com.br/) (presencial em João Pessoa-PB).
 
 ## Observações
 
-1. Posso emitir nota fiscal, mas não trabalho com Nota de empenho, usada em orgãos públicos.
+1. Posso emitir nota fiscal, mas não trabalho com Nota de empenho, usada em órgãos públicos.
 2. É necessário que cada aluno(a) utilize seu computador.
 3. Como não represento uma instituição de ensino, não poderei emitir um certificado de participação.
 
@@ -87,7 +87,7 @@ SRE, cloud architect, desenvolvedor(a) de software, arquiteto(a) de software, ge
 - Docker Compose;
 - Dicas de segurança para a criação de imagens e administração de contêineres Docker;
 - Ferramentas de apoio ao ambiente de produção;
-- Projeto prático: cada grupo simulará uma equipe de desenvolvimento e operação. O objetivo é praticar o fluxo de trabalho, desde a criação de uma imagem Docker até a implantação no ambiente de  produção.
+- Projeto prático: cada grupo simulará uma equipe de desenvolvimento e operação. O objetivo é praticar o fluxo de trabalho, desde a criação de uma imagem Docker até a implantação no ambiente de produção.
 
 ## Slides demonstrativos
 

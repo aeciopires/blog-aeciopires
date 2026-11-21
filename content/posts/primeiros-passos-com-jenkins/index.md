@@ -6,7 +6,7 @@ lastmod: 2024-11-19T01:44:49-03:00
 draft: false
 categories: ["jenkins", "tutoriais"]
 tags: ["ci-cd", "jenkins"]
-description: "Temas:"
+description: "Links que estudei nos primeiros passos com o Jenkins: blogs, temas, livros e vídeos."
 wp_id: 1635
 ---
 
@@ -21,7 +21,6 @@ Olá! Estou começando a dar os primeiros passos com o **[Jenkins](https://www.j
 - [https://www.tutorialspoint.com/jenkins/index.htm](https://www.tutorialspoint.com/jenkins/index.htm)
 - [https://www.tutorialspoint.com/jenkins/jenkins\_tutorial.pdf](https://www.tutorialspoint.com/jenkins/jenkins_tutorial.pdf)
 - [http://www.devopsschool.com/tutorial/jenkins/](http://www.devopsschool.com/tutorial/jenkins/)
-- [https://www.tutorialspoint.com/jenkins/index.htm](https://www.tutorialspoint.com/jenkins/index.htm)
 
 **Temas:**
 

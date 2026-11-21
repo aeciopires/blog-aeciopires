@@ -22,12 +22,12 @@ Referências:
 
 - [Server-Sent Events - HTML Living Standard](https://html.spec.whatwg.org/multipage/server-sent-events.html)
 - [MDN Web Docs - Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events)
-- [RFC 6797 - HTTP Over TLS](https://www.rfc-editor.org/rfc/rfc6797)
+- [RFC 2818 - HTTP Over TLS](https://www.rfc-editor.org/rfc/rfc2818)
 
 A aplicação GoSSE implementa um backend em Go que serve um frontend, além de incluir métricas do Prometheus e configurações do Docker.
 
 Eu desenvolvi essa aplicação quando estava validando o suporte de uma CDN a esse protocolo.
-Se houve algum caso de uso em que essa aplicação lhe ajude, fique a vontade para utilizar.
+Se houver algum caso de uso em que essa aplicação lhe ajude, fique à vontade para utilizar.
 
 Mais detalhes sobre o uso podem ser encontrados em: [https://github.com/aeciopires/go-sse](https://github.com/aeciopires/go-sse)
 

@@ -25,3 +25,51 @@ article:
 # grudado), senão o Lighthouse aponta label-content-name-mismatch. Os dois atalhos funcionam (search.js do tema: "/" e Ctrl/Cmd+K).
 search:
   open_button_title: "Pesquisar: Ctrl K ou /"
+
+# Chaves que o tema usa e o pt-BR.yaml do Blowfish v3.10.0 não tem (make check-i18n aponta as novas).
+error:
+  404_home: "Voltar para a página inicial"
+term:
+  no_articles: "Ainda não há posts aqui."
+
+# Seletor de idioma (componente do tema header/components/translations.html, sem override):
+# texto do botão. A lista mostra o displayName de cada idioma (config/_default/languages.*.toml).
+global:
+  language: "PT"
+
+# Textos dos layouts e shortcodes PRÓPRIOS do blog (layouts/). Cada chave tem a mesma em i18n/en.yaml;
+# ao criar texto novo num layout próprio, use i18n "blog.…" e traduza nos dois arquivos.
+blog:
+  comentarios: "Comentários"
+  comentarios_arquivados: "Comentários arquivados do blog antigo (somente leitura)"
+  rodape_tema: "Tema Blowfish © 2022 Nuno Coração, licença MIT"
+  creditos: "Créditos e licenças"
+  explorar: "Explorar"
+  tags_mais_usadas: "Tags mais usadas"
+  ver_todas_tags: "Ver todas as tags →"
+  categorias: "Categorias"
+  nuvem_tags: "Nuvem de tags"
+  posts_contagem:
+    one: "{{ .Count }} post"
+    other: "{{ .Count }} posts"
+  tags_a_z: "Todas as tags de A a Z"
+  chamada_titulo: "Compartilhando conhecimento há {{ .Anos }} anos."
+  chamada_texto: "Tutoriais práticos de Kubernetes, AWS, observabilidade e automação, escritos por {{ .Autor }}."
+  curso_docker: "Curso Docker"
+  curso_kubernetes: "Curso Kubernetes"
+  stats_posts: "posts publicados"
+  stats_categorias: "categorias"
+  stats_repositorios: "repositórios no GitHub"
+  tecnologias_titulo: "Stacks que uso no dia a dia"
+  tecnologias_subtitulo: "Tecnologias com as quais tenho experiência prática"
+  tecnologias_nota: "As marcas pertencem aos seus respectivos donos e indicam apenas os assuntos tratados no blog."
+  ordenar_grupo: "Ordenar posts"
+  ordenar: "Ordenar:"
+  ordem_recentes: "Mais recentes"
+  ordem_antigos: "Mais antigos"
+  ordem_mais_lidos: "Mais lidos"
+  ordem_menos_lidos: "Menos lidos"
+  jotform_sem_js: "O formulário precisa de JavaScript."
+  jotform_abrir: "Abrir o formulário em outra página"
+  removido_arquivo: "Arquivo removido: \"{{ .Nome }}\" não está mais disponível no site de origem."
+  removido_imagem: "Imagem removida: \"{{ .Nome }}\" não está mais disponível no site de origem."

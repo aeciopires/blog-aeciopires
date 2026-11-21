@@ -118,7 +118,7 @@ Se estiver tudo certo, siga para a próxima tarefa!
 
 ## **Removendo os laboratórios**
 
-Basta executar o seguinte comando:
+Basta executar os seguintes comandos:
 
 ```text
 girus delete cluster

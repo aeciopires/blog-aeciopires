@@ -8,6 +8,7 @@ categories: ["cluster", "devops", "docker", "git", "gitops", "kubernetes"]
 tags: ["docker", "helm", "kubernetes", "bash"]
 description: "Acabei de publicar este helm chart: 📌 https://artifacthub.io/packages/helm/helm-watchdog-pod-delete/helm-watchdog-pod-delete 📌…"
 wp_id: 3369
+bilingue: true
 ---
 
 Oi, pessoal!

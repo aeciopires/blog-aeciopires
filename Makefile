@@ -15,7 +15,7 @@ RUN       := $(MISE_EXEC)
 HUGO_VERSION  := $(shell awk -F'"' '/^hugo-extended/{print $$2}' mise.toml)
 MERMAID_IMAGE := minlag/mermaid-cli:12.0.1
 MD_DIAGRAMS   := README.md CLAUDE.md $(wildcard docs/*.md)
-MD_LINT       := "content/**/*.md" README.md CLAUDE.md "docs/**/*.md" "PLANS/**/*.md" "!content/**/_index.md"
+MD_LINT       := "content/**/*.md" README.md CLAUDE.md ".claude/agents/*.md" ".claude/skills/*/SKILL.md" "!.claude/skills/blowfish/**" "docs/**/*.md" "PLANS/**/*.md" "!content/**/_index.md" "!content/**/_index.en.md"
 
 # Aspas simples seguras para texto livre (TITLE, DESC): ' vira '"'"'
 q = '$(subst ','"'"',$(1))'
@@ -27,7 +27,8 @@ COMPOSE := $(shell docker compose version >/dev/null 2>&1 && echo "docker compos
 	new new-post new-page publish-post publish-page unpublish-post unpublish-page rm-post rm-page list-drafts \
 	check-tags fix-tags new-tag merge-tag rm-tag tags-report install-hooks normalize-tags optimize-images \
 	lint-md lint-md-fix validate validate-links actionlint shellcheck compare-urls validate-diagrams \
-	check-links-online audit-content check-updates update-theme skill-sync outdated migrate-install github-repos check-home lighthouse
+	check-links-online audit-content check-updates update-theme skill-sync outdated migrate-install github-repos check-home lighthouse lighthouse-local test-idioma \
+	i18n-status check-i18n check-correcoes i18n-diff i18n-ok i18n-sync-fm prosa-en
 
 help: ## Lista os alvos
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / { printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2 } /^## / { printf "\n%s\n", substr($$0, 4) }' $(MAKEFILE_LIST)
@@ -50,7 +51,8 @@ serve-docker: ## Servidor local via Docker/Compose (Colima no macOS)
 	HUGO_VERSION=$(HUGO_VERSION) $(COMPOSE) up
 
 build: ## Build de produção em public/
-	HUGO_ENVIRONMENT=production $(HUGO) --gc --minify
+	@# env dentro do mise exec: o [env] do mise.toml (HUGO_ENVIRONMENT=development) venceria a variável de fora
+	$(RUN) env HUGO_ENVIRONMENT=production hugo --gc --minify
 
 clean: ## Remove public/, resources/_gen/, .hugo_build.lock, reports/, .mermaid-out/
 	rm -rf public resources/_gen .hugo_build.lock reports .mermaid-out
@@ -109,11 +111,34 @@ normalize-tags: ## (Fase 3, uma vez) aplica o mapa de limpeza das tags (grava s�
 
 install-hooks: ## Ativa o pre-commit versionado (.githooks/)
 	git config core.hooksPath .githooks
-	@echo "pre-commit ativo: repositórios do GitHub (data/github.json) + segredos/chaves/e-mail (todo commit) + check-tags e lint-md nos .md alterados"
+	@echo "pre-commit ativo: repositórios do GitHub (data/github.json) + segredos/chaves/e-mail (todo commit) + versão em inglês em dia (check-i18n) + check-tags e lint-md nos .md alterados"
 
 optimize-images: ## oxipng nos PNGs novos ou alterados
 	@files="$$( { git diff --name-only --diff-filter=AM HEAD; git ls-files --others --exclude-standard; } | grep -Ei '\.png$$' | sort -u)"; \
 	if [ -z "$$files" ]; then echo "nenhum PNG novo ou alterado"; else $(RUN) oxipng -o 4 --strip safe $$files; fi
+
+## Versão em inglês (en-US): tradução local, antes do commit (skill traduzir-conteudo)
+
+i18n-status: ## Situação das traduções (falta, desatualizada, rascunho, órfã)
+	@$(NODE) scripts/i18n.mjs status
+
+check-i18n: ## Traduções completas, em dia e com os mesmos comandos/links do pt-BR (validate, pre-commit, CI)
+	@$(NODE) scripts/i18n.mjs check
+
+check-correcoes: ## Correções feitas pela IA no conteúdo ainda não conferidas (reports/correcoes-conteudo-*.md)
+	@$(NODE) scripts/i18n.mjs correcoes
+
+i18n-diff: ## O que mudou no pt-BR desde a última tradução: SLUG=…
+	@$(NODE) scripts/i18n.mjs diff "$(SLUG)"
+
+i18n-ok: ## Valida a tradução e grava o carimbo sourceHash: SLUG="slug1 slug2" [FORCAR=1]
+	@$(NODE) scripts/i18n.mjs ok $(SLUG) $(if $(FORCAR),--forcar)
+
+i18n-sync-fm: ## Copia do pt-BR os campos não traduzíveis do front matter (tags, datas, draft): SLUG="…"
+	@$(NODE) scripts/i18n.mjs sync-fm $(SLUG)
+
+prosa-en: ## Texto corrido da tradução, para revisão gramatical em inglês: SLUG="slug1 slug2"
+	@$(NODE) scripts/i18n.mjs prosa $(SLUG)
 
 ## Qualidade e manutenção
 
@@ -124,7 +149,7 @@ lint-md-fix: ## Corrige o que for seguro no Markdown e mostra o diff
 	-$(RUN) markdownlint-cli2 --fix $(MD_LINT)
 	git --no-pager diff --stat
 
-validate: check-secrets lint-md check-tags build validate-links check-home actionlint shellcheck compare-urls ## O mesmo que a CI
+validate: check-secrets lint-md check-tags check-i18n check-correcoes build validate-links check-home actionlint shellcheck compare-urls ## O mesmo que a CI
 	@echo "validate: OK"
 
 validate-links: ## Links internos e imagens (lychee offline sobre public/)
@@ -135,6 +160,12 @@ check-home: ## Home leve: cards, JSON (SRI, URLs) e fidelidade ao card do tema (
 
 lighthouse: ## Lighthouse em Docker no site publicado [URL=https://blog.aeciopires.com/] → reports/lighthouse/
 	@bash scripts/lighthouse.sh "$(URL)"
+
+test-idioma: ## Testa (Docker, Chromium, CSP oficial) o redirecionamento pelo idioma do navegador e o seletor
+	@bash scripts/test-idioma.sh
+
+lighthouse-local: ## Lighthouse em Docker no build local de produção [PAGINAS="/ /en/ /slug/ /en/slug/"]
+	@bash scripts/lighthouse.sh --local "$(PAGINAS)"
 
 check-secrets: ## Segredos, tokens e chaves no histórico do Git (gitleaks + .gitleaks.toml)
 	$(RUN) gitleaks git --no-banner --redact .
@@ -163,8 +194,8 @@ check-links-online: ## lychee online nos links externos (não bloqueante; report
 	-$(RUN) lychee --no-progress --format markdown --output reports/links.md 'content/**/*.md'
 	@echo "relatório: reports/links.md"
 
-aviso-atualizacao: ## Aviso "Atualizado em" + lastmod num post: SLUG=… RESUMO="o que mudou"
-	@$(NODE) scripts/conteudo.mjs aviso "$(SLUG)" "$(RESUMO)"
+aviso-atualizacao: ## Aviso "Atualizado em" + lastmod: SLUG=… RESUMO="o que mudou" [RESUMO_EN="what changed"]
+	@$(NODE) scripts/conteudo.mjs aviso "$(SLUG)" $(call q,$(RESUMO)) $(call q,$(RESUMO_EN))
 
 prosa: ## Texto corrido de posts (sem código), para revisão gramatical: SLUG="slug1 slug2"
 	@$(NODE) scripts/conteudo.mjs prosa $(SLUG)

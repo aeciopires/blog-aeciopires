@@ -75,7 +75,7 @@ Para a execução deste tutorial, partirei da premissa que você está usando al
 - [helm](https://helm.sh/docs/intro/install/)
 - [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 
-Além disso, você precisa ter acesso a 1 ou 2 clusters Kubernetes (sejam eles no ambiente on-premises, cloud ([EKS](https://aws.amazon.com/eks/), [GKE](https://cloud.google.com/kubernetes-engine) ou [AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) ou ainda, usando [minikube](https://minikube.sigs.k8s.io/docs/start/), [kind](https://kind.sigs.k8s.io/docs/user/quick-start/), [k0s](https://k0sproject.io/), [microk8s](https://microk8s.io/) ou [k3s](https://k3s.io/)).
+Além disso, você precisa ter acesso a 1 ou 2 clusters Kubernetes (sejam eles no ambiente on-premises, cloud ([EKS](https://aws.amazon.com/eks/), [GKE](https://cloud.google.com/kubernetes-engine) ou [AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/)) ou ainda, usando [minikube](https://minikube.sigs.k8s.io/docs/start/), [kind](https://kind.sigs.k8s.io/docs/user/quick-start/), [k0s](https://k0sproject.io/), [microk8s](https://microk8s.io/) ou [k3s](https://k3s.io/)).
 
 ## **Instalando o Argo CD**
 

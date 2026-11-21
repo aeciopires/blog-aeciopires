@@ -36,6 +36,9 @@ jobs:
       - name: Tags e categorias
         run: make check-tags
 
+      - name: Versão em inglês completa e em dia (traduzida localmente, antes do commit)
+        run: make check-i18n
+
       - name: Build (com avisos de caminho e deprecations)
         run: |
           hugo --logLevel info --printPathWarnings 2>&1 | tee hugo.log

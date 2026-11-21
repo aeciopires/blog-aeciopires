@@ -10,14 +10,14 @@
 {{- $contorno := "!rounded-md border border-neutral-400 px-4 py-2 font-semibold !text-neutral-900 !no-underline hover:border-primary-500 dark:border-neutral-500 dark:!text-neutral" -}}
 <div class="home-chamada not-prose">
   <p class="eyebrow">DevOps · SRE · Cloud</p>
-  <h2>Compartilhando conhecimento há {{ sub now.Year $desde }} anos.</h2>
-  <p class="lead">Tutoriais práticos de Kubernetes, AWS, observabilidade e automação, escritos por {{ site.Params.author.name }}.</p>
+  <h2>{{ i18n "blog.chamada_titulo" (dict "Anos" (sub now.Year $desde)) }}</h2>
+  <p class="lead">{{ i18n "blog.chamada_texto" (dict "Autor" site.Params.author.name) }}</p>
   <div class="home-botoes">
     {{- with site.GetPage "/curso-docker" }}
-      <a class="{{ $primario }}" href="{{ .RelPermalink }}">Curso Docker</a>
+      <a class="{{ $primario }}" href="{{ .RelPermalink }}">{{ i18n "blog.curso_docker" }}</a>
     {{- end }}
     {{- with site.GetPage "/curso-kubernetes-k8s" }}
-      <a class="{{ $primario }}" href="{{ .RelPermalink }}">Curso Kubernetes</a>
+      <a class="{{ $primario }}" href="{{ .RelPermalink }}">{{ i18n "blog.curso_kubernetes" }}</a>
     {{- end }}
     {{- with $github }}
       <a class="{{ $contorno }} inline-flex items-center gap-2" href="{{ . }}" rel="me noopener noreferrer" target="_blank">

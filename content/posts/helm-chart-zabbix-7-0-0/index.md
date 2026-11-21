@@ -8,6 +8,7 @@ categories: ["cluster", "devops", "gitops", "kubernetes", "tutoriais", "zabbix-2
 tags: ["docker", "git", "kubernetes", "linux", "zabbix"]
 description: "Christian Anton and I have just released versions 7.0.1 and 7.0.0 of the Zabbix helm Chart! 🚀"
 wp_id: 3314
+bilingue: true
 ---
 
 {{< alert icon="circle-info" >}}
@@ -24,7 +25,7 @@ They offer many improvements and one important change. Read the changes here: [h
 
 Since 2022, this helm chart has almost 300,000 downloads ([https://tooomm.github.io/github-release-stats/?username=zabbix-community&repository=helm-zabbix](https://tooomm.github.io/github-release-stats/?username=zabbix-community&repository=helm-zabbix)).
 
-We thank [Zabbix](https://www.linkedin.com/company/zabbix/) for maintaining and making this free and open source software available, and to the people who submit pull requests, report bugs, and suggest improvements to the helm chart.
+We thank [Zabbix](https://www.linkedin.com/company/zabbix/) for maintaining and making this free and open source software available, and the people who submit pull requests, report bugs, and suggest improvements to the helm chart.
 
 Special thanks to [Christian Anton](https://www.linkedin.com/in/christiananton1/), who has created many technical solutions to reported issues and helps me with code management.
 
@@ -56,6 +57,6 @@ Não deixe de conferir as últimas novidades e compartilhar seu feedback:
 
 PS: Vídeo e slides da apresentação sobre este helm chart na Zabbix Conference 2022
 
-[https://www.youtube.com/watch?v=NU3FsXQp\_rE\
-\
-https://assets.zabbix.com/files/events/2022/zabbix\_summit\_2022/Christian\_Anton\_Install\_and\_operate\_Zabbix\_in\_Kubernetes\_and\_OpenShift.pdf](https://www.youtube.com/watch?v=NU3FsXQp_rEhttps://assets.zabbix.com/files/events/2022/zabbix_summit_2022/Christian_Anton_Install_and_operate_Zabbix_in_Kubernetes_and_OpenShift.pdf)
+[https://www.youtube.com/watch?v=NU3FsXQp\_rE](https://www.youtube.com/watch?v=NU3FsXQp_rE)
+
+[https://assets.zabbix.com/files/events/2022/zabbix\_summit\_2022/Christian\_Anton\_Install\_and\_operate\_Zabbix\_in\_Kubernetes\_and\_OpenShift.pdf](https://assets.zabbix.com/files/events/2022/zabbix_summit_2022/Christian_Anton_Install_and_operate_Zabbix_in_Kubernetes_and_OpenShift.pdf)

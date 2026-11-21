@@ -1,6 +1,6 @@
 {{- /*
   Banner de tecnologias (PLAN.md 3.7.1). Uso: {{< tecnologias >}}
-  Lê data/tecnologias.yaml. Logos oficiais, sem recolorir, em placas brancas (iguais nos dois modos).
+  Lê data/tecnologias.yaml (grupos e itens aceitam nome_<idioma>/legenda_<idioma>, ex.: nome_en; sem eles, usa nome/legenda). Logos oficiais, sem recolorir, em placas brancas (iguais nos dois modos).
   PNG/JPG são só redimensionados (WebP, proporção mantida); SVG é servido como está, com hash no nome.
   A marca do GitHub do cabeçalho usa a cor do texto (preta no claro, branca no escuro).
   O perfil do GitHub vem de site.Params.author.links (fonte única).
@@ -16,14 +16,16 @@
       </a>
     {{- end }}
     <div class="tecnologias__titulos">
-      <h2 id="tecnologias-titulo">Stacks que uso no dia a dia</h2>
-      <p>Tecnologias com as quais tenho experiência prática</p>
+      <h2 id="tecnologias-titulo">{{ i18n "blog.tecnologias_titulo" }}</h2>
+      <p>{{ i18n "blog.tecnologias_subtitulo" }}</p>
     </div>
   </div>
+  {{- $idioma := $.Page.Language.Lang -}}
   {{- range hugo.Data.tecnologias.grupos }}
+    {{- $grupo := index . (printf "nome_%s" $idioma) | default .nome }}
     <div class="tecnologias__grupo">
-      <p class="tecnologias__rotulo">{{ .nome }}</p>
-      <ul class="tecnologias__placas" aria-label="{{ .nome }}">
+      <p class="tecnologias__rotulo">{{ $grupo }}</p>
+      <ul class="tecnologias__placas" aria-label="{{ $grupo }}">
         {{- range .itens }}
           {{- $logo := "" -}}
           {{- with .logo }}{{ $logo = resources.Get (printf "img/logos/%s" .) }}{{ end -}}
@@ -33,19 +35,23 @@
           {{- with $logo -}}
             {{- if eq .MediaType.SubType "svg" }}{{ $logo = . | resources.Fingerprint "md5" }}{{ else }}{{ $logo = .Fit "144x72 webp q90" }}{{ end -}}
           {{- end }}
+          {{- /* nome_<idioma>/legenda_<idioma> opcionais (ex.: nome_en: Golang, porque o Lighthouse trata "Go"
+                 como texto de link genérico em inglês). */ -}}
+          {{- $nome := index . (printf "nome_%s" $idioma) | default .nome -}}
+          {{- $legenda := index . (printf "legenda_%s" $idioma) | default .legenda | default $nome }}
           <li>
-            <a class="tecnologias__placa" href="{{ .url }}" rel="noopener noreferrer" target="_blank" title="{{ .nome }}">
+            <a class="tecnologias__placa" href="{{ .url }}" rel="noopener noreferrer" target="_blank" title="{{ $nome }}">
               {{- if $logo }}
-                <img src="{{ $logo.RelPermalink }}" alt="{{ .nome }}" width="72" height="36" loading="lazy" decoding="async">
+                <img src="{{ $logo.RelPermalink }}" alt="{{ $nome }}" width="72" height="36" loading="lazy" decoding="async">
               {{- else }}
-                <span class="tecnologias__texto">{{ .nome }}</span>
+                <span class="tecnologias__texto">{{ $nome }}</span>
               {{- end }}
-              <span class="tecnologias__legenda">{{ .legenda | default .nome }}</span>
+              <span class="tecnologias__legenda">{{ $legenda }}</span>
             </a>
           </li>
         {{- end }}
       </ul>
     </div>
   {{- end }}
-  <p class="tecnologias__nota">As marcas pertencem aos seus respectivos donos e indicam apenas os assuntos tratados no blog.</p>
+  <p class="tecnologias__nota">{{ i18n "blog.tecnologias_nota" }}</p>
 </section>

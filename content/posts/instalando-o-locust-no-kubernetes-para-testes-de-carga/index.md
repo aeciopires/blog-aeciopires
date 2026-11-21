@@ -2,7 +2,7 @@
 title: "Instalando o Locust no Kubernetes para testes de carga"
 slug: "instalando-o-locust-no-kubernetes-para-testes-de-carga"
 date: 2025-04-22T10:34:26-03:00
-lastmod: 2026-11-20T12:00:00-03:00
+lastmod: 2026-11-21T13:11:14-03:00
 draft: false
 categories: ["cluster", "devops", "docker", "go", "kubernetes", "tutoriais"]
 tags: ["docker", "git", "helm", "kubernetes", "linux"]
@@ -11,7 +11,7 @@ wp_id: 3372
 ---
 
 {{< alert icon="circle-info" >}}
-**Atualizado em 20/11/2026:** Locust 2.47.0 com o chart `deliveryhero/locust` 0.35.0, testado num cluster kind (Kubernetes 1.37). Corrigida a opção `--csv` da execução por linha de comando, que gerava arquivos com nome diferente do usado no `kubectl cp`.
+**Atualizado em 21/11/2026:** corrigida a descrição do parâmetro `--headless` na tabela de parâmetros: ele desativa a interface web e inicia o teste imediatamente (conforme a documentação oficial do Locust). Em 20/11/2026: Locust 2.47.0 com o chart `deliveryhero/locust` 0.35.0, testado num cluster kind (Kubernetes 1.37); corrigida a opção `--csv` da execução por linha de comando, que gerava arquivos com nome diferente do usado no `kubectl cp`.
 {{< /alert >}}
 
 [Locust](https://locust.io/) é uma ferramenta de código-fonte aberto usada para fazer testes de desempenho/carga no protocolo HTTP e outros.
@@ -188,8 +188,6 @@ Abaixo estão algumas imagens com o resultado dos testes com o Locust:
 
 Audiodescrição: A imagem exibe três gráficos:
 
-Começa em 0 e vai até 50 usuários em questão de segundos.
-
 **Total Requests per Second (RPS)**:
 
 - Um gráfico de linha mostrando o número de requisições por segundo em vermelho.
@@ -206,6 +204,7 @@ Começa em 0 e vai até 50 usuários em questão de segundos.
 **Number of Users**:
 
 - Linha azul representando o número de usuários virtuais.
+- Começa em 0 e vai até 50 usuários em questão de segundos.
 
 **Imagem 2 – Estatísticas detalhadas por rota**
 
@@ -226,7 +225,7 @@ Audiodescrição: A imagem mostra uma tabela com dados estatísticos sobre as re
 No topo da tela aparecem os dados globais do teste:
 
 - **FAILURES**: 100%
-- **HOST**: http://kube-pires.test.cluster.local
+- **HOST**: http://kube-pires.test.svc.cluster.local
 - **USERS**: 50
 - **WORKERS**: 10
 - **RPS**: 8.1
@@ -255,8 +254,6 @@ Faça o rollout do deployment para atualizar o pod.
 kubectl rollout restart deployment/locust-master -n $MYNAMESPACE
 
 ```
-
-Exemplo da interface web do Locust, exibindo os resultados após os testes
 
 ## Removendo os configmaps
 
@@ -300,7 +297,7 @@ Dentro do pod, o Locust permite definir os seguintes parâmetros para execução
 | `-u` | Quantidade de usuários |
 | `-r` | Quantidade de usuários que são iniciados por segundo (ramp up) |
 | `-t` | Duração do teste |
-| `--headless` | Sem cabeçalho na requisição |
+| `--headless` | Desativa a interface web e inicia o teste imediatamente |
 | `--html` | Gera um relatório em html |
 | `--csv` | Exporta os dados em CSV |
 | `--host` | Host alvo dos testes |

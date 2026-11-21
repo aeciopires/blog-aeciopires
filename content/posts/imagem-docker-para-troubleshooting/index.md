@@ -8,6 +8,7 @@ categories: ["cluster", "devops", "docker"]
 tags: ["docker", "kubernetes", "linux"]
 description: "🇺🇸 [en-US] I customized a Docker image with troubleshooting tools..."
 wp_id: 3454
+bilingue: true
 ---
 
 🇺🇸 [en-US] I customized a Docker image with troubleshooting tools...

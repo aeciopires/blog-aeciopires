@@ -3,6 +3,9 @@
 # 1) Em todo commit: bloqueia segredos/tokens/chaves privadas (gitleaks), arquivos sensíveis
 #    e o e-mail do autor no conteúdo adicionado.
 # 2) Só se houver .md alterado: check-tags e lint-md nesses arquivos.
+# 3) Conteúdo, i18n/ ou menus alterados: versão em inglês completa e em dia (scripts/i18n.mjs check).
+# 4) Conteúdo alterado com correções da IA ainda não conferidas em reports/correcoes-conteudo-*.md: bloqueia.
+#    pt-BR mudou e a tradução não acompanhou? O commit para: traduza (skill traduzir-conteudo) e carimbe.
 # 0) Antes de tudo: atualiza data/github.json (repositórios públicos no GitHub, home) e o inclui
 #    no commit se o número mudou. Sem rede, segue sem mudar nada. Pular: GITHUB_REPOS_SKIP=1
 # Falso positivo: ajuste .gitleaks.toml (exceção bem delimitada) ou marque a linha com
@@ -59,6 +62,27 @@ if [ -n "$emails" ]; then
   done <<EOF
 $emails
 EOF
+fi
+
+# --- 3) Versão em inglês (antes do lint, que encerra o hook) ---
+i18n="$(git diff --cached --name-only --diff-filter=ACMRD -- 'content/*.md' 'i18n/*' 'config/_default/menus.*' || true)"
+if [ -n "$i18n" ]; then
+  # shellcheck disable=SC2086
+  if ! $RUN node scripts/i18n.mjs check $i18n; then
+    echo "pre-commit: BLOQUEADO — versão em inglês ausente, desatualizada ou com comandos/links diferentes do pt-BR (acima)." >&2
+    echo "Veja: make i18n-status · make i18n-diff SLUG=… · skill traduzir-conteudo · make i18n-ok SLUG=…" >&2
+    exit 1
+  fi
+fi
+
+# --- 4) Correções feitas pela IA no conteúdo: o autor confere antes do commit ---
+conteudo_alterado="$(git diff --cached --name-only --diff-filter=ACMR -- 'content/*.md' || true)"
+if [ -n "$conteudo_alterado" ]; then
+  # shellcheck disable=SC2086
+  if ! $RUN node scripts/i18n.mjs correcoes $conteudo_alterado; then
+    echo "pre-commit: BLOQUEADO — há correções da IA não conferidas nesses conteúdos (acima)." >&2
+    exit 1
+  fi
 fi
 
 # --- 2) Markdown alterado: tags e lint ---

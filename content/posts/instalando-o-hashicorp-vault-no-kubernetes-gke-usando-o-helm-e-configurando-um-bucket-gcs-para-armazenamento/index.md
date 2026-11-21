@@ -2,7 +2,7 @@
 title: "Instalando o Hashicorp Vault no Kubernetes (GKE) usando o Helm e configurando um bucket GCS para armazenamento"
 slug: "instalando-o-hashicorp-vault-no-kubernetes-gke-usando-o-helm-e-configurando-um-bucket-gcs-para-armazenamento"
 date: 2024-09-28T03:30:19-03:00
-lastmod: 2026-11-20T12:00:00-03:00
+lastmod: 2026-11-21T13:11:21-03:00
 draft: false
 categories: ["cluster", "devops", "docker", "kubernetes", "tutoriais", "vault"]
 tags: ["gcp", "helm", "kubernetes", "vault"]
@@ -11,7 +11,7 @@ wp_id: 2932
 ---
 
 {{< alert icon="circle-info" >}}
-**Atualizado em 20/11/2026:** chart `hashicorp/vault` 0.34.1, Vault 2.2.2 e vault-k8s 1.7.7. Testado num cluster kind com 3 workers (Kubernetes 1.37): HA com 3 réplicas, armazenamento `gcs` (num emulador local da API do GCS), init, unseal, login e configuração do método de autenticação `kubernetes`. O auto-unseal pelo Cloud KMS não pôde ser testado localmente. A conferência do token da service account passou a usar `kubectl describe secret`, porque o kubectl atual não mostra mais o campo `Tokens`. Incluído um aviso sobre o `helm upgrade` com o Helm 4.
+**Atualizado em 21/11/2026:** no values.yaml de exemplo, a regra de anti-afinidade do injector estava fora de `injector.affinity` e era ignorada pelo chart; agora usa o valor padrão do values.yaml oficial do chart 0.34.1. Em 20/11/2026: chart `hashicorp/vault` 0.34.1, Vault 2.2.2 e vault-k8s 1.7.7. Testado num cluster kind com 3 workers (Kubernetes 1.37): HA com 3 réplicas, armazenamento `gcs` (num emulador local da API do GCS), init, unseal, login e configuração do método de autenticação `kubernetes`. O auto-unseal pelo Cloud KMS não pôde ser testado localmente. A conferência do token da service account passou a usar `kubectl describe secret`, porque o kubectl atual não mostra mais o campo `Tokens`. Incluído um aviso sobre o `helm upgrade` com o Helm 4.
 {{< /alert >}}
 
 Este é o segundo post da série sobre o Vault. [Clique aqui para ver o primeiro post](/conhecendo-o-hashicorp-vault/) e conhecer um pouco sobre essa ferramenta.
@@ -20,13 +20,13 @@ Obrigado [Filipe Maia](https://www.linkedin.com/in/filipebsmaia/), [André Luis 
 
 ## **Requisitos**
 
-- O cluster [Kubernetes](https://kubernetes.io/) já deve estar criado e você deve ter permissão para instalar aplicações. Neste caso, estou usando um cluster [Google Kubernetes Engine (GKE) Standard](https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview?hl=pt-br). Você pode adaptar o procedimento, comandos e configurações de acordo com a sua necessidade. Neste caso, estou usando o [Kuberentes na versão 1.30](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.30.md) **(este passo não será mostrado no tutorial)**.
+- O cluster [Kubernetes](https://kubernetes.io/) já deve estar criado e você deve ter permissão para instalar aplicações. Neste caso, estou usando um cluster [Google Kubernetes Engine (GKE) Standard](https://cloud.google.com/kubernetes-engine/docs/concepts/kubernetes-engine-overview?hl=pt-br). Você pode adaptar o procedimento, comandos e configurações de acordo com a sua necessidade. Neste caso, estou usando o [Kubernetes na versão 1.30](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.30.md) **(este passo não será mostrado no tutorial)**.
 - O kubectl também precisa estar instalado no seu computador e conectado ao cluster Kubernetes. Neste caso, estou usando o [kubectl na versão 1.30](https://v1-30.docs.kubernetes.io/pt-br/docs/tasks/tools/install-kubectl-linux/) **(este passo não será mostrado no tutorial)**.
 - O binário do [helm](https://helm.sh/) também precisa estar instalado no seu computador. Neste caso, estou usando o [helm 3.16](https://helm.sh/docs/intro/install/) **(este passo não será mostrado no tutorial)**.
-- Vai precisar ter o pacote [jq](https://jqlang.org/) instalado no sistema operacional ( **este passo não será mostrado no tutoriail**);
+- Vai precisar ter o pacote [jq](https://jqlang.org/) instalado no sistema operacional ( **este passo não será mostrado no tutorial**);
 - Crie um [bucket GCS](https://cloud.google.com/storage?hl=en) para armazenar os dados do vault **(este passo não será mostrado no tutorial)**;
-- Crie um [KMS (Key Management Service)](https://cloud.google.com/security/products/security-key-management?hl=pt-BR) e uma [chave simétrica](https://www.hostinger.com.br/tutoriais/o-que-e-criptografia) para uso o vault criptografar/descriptografar os segredos armazenados no bucket **(este passo não será mostrado no tutorial)**;
-- Crie um role IAM customizada com as seguintes permissões **(este passo não será mostrado no tutorial)**.
+- Crie um [KMS (Key Management Service)](https://cloud.google.com/security/products/security-key-management?hl=pt-BR) e uma [chave simétrica](https://www.hostinger.com.br/tutoriais/o-que-e-criptografia) para o Vault criptografar/descriptografar os segredos armazenados no bucket **(este passo não será mostrado no tutorial)**;
+- Crie uma role IAM customizada com as seguintes permissões **(este passo não será mostrado no tutorial)**.
   - cloudkms.cryptoKeyVersions.useToDecrypt
   - cloudkms.cryptoKeyVersions.useToEncrypt
   - cloudkms.cryptoKeys.get
@@ -36,7 +36,7 @@ Obrigado [Filipe Maia](https://www.linkedin.com/in/filipebsmaia/), [André Luis 
   - storage.objects.list
   - storage.objects.update
 - Crie uma service account na GCP associando a role IAM customizada **(este passo não será mostrado no tutorial)**.
-- Na service account, crie um chave JSON sem tempo de expiração (duração infinita) e salve o arquivo como credentials.json **(este passo não será mostrado no tutorial)**.
+- Na service account, crie uma chave JSON sem tempo de expiração (duração infinita) e salve o arquivo como credentials.json **(este passo não será mostrado no tutorial)**.
 
 ### **Instalando o Vault no Kubernetes usando Helm**
 
@@ -246,7 +246,7 @@ vault write auth/kubernetes/config \
      issuer="https://kubernetes.default.svc.cluster.local"
 ```
 
-### **Desistalando o Vault**
+### **Desinstalando o Vault**
 
 Se precisar remover o Vault, use o seguinte comando:
 
@@ -278,16 +278,15 @@ global:
 injector:
   enabled: true
   replicas: 3
-  affinity:
-  podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-            - key: app
-              operator: In
-              values:
-                - vault
-        topologyKey: "kubernetes.io/hostname"
+  affinity: |
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: {{ template "vault.name" . }}-agent-injector
+              app.kubernetes.io/instance: "{{ .Release.Name }}"
+              component: webhook
+          topologyKey: kubernetes.io/hostname
 
   # image sets the repo and tag of the vault-k8s image to use for the injector.
   image:

@@ -12,7 +12,7 @@ wp_id: 3420
 
 Eu estudei e passei nas certificações sobre Kubernetes (CKA), Terraform Associate, AWS Cloud Practitioner e GCP Cloud Engineer.
 
-Todo o material que usei nos estudos estão disponíveis nos repositórios git abaixo e espero que possam lhe ajudar a se preparar e passar nas provas.
+Todo o material que usei nos estudos está disponível nos repositórios git abaixo e espero que possam lhe ajudar a se preparar e passar nas provas.
 
 - [https://github.com/aeciopires/learning-cka](https://github.com/aeciopires/learning-cka)
 - [https://github.com/aeciopires/learning-terraform-associate](https://github.com/aeciopires/learning-terraform-associate)

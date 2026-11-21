@@ -10,7 +10,8 @@ description: "Documentação para desenvolver manifests, classes e módulos no P
 wp_id: 807
 ---
 
-![puppet](/wp-content/uploads/2017/04/puppet-300x114.png)Olá!Estou começando a dar os primeiros passos com o **[Puppet](https://puppet.com/)** e quero compartilhar os links que já estudei até aqui e que servem de bússola para quem quer começar a usá-lo também. Esta página será atualizada à medida que eu encontrar mais documentos relevantes.
+![puppet](/wp-content/uploads/2017/04/puppet-300x114.png)Olá! Estou começando a dar os primeiros passos com o **[Puppet](https://puppet.com/)** e quero compartilhar os links que já estudei até aqui e que servem de bússola para quem quer começar a usá-lo também. Esta página será atualizada à medida que eu encontrar mais documentos relevantes.
+
 **O que é DevOps? Por que mudar para a cultura DevOps?**
 
 - [http://gutocarvalho.net/octopress/2013/03/16/o-que-e-um-devops-afinal/](http://gutocarvalho.net/octopress/2013/03/16/o-que-e-um-devops-afinal/)
@@ -85,7 +86,6 @@ wp_id: 807
 **Puppetboard:**
 
 - [https://github.com/puppet-community/puppetboard](https://github.com/puppet-community/puppetboard)
--
 - [http://domarques.com.br/blog/2014/08/puppet-e-puppetboard-para-automatizacao-de-servidores](http://domarques.com.br/blog/2014/08/puppet-e-puppetboard-para-automatizacao-de-servidores)
 - [http://www.credativ.de/blog/howto-puppetdb-installation](http://www.credativ.de/blog/howto-puppetdb-installation)
 - [https://ask.puppetlabs.com/question/3557/how-to-refresh-puppet-master-cached-catalog/](https://ask.puppetlabs.com/question/3557/how-to-refresh-puppet-master-cached-catalog/)
@@ -118,7 +118,7 @@ wp_id: 807
   - [https://notepad-plus-plus.org](https://notepad-plus-plus.org)
   - [http://mattparkes.net/notepad-as-an-ide-for-puppet](http://mattparkes.net/notepad-as-an-ide-for-puppet/)
 
-**Git e Github:**
+**Git e GitHub:**
 
 - [https://github.com/](https://github.com/)
 - [http://rogerdudler.github.io/git-guide/index.pt\_BR.html](http://rogerdudler.github.io/git-guide/index.pt_BR.html)
@@ -164,4 +164,4 @@ wp_id: 807
 - [https://ieeexplore.ieee.org/abstract/document/7950402](https://ieeexplore.ieee.org/abstract/document/7950402)
 - [https://ieeexplore.ieee.org/abstract/document/6932958](https://ieeexplore.ieee.org/abstract/document/6932958)
 
-Para tirar dúvidas com usuários mais experientes, recomendo fazer parte da comunidade Puppet-BR [http://puppet-br.org](http://puppet-br.org) Comparação entre as ferramentas de relatório e monitoramento Puppet.
+Para tirar dúvidas com usuários mais experientes, recomendo fazer parte da comunidade Puppet-BR [http://puppet-br.org](http://puppet-br.org).

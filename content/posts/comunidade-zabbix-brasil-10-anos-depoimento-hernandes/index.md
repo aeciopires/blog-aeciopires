@@ -6,6 +6,7 @@ lastmod: 2018-09-17T10:20:34-03:00
 draft: false
 categories: ["zabbix-2"]
 tags: ["zabbix"]
+description: "Depoimento em vídeo de Hernandes sobre os 10 anos da Comunidade Zabbix Brasil."
 wp_id: 1693
 ---
 
